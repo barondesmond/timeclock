@@ -10,7 +10,9 @@ export default class LinksScreen extends React.Component {
   render() {
     return (
       <ScrollView style={styles.container}>
+		<Text>
               Primelogic Job Center.
+		</Text>
       </ScrollView>
     );
   }
