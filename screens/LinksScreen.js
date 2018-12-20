@@ -11,7 +11,7 @@ export default class LinksScreen extends React.Component {
     return (
       <ScrollView style={styles.container}>
 	
-		   <Text>What a monkey </Text>
+		   <Text styles={styles.container}>What a monkey </Text>
       </ScrollView>
     );
   }
