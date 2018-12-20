@@ -3,21 +3,6 @@ import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { AppLoading, Asset, Font, Icon } from 'expo';
 import AppNavigator from './navigation/AppNavigator';
 
-import Auth from '@aws-amplify/auth';
-
-Auth.signUp({
-  username: 'AmandaB',
-  password: 'MyCoolPassword1!',
-  attributes: {
-    email: 'someemail@example.com'
-  }
-});
-
-Auth.signIn(username, password)
-  .then(success => console.log('successful sign in'))
-  .catch(err => console.log(err));
-
-
 export default class App extends React.Component {
   state = {
     isLoadingComplete: false,
