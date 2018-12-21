@@ -1,12 +1,11 @@
 import React from 'react';
 import { FlatList, ActivityIndicator, Text, View  } from 'react-native';
 
-export default class LinksScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Jobs',
-  };
+ export default class LinkScreen extends React.Component {
 
-export default class FetchExample extends React.Component {
+ static navigationOptions = {
+    title: 'Jobs',
+  }
 
   constructor(props){
     super(props);
@@ -29,7 +28,7 @@ export default class FetchExample extends React.Component {
       .catch((error) =>{
         console.error(error);
       });
-  }
+  };
 
 
 
