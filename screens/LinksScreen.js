@@ -9,7 +9,7 @@ export default class LinkSreen extends React.Component {
   }
 
   componentDidMount(){
-    return fetch('https://10.111.0.246/timeclock/movies.json')
+    return fetch('http://10.111.0.246/timeclock/movies.json')
       .then((response) => response.json())
       .then((responseJson) => {
 
