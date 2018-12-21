@@ -9,7 +9,7 @@ export default class SettingsScreen extends React.Component {
   }
 
   componentDidMount(){
-    return fetch('http://10.111.0.246/primelogic/jobs_json.php')
+    return fetch('http://10.111.0.246/primelogic/employees_json.php')
       .then((response) => response.json())
       .then((responseJson) => {
 

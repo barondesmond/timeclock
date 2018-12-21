@@ -15,7 +15,7 @@ export default class SettingsScreen extends React.Component {
 
         this.setState({
           isLoading: false,
-          dataSource: responseJson.jobs,
+          dataSource: responseJson.employees,
         }, function(){
 
         });
@@ -42,7 +42,7 @@ export default class SettingsScreen extends React.Component {
       <View style={{flex: 1, paddingTop:20}}>
         <FlatList
           data={this.state.dataSource}
-          renderItem={({item}) => <Text>{item.Name}, {item.LastName}</Text>}
+          renderItem={({item}) => <Text>{item.EmpName}, {item.Email}</Text>}
           keyExtractor={({id}, index) => id}
         />
       </View>
