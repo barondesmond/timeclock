@@ -13,7 +13,13 @@ import { FlatList, ActivityIndicator, Text, View  } from 'react-native';
   }
 
   componentDidMount(){
-    return fetch('https://10.111.0.246/primelogic/jobs_json.php')
+    return fetch('https://10.111.0.246/primelogic/jobs_json.php',
+		{
+			method: 'POST',
+			headers: {
+			Accept: 'application/json',
+			'Content-Type': 'application/json',
+		})
       .then((response) => response.json())
       .then((responseJson) => {
 

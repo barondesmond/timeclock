@@ -18,7 +18,7 @@ import { FlatList, ActivityIndicator, Text, View  } from 'react-native';
 			method: 'POST',
 			headers: {
 			Accept: 'application/json',
-			'Content-Type': 'application/json',
+			'Content-Type': 'application/json'
 		})
       .then((response) => response.json())
       .then((responseJson) => {
