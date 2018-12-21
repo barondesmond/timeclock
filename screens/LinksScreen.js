@@ -9,13 +9,13 @@ export default class LinkSreen extends React.Component {
   }
 
   componentDidMount(){
-    return fetch('http://10.111.0.246/timeclock/movies.json')
+    return fetch('http://10.111.0.246/primelogic/jobs_json.php')
       .then((response) => response.json())
       .then((responseJson) => {
 
         this.setState({
           isLoading: false,
-          dataSource: responseJson.movies,
+          dataSource: responseJson.jobs,
         }, function(){
 
         });
@@ -42,7 +42,7 @@ export default class LinkSreen extends React.Component {
       <View style={{flex: 1, paddingTop:20}}>
         <FlatList
           data={this.state.dataSource}
-          renderItem={({item}) => <Text>{item.title}, {item.releaseYear}</Text>}
+          renderItem={({item}) => <Text>{item.Name}, {item.LastName}</Text>}
           keyExtractor={({id}, index) => id}
         />
       </View>
