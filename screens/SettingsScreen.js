@@ -43,7 +43,7 @@ export default class SettingsScreen extends React.Component {
         <FlatList
           data={this.state.dataSource}
           renderItem={({item}) => <Text>{item.EmpName}, {item.Email}</Text>}
-          keyExtractor={({id}, index) => id}
+          keyExtractor={({id}, index.toString()) => id}
         />
       </View>
     );
