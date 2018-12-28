@@ -18,24 +18,82 @@ import { MonoText } from '../components/StyledText';
 import { createSwitchNavigator, createStackNavigator, createAppContainer } from 'react-navigation';
 
 
+
 export default class HomeScreen extends React.Component {
 
   static navigationOptions = {
     header: null
  
 	};
+
+  state = {
+    compatible: false,
+  };
+
+  componentDidMount() {
+    this.checkDeviceForHardware();
+  }
+
+
+  checkDeviceForHardware = async () => {
+    let compatible = await Expo.LocalAuthentication.hasHardwareAsync();
+    this.setState({ compatible });
+    if (!compatible) {
+      this.showIncompatibleAlert();
+    }
+  };
+
+ showIncompatibleAlert = () => {
+    Alert.alert('Incompatible Device',
+      'Current device does not have the necessary hardware to use this API.'
+    );
+  };
+
+  checkForBiometrics = async () => {
+    let biometricRecords = await Expo.LocalAuthentication.isEnrolledAsync();
+    if (!biometricRecords) {
+      Alert.alert('No Biometrics Found',
+        'Please ensure you have set up biometrics in your OS settings.'
+      );
+    } else {
+      this.handleLoginPress();
+    }
+  };
+  
+  handleLoginPress = () => {
+    if (Platform.OS === 'android') {
+      this.showAndroidAlert();
+    } else {
+      this.scanBiometrics();
+    }
+  };
+
+  showAndroidAlert = () => {
+    Alert.alert('Fingerprint Scan', 'Place your finger over the touch sensor.');
+    this.scanBiometrics();
+  };
+
+  scanBiometrics = async () => {
+    let result = await Expo.LocalAuthentication.authenticateAsync('Biometric Scan.');
+    if (result.success) {
+		Alert.alert('Success', 'Successful Authentication');
+
+    } else {
+	    this.props.navigation.navigate('Alternative');
+	}
+  };
+
+ 
  buttonClickListener = () =>{
- const navigation = this.props.navigation;
 
 
-  this.navigate('Primary');
+  this.props.navigation.navigate('Alternative');
 }
 
   render() 
   {
     return (
       <View style={styles.container}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
           <View style={styles.welcomeContainer}>
             <Image
               source={
@@ -53,13 +111,26 @@ export default class HomeScreen extends React.Component {
           </View>
 
 
-          <View style={styles.container}>
-          <Button title="Primary Login"
-            onPress={this.buttonClickListener}
-          />
-          </View>
+			  <View style={styles.contentContainer}>
+          <View style={styles.buttonContainer}>
 
-        </ScrollView>
+			  <Button title="Primary Login"
+                   onPress={
+            this.state.compatible
+              ? this.checkForBiometrics
+              : this.showIncompatibleAlert
+          }
+          />
+			  </View>
+          </View>
+		  <View style={styles.contentContainer}>
+          <View style={styles.buttonContainer}>
+
+			  <Button title="Alternate Login"
+			  onPress={this.buttonClickListener}
+			  />
+		  </View>
+		  </View>
 
       </View>
     );
@@ -76,8 +147,18 @@ const styles = StyleSheet.create({
   },
 
   contentContainer: {
-    paddingTop: 30,
+    padding: 5,
+    color: '#fff',
+   borderColor: 'gray',
+	borderWidth: 2,
+
   },
+   buttonContainer: {
+    margin: 5,
+    color: '#fff',
+	backgroundColor: '#DDDDDD',
+
+	},
   welcomeContainer: {
     alignItems: 'center',
     marginTop: 10,
@@ -146,13 +227,7 @@ const styles = StyleSheet.create({
   helpLink: {
     paddingVertical: 15,
   },
- buttonContainer: {
-    margin: 20,
-    color: '#FFFFFF',
-    borderColor: '#A24B83',
-	borderWidth: 2,
-	backgroundColor: '#DDDDDD'
-	},
+ 
   helpLinkText: {
     fontSize: 14,
     color: '#2e78b7',

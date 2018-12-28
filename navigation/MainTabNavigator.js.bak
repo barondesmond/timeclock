@@ -11,7 +11,7 @@ import PrimaryScreen from '../screens/PrimaryScreen';
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
-
+  Primary: PrimaryScreen,
 });
 
 HomeStack.navigationOptions = {

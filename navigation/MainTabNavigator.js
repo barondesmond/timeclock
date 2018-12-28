@@ -7,11 +7,13 @@ import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import PrimaryScreen from '../screens/PrimaryScreen';
+import AlternativeScreen from '../screens/AlternativeScreen';
 
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
   Primary: PrimaryScreen,
+  Alternative: AlternativeScreen,
 });
 
 HomeStack.navigationOptions = {
@@ -61,6 +63,14 @@ const PrimaryStack = createStackNavigator({
 });
 
 PrimaryStack.navigationOptions = {
+	title: 'Welcome to the app!',
+  };
+
+const AlternativeStack = createStackNavigator({
+	Primary: PrimaryScreen,
+});
+
+AlternativeStack.navigationOptions = {
 	title: 'Welcome to the app!',
   };
 
