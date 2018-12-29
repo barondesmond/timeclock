@@ -32,7 +32,7 @@ onLoginPress = () => {
 
 return fetch('https://app.plisolutions.com:7443/primelogic/employees_json.php', { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify({Name: this.state.user, Email: this.state.pass })})
 .then((response) => response.json())
-.then((responseJson) => {  } )
+.then((responseJson) => { console.log(responseJson) } )
 .catch((error) =>{ console.error(error); });
 
 
