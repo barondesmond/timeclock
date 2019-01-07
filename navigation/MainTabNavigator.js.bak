@@ -9,7 +9,7 @@ import SettingsScreen from '../screens/SettingsScreen';
 import PrimaryScreen from '../screens/PrimaryScreen';
 import AlternativeScreen from '../screens/AlternativeScreen';
 import JobsScreen from '../screens/JobsScreen';
-inport StartScreen from '../screens/StartScreen';
+import StartScreen from '../screens/StartScreen';
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,

@@ -9,7 +9,8 @@ import {
   View,
   Button,
   Alert,
-  Navigator
+  Navigator,
+  AsyncStorage,
 } from 'react-native';
 import { WebBrowser, Constants } from 'expo';
 
@@ -30,10 +31,14 @@ export default class HomeScreen extends React.Component {
 
   state = {
     compatible: false,
+    EmpNo: null,
   };
 
-  componentDidMount() {
-    this.checkDeviceForHardware();
+  async componentDidMount() {
+	const EmpNo = await AsyncStorage.getItem('EmpNo');
+	this.setState({EmpNo: EmpNo});
+
+	this.checkDeviceForHardware();
   }
 
 
@@ -78,7 +83,15 @@ export default class HomeScreen extends React.Component {
   scanBiometrics = async () => {
     let result = await Expo.LocalAuthentication.authenticateAsync('Biometric Scan.');
     if (result.success) {
-		Alert.alert('Success', 'Successful Authentication');
+
+		if (this.state.EmpNo == null)
+        { 
+			this.props.navigation.navigate('Alternate');
+        }
+		else
+		{
+			this.props.navigation.navigate('Jobs');
+        }
 
     } else {
 	    this.buttonClickListener;

@@ -10,6 +10,7 @@ import {
     Button,
 	Concat,
     StyleSheet,
+    AsyncStorage,
 } from 'react-native';
 
 import styles from  '../components/styles';
@@ -25,18 +26,35 @@ export default class AlternativeScreen extends Component {
       pass: 'Password',
       image: 'Image',
       isLoading: true,
-      id: ''
+      id: '',
+	  data: null,
+      EmpName: null,
+      Email: null,
     };
   }
 
+async saveKey(EmpName, Email) {
 
-onLoginPress = () => {
+    console.log(EmpName);
+	console.log(Email);
+    try {
 
-console.log(this.state);
-this.props.navigation.navigate('Jobs');
+      await AsyncStorage.setItem('EmpName', EmpName);
+      await AsyncStorage.setItem('Email', Email);
+
+	} catch (error) {
 
 
-}
+      console.log("Error saving data" + error);
+
+    }
+	console.log(EmpName);
+	console.log(Email);
+	this.props.navigation.navigate('Jobs');
+
+
+  }
+
 
 
     render() {
@@ -44,21 +62,21 @@ this.props.navigation.navigate('Jobs');
       <View style={styles.container}>
                 <Text 
                     style={{fontSize: 27}}>
-                    Login
+                    Name and Email
                 </Text>
   
-     <TextInput placeholder="Name" 
+     <TextInput placeholder="EmpName" 
         style={{height: 40, borderColor: 'gray', borderWidth: 1}}
-                  onChangeText={data => this.setState({ user: data })}
+                  onChangeText={data => this.setState({ EmpName: data })}
       />
    <TextInput placeholder="Email"
         style={{height: 40, borderColor: 'blue', borderWidth: 1}}
-                  onChangeText={data => this.setState({ pass: data })}
+                  onChangeText={data => this.setState({ Email: data })}
       />
 	  <View style={styles.contentContainer}>
           <View style={styles.buttonContainer}>
                <Button 
-                          onPress={this.onLoginPress}
+                          onPress={(EmpName, Email) => this.saveKey(this.state.EmpName, this.state.Email)}
                           title="Submit"
                       />
 		  </View>

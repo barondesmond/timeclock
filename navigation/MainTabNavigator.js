@@ -87,6 +87,13 @@ JobsStack.navigationOptions = {
 	title: 'Welcome to the app!',
   };
 
+const StartStack = createStackNavigator({
+	Jobs: JobsScreen,
+});
+
+StartStack.navigationOptions = {
+	title: 'Welcome to the app!',
+  };
 
 export default createBottomTabNavigator({
   HomeStack,
