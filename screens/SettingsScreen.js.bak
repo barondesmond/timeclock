@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, ActivityIndicator, Text, View , Select, Option, OptionList, updatePosition } from 'react-native';
+import { FlatList, ActivityIndicator, Text, View  } from 'react-native';
 
 export default class SettingsScreen extends React.Component {
 

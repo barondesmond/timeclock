@@ -14,8 +14,8 @@
     "@expo/samples": "2.1.1",
     "expo": "^31.0.2",
     "react": "16.5.0",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-31.0.0.tar.gz",
-    "react-native-dropdownalert": "^3.8.0",
+    "react-native": "^0.57.8",
+    "react-native-dropdownalert": "^3.9.1",
     "react-navigation": "^2.18.2",
     "react-redux": "^6.0.0"
   },

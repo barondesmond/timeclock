@@ -8,12 +8,15 @@ import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import PrimaryScreen from '../screens/PrimaryScreen';
 import AlternativeScreen from '../screens/AlternativeScreen';
-
+import JobsScreen from '../screens/JobsScreen';
+import StartScreen from '../screens/StartScreen';
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
   Primary: PrimaryScreen,
   Alternative: AlternativeScreen,
+  Jobs: JobsScreen,
+  Start: StartScreen,
 });
 
 HomeStack.navigationOptions = {
@@ -68,11 +71,22 @@ PrimaryStack.navigationOptions = {
 
 const AlternativeStack = createStackNavigator({
 	Primary: PrimaryScreen,
+    Alternative: AlternativeScreen,
+    Jobs: JobsScreen,
 });
 
 AlternativeStack.navigationOptions = {
 	title: 'Welcome to the app!',
   };
+
+const JobsStack = createStackNavigator({
+	Jobs: JobsScreen,
+});
+
+JobsStack.navigationOptions = {
+	title: 'Welcome to the app!',
+  };
+
 
 export default createBottomTabNavigator({
   HomeStack,

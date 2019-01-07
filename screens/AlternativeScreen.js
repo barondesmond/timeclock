@@ -8,9 +8,11 @@ import {
 	Alert,
 	Navigator,
     Button,
-	Concat
+	Concat,
+    StyleSheet,
 } from 'react-native';
 
+import styles from  '../components/styles';
 
 
 export default class AlternativeScreen extends Component {
@@ -30,10 +32,8 @@ export default class AlternativeScreen extends Component {
 
 onLoginPress = () => {
 
-return fetch('https://app.plisolutions.com:7443/primelogic/employees_json.php', { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify({Name: this.state.user, Email: this.state.pass })})
-.then((response) => response.json())
-.then((responseJson) => { console.log(responseJson) } )
-.catch((error) =>{ console.error(error); });
+console.log(this.state);
+this.props.navigation.navigate('Jobs');
 
 
 }
@@ -41,7 +41,7 @@ return fetch('https://app.plisolutions.com:7443/primelogic/employees_json.php', 
 
     render() {
         return (
-            <ScrollView style={{padding: 20}}>
+      <View style={styles.container}>
                 <Text 
                     style={{fontSize: 27}}>
                     Login
@@ -55,13 +55,16 @@ return fetch('https://app.plisolutions.com:7443/primelogic/employees_json.php', 
         style={{height: 40, borderColor: 'blue', borderWidth: 1}}
                   onChangeText={data => this.setState({ pass: data })}
       />
-
-		<View style={{margin:7}} />
-                <Button 
+	  <View style={styles.contentContainer}>
+          <View style={styles.buttonContainer}>
+               <Button 
                           onPress={this.onLoginPress}
                           title="Submit"
                       />
-                  </ScrollView>
+		  </View>
+		  </View>
+ 
+                  </View>
             )
     }
 }

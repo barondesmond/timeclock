@@ -1,6 +1,8 @@
 import React from 'react';
 import { FlatList, ActivityIndicator, Text, View  } from 'react-native';
 
+import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, URL} from '../constants/common';
+
 export default class LinkSreen extends React.Component {
 
   constructor(props){
@@ -9,7 +11,7 @@ export default class LinkSreen extends React.Component {
   }
 
   componentDidMount(){
-    return fetch('https://app.plisolutions.com:7443/primelogic/jobs_json.php')
+    return fetch(URL + 'jobs_json.php')
       .then((response) => response.json())
       .then((responseJson) => {
 
