@@ -13,6 +13,8 @@ import {
     AsyncStorage,
 } from 'react-native';
 
+import { Constants } from 'expo';
+
 import styles from  '../components/styles';
 
 import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, URL, STORAGE_KEY} from '../constants/common';
@@ -38,7 +40,7 @@ export default class AlternativeScreen extends Component {
 
 async fetchEmployeeFromApi (EmpName, Email) {
    
-  const emp_url = URL + `employees_json.php?EmpName=${EmpName}&Email=${Email}`;
+  const emp_url = URL + `empauth_json.php?EmpName=${EmpName}&Email=${Email}&installationID=${Constants.installationId}`;
   console.log(emp_url);
 
   let response = await fetch(emp_url)
@@ -46,7 +48,7 @@ async fetchEmployeeFromApi (EmpName, Email) {
   
  response = await response.json();
   console.log(response);
-   if (response.numEmp == 1)
+   if (response.authorized == 1)
    {
 	  let employees = response.employees;
 	 console.log(employees);
@@ -58,8 +60,7 @@ async fetchEmployeeFromApi (EmpName, Email) {
    }
    else
 	{
-	  Alert.alert('Invalid Employee Primelogic');
-	  this.props.navigation.navigate('Camera');
+	  Alert.alert('Employee Not Authorized.  Wating Authorization');
 	   return false;
     }
  
