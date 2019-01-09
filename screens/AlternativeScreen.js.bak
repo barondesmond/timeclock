@@ -50,17 +50,14 @@ async fetchEmployeeFromApi (EmpName, Email) {
   console.log(response);
    if (response.authorized == 1)
    {
-	  let employees = response.employees;
-	 console.log(employees);
-	  console.log(employees['0'].EmpNo);
-	 const EmpNo = employees['0'].EmpNo;
+   const EmpNo = response.EmpNo;
    this.setState({EmpNo: EmpNo});
    this.setState({data: response});
    this.saveKey(EmpName, Email, EmpNo);
    }
    else
 	{
-	  Alert.alert('Employee Not Authorized.  Wating Authorization');
+	  Alert.alert('Employee Not Authorized on Device ');
 	   return false;
     }
  
