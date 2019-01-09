@@ -5,3 +5,4 @@ export const FONT_BOLD = 'OpenSans-Bold';
 export const BORDER_RADIUS = 5;
 export const URL = 'https://app.plisolutions.com:7443/primelogic/';
 export const STORAGE_KEY = '@MySuperStore:key';
+export const AUTHKEY = 'xxx';

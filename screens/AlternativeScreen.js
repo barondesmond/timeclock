@@ -41,14 +41,9 @@ async fetchEmployeeFromApi (EmpName, Email) {
   const emp_url = URL + `employees_json.php?EmpName=${EmpName}&Email=${Email}`;
   console.log(emp_url);
 
-  let response = await fetch(emp_url);
+  let response = await fetch(emp_url)
+				.catch((error) => console.warn("fetch error:", error))
   
-
-
-  if (response.error) {
-    console.error('Error with api  request', response.error);
-    return false;
-  }
  response = await response.json();
   console.log(response);
    if (response.numEmp == 1)
@@ -63,8 +58,7 @@ async fetchEmployeeFromApi (EmpName, Email) {
    }
    else
 	{
-	  Alert('Invalid Employee Primelogic');
-	  this.props.navigation.navigate('Camera');
+	  Alert.alert('Invalid Employee Primelogic');
 	   return false;
     }
  

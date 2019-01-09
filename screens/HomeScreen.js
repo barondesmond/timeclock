@@ -20,7 +20,7 @@ import { createStackNavigator, createAppContainer } from 'react-navigation';
 
 import styles from '../components/styles';
 
-import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, URL} from '../constants/common';
+import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, URL, AUTHKEY} from '../constants/common';
 
 
 
@@ -36,9 +36,14 @@ export default class HomeScreen extends React.Component {
     compatible: false,
     EmpNo: null,
     Bio: null,
+    uids: null,
   };
 
+
+
   async componentDidMount() {
+
+
 	const EmpNo = await AsyncStorage.getItem('EmpNo');
 	if (EmpNo === null)
 	{
@@ -149,7 +154,7 @@ resetKeys = async ()  => {
               style={styles.welcomeImage}
             />
 
-
+			<Text> Device: {Constants.installationId} </Text>
             <Text style={styles.getStartedText}>
               Job Portal
             </Text>
