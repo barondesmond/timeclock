@@ -1,6 +1,6 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation';
 
 import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
@@ -10,6 +10,8 @@ import PrimaryScreen from '../screens/PrimaryScreen';
 import AlternativeScreen from '../screens/AlternativeScreen';
 import JobsScreen from '../screens/JobsScreen';
 import StartScreen from '../screens/StartScreen';
+import CameraScreen from '../screens/CameraScreen';
+
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
@@ -17,20 +19,13 @@ const HomeStack = createStackNavigator({
   Alternative: AlternativeScreen,
   Jobs: JobsScreen,
   Start: StartScreen,
-});
+  Camera: CameraScreen,
+
+  });
 
 HomeStack.navigationOptions = {
-  tabBarLabel: 'Home',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
-      }
-    />
-  ),
+	title: 'Welcome to the app!',
+
 };
 
 const LinksStack = createStackNavigator({
@@ -38,13 +33,8 @@ const LinksStack = createStackNavigator({
 });
 
 LinksStack.navigationOptions = {
-  tabBarLabel: 'Jobs',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'}
-    />
-  ),
+	title: 'Welcome to the app!',
+  
 };
 
 const SettingsStack = createStackNavigator({
@@ -52,13 +42,8 @@ const SettingsStack = createStackNavigator({
 });
 
 SettingsStack.navigationOptions = {
-  tabBarLabel: 'Employees',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-options' : 'md-options'}
-    />
-  ),
+	title: 'Welcome to the app!',
+
 };
 
 const PrimaryStack = createStackNavigator({
@@ -69,10 +54,16 @@ PrimaryStack.navigationOptions = {
 	title: 'Welcome to the app!',
   };
 
+const CameraStack = createStackNavigator({
+	Camera: CameraScreen,
+});
+
+CameraStack.navigationOptions = {
+	title: 'Welcome to the app!',
+  };
+
 const AlternativeStack = createStackNavigator({
-	Primary: PrimaryScreen,
     Alternative: AlternativeScreen,
-    Jobs: JobsScreen,
 });
 
 AlternativeStack.navigationOptions = {
@@ -94,9 +85,3 @@ const StartStack = createStackNavigator({
 StartStack.navigationOptions = {
 	title: 'Welcome to the app!',
   };
-
-export default createBottomTabNavigator({
-  HomeStack,
-  LinksStack,
-  SettingsStack,
-});

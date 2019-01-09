@@ -9,7 +9,9 @@ import {
   View,
   Button,
   Alert,
-  Navigator
+  Navigator,
+  TouchableHighlight,
+  Dimensions,
 } from 'react-native';
 import { WebBrowser, Constants } from 'expo';
 
@@ -20,7 +22,8 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
-  },
+
+	},
 
   contentContainer: {
     padding: 5,
@@ -31,10 +34,18 @@ export default StyleSheet.create({
   },
    buttonContainer: {
     margin: 5,
-    color: '#fff',
 	backgroundColor: '#DDDDDD',
+    alignSelf: 'stretch',
 
 	},
+ circleContainer: {
+    borderRadius: Math.round(Dimensions.get('window').width + Dimensions.get('window').height) / 2,
+    width: Dimensions.get('window').width * 0.5,
+    height: Dimensions.get('window').width * 0.5,
+	justifyContent: 'center',
+    alignItems: 'center'
+	},
+
   welcomeContainer: {
     alignItems: 'center',
     marginTop: 10,
@@ -110,4 +121,3 @@ export default StyleSheet.create({
   },
 });
 
-export default styles;

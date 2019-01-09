@@ -9,7 +9,9 @@ import {
   View,
   Button,
   Alert,
-  Navigator
+  Navigator,
+  TouchableHighlight,
+  Dimensions,
 } from 'react-native';
 import { WebBrowser, Constants } from 'expo';
 
@@ -20,7 +22,8 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
-  },
+
+	},
 
   contentContainer: {
     padding: 5,
@@ -31,10 +34,12 @@ export default StyleSheet.create({
   },
    buttonContainer: {
     margin: 5,
-    color: '#fff',
 	backgroundColor: '#DDDDDD',
+    alignSelf: 'stretch',
 
 	},
+ 
+
   welcomeContainer: {
     alignItems: 'center',
     marginTop: 10,

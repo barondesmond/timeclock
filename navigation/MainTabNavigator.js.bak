@@ -10,6 +10,8 @@ import PrimaryScreen from '../screens/PrimaryScreen';
 import AlternativeScreen from '../screens/AlternativeScreen';
 import JobsScreen from '../screens/JobsScreen';
 import StartScreen from '../screens/StartScreen';
+import CameraScreen from '../screens/CameraScreen';
+
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
@@ -17,7 +19,9 @@ const HomeStack = createStackNavigator({
   Alternative: AlternativeScreen,
   Jobs: JobsScreen,
   Start: StartScreen,
-});
+  Camera: CameraScreen,
+
+  });
 
 HomeStack.navigationOptions = {
   tabBarLabel: 'Home',
@@ -69,6 +73,14 @@ PrimaryStack.navigationOptions = {
 	title: 'Welcome to the app!',
   };
 
+const CameraStack = createStackNavigator({
+	Camera: CameraScreen,
+});
+
+CameraStack.navigationOptions = {
+	title: 'Welcome to the app!',
+  };
+
 const AlternativeStack = createStackNavigator({
 	Primary: PrimaryScreen,
     Alternative: AlternativeScreen,
@@ -87,9 +99,10 @@ JobsStack.navigationOptions = {
 	title: 'Welcome to the app!',
   };
 
-
-export default createBottomTabNavigator({
-  HomeStack,
-  LinksStack,
-  SettingsStack,
+const StartStack = createStackNavigator({
+	Jobs: JobsScreen,
 });
+
+StartStack.navigationOptions = {
+	title: 'Welcome to the app!',
+  };

@@ -32,7 +32,8 @@ export default class JobsScreen extends React.Component {
     this.state = {
 
         Name: null,
-        LastName: null,
+        LocName: null,
+        JobNotes: null,
         dataSource : '',
 
     }
@@ -43,7 +44,9 @@ export default class JobsScreen extends React.Component {
     
 
       const Name = await AsyncStorage.getItem('Name');
-      if (Name != null)
+      const LocName = await AsyncStorage.getItem('LocName');
+      const JobNotes = await AsyncStorage.getItem('JobNotes');
+	  if (Name != null && LocName != null && JobNotes != null)
       {
 		  this.props.navigation.navigate('Start');
       }
@@ -71,12 +74,13 @@ export default class JobsScreen extends React.Component {
  
 
 
-  async saveKey(Name, LastName) {
+  async saveKey(Name, LocName, JobNotes) {
 
     try {
 
       await AsyncStorage.setItem('Name', Name);
-      await AsyncStorage.setItem('LastName', LastName);
+      await AsyncStorage.setItem('LocName', LocName);
+      await AsyncStorage.setItem('JobNotes', JobNotes);
 
 	} catch (error) {
 
@@ -85,7 +89,8 @@ export default class JobsScreen extends React.Component {
 
     }
 	console.log(Name);
-	console.log(LastName);
+	console.log(LocName);
+	console.log(JobNotes);
 	this.props.navigation.navigate('Start');
 
 
@@ -113,7 +118,7 @@ export default class JobsScreen extends React.Component {
 			<View style={styles.buttonContainer}>
 			<FlatList
           data={this.state.dataSource}
-          renderItem={({item}) => <Button title={item.LastName} onPress={(Name, LastName) => this.saveKey(item.Name, item.LastName)} /> }
+          renderItem={({item}) => <Button title={item.LocName} onPress={(Name, LocName, JobNotes) => this.saveKey(item.Name, item.LocName, item.JobNotes)} /> }
           keyExtractor={({id}, index) => id}
         />
             </View>

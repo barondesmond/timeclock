@@ -16,11 +16,14 @@ import { WebBrowser, Constants } from 'expo';
 
 import { MonoText } from '../components/StyledText';
 
-import { createSwitchNavigator, createStackNavigator, createAppContainer } from 'react-navigation';
+import { createStackNavigator, createAppContainer } from 'react-navigation';
 
 import styles from '../components/styles';
 
 import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, URL} from '../constants/common';
+
+
+
 
 export default class HomeScreen extends React.Component {
 
@@ -32,12 +35,19 @@ export default class HomeScreen extends React.Component {
   state = {
     compatible: false,
     EmpNo: null,
+    Bio: null,
   };
 
   async componentDidMount() {
 	const EmpNo = await AsyncStorage.getItem('EmpNo');
-	this.setState({EmpNo: EmpNo});
-
+	if (EmpNo === null)
+	{
+		this.props.navigation.navigate('Alternative');
+	}
+	else
+	{
+		this.setState({EmpNo: EmpNo});
+	}
 	this.checkDeviceForHardware();
   }
 
@@ -90,7 +100,16 @@ export default class HomeScreen extends React.Component {
         }
 		else
 		{
-			this.props.navigation.navigate('Jobs');
+		    await AsyncStorage.setItem('Bio', this.state.EmpNo);
+            const Name = await AsyncStorage.getItem('Name');
+			if (Name != null)
+			{
+				this.props.navigation.navigate('Start');
+			}
+			else
+			{
+				this.props.navigation.navigate('Jobs');
+            }
         }
 
     } else {
@@ -102,9 +121,20 @@ export default class HomeScreen extends React.Component {
  buttonClickListener = () =>{
 
 
-  this.props.navigation.navigate('Alternative');
+  this.props.navigation.navigate('Camera');
 }
 
+resetKeys = async ()  => {
+ 
+ await AsyncStorage.removeItem('Name');
+ await AsyncStorage.removeItem('LocName');
+ await AsyncStorage.removeItem('Email');
+ await AsyncStorage.removeItem('EmpNo');
+ await AsyncStorage.removeItem('JobNotes');
+ await AsyncStorage.removeItem('Bio');
+
+ await this.props.navigation.navigate('Alternative');
+}
   render() 
   {
     return (
@@ -145,10 +175,14 @@ export default class HomeScreen extends React.Component {
 			  onPress={this.buttonClickListener}
 			  />
 		  </View>
-		  </View>
+
+
+			  </View>
+	  {__DEV__ ? <Button title="Reset" onPress={this.resetKeys} /> : null}
 
       </View>
-    );
+
+			  );
   }
 }
 
