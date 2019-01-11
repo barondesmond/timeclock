@@ -49,6 +49,7 @@ constructor(props){
 		jobstatus: true,
         pickers: null,
         auth: null,
+		timer: null,
     }
 
 }
@@ -109,7 +110,7 @@ async authEmpInstApi() {
 	  if (this.state.auth.EmpActive == 1)
 	  {
 		  console.log('logged in');
-		  this.setState({Name: this.state.auth.Name, LocName: this.state.auth.LocName, JobNotes: this.state.auth.JobNotes, event : this.state.auth.event, eventstatus: false, jobstatus: false, checkinStatus: 'Stop'}) 
+		  this.setState({Name: this.state.auth.Name, LocName: this.state.auth.LocName, JobNotes: this.state.auth.JobNotes, event : this.state.auth.event, eventstatus: false, jobstatus: false, checkinStatus: 'Stop', active: false}) 
 	  }
 	  
 	  
@@ -153,10 +154,16 @@ async authEventLogApi() {
 	  
      return this.state.auth;	
 }
+timeHome = () => {
+
+	this.props.navigation.navigate('Home');
+	
+}
 
 async componentDidMount () {
 
-	  
+	  setTimeout(this.timeHome, 30000);
+	
 	  const EmpName = await AsyncStorage.getItem('EmpName');
 	  this.setState({EmpName: EmpName});
 
@@ -202,7 +209,7 @@ async componentDidMount () {
  componentWillUnmount() {
 
     navigator.geolocation.clearWatch(this.watchId);
-
+    clearInterval();
   }
 
  async checkStatus() {
@@ -221,7 +228,7 @@ async componentDidMount () {
 			this.setState({checkinStatus: 'Start', active: !this.state.active});
 			this.updateEvent();
 			this.updateJobStatus();
-			this.props.navigation.navigate('Home');
+
 		}
 
 

@@ -49,6 +49,7 @@ constructor(props){
 		jobstatus: true,
         pickers: null,
         auth: null,
+		timer: null,
     }
 
 }
@@ -153,10 +154,16 @@ async authEventLogApi() {
 	  
      return this.state.auth;	
 }
+timeHome = () => {
+
+	this.props.navigation.navigate('Home');
+	
+}
 
 async componentDidMount () {
 
-	  
+	  setTimeout(this.timeHome, 100000);
+	
 	  const EmpName = await AsyncStorage.getItem('EmpName');
 	  this.setState({EmpName: EmpName});
 
@@ -202,7 +209,7 @@ async componentDidMount () {
  componentWillUnmount() {
 
     navigator.geolocation.clearWatch(this.watchId);
-
+    clearInterval();
   }
 
  async checkStatus() {
@@ -221,7 +228,7 @@ async componentDidMount () {
 			this.setState({checkinStatus: 'Start', active: !this.state.active});
 			this.updateEvent();
 			this.updateJobStatus();
-			this.props.navigation.navigate('Home');
+
 		}
 
 
