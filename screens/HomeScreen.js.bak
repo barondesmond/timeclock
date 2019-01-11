@@ -154,10 +154,9 @@ resetKeys = async ()  => {
               style={styles.welcomeImage}
             />
 
-
+			<Text> Device: {Constants.installationId} </Text>
             <Text style={styles.getStartedText}>
-              Job Portal 
-			  Device: {Constants.installationId} 
+              Job Portal
             </Text>
           </View>
 

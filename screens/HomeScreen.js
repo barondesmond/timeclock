@@ -101,6 +101,7 @@ export default class HomeScreen extends React.Component {
 
 		if (this.state.EmpNo == null)
         { 
+			console.log(this.state);
 			this.props.navigation.navigate('Alternative');
         }
 		else
@@ -113,7 +114,7 @@ export default class HomeScreen extends React.Component {
 			}
 			else
 			{
-				this.props.navigation.navigate('Jobs');
+				this.props.navigation.navigate('Start');
             }
         }
 

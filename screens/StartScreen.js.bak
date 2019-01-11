@@ -9,7 +9,6 @@ import {
   Alert,
   Image,
   Button,
-  FlatList,
   AsyncStorage,
   Navigator,
   Geolocation,
@@ -30,7 +29,7 @@ constructor(props){
     super(props);
     this.state = {
 
-        Name: null,
+        Name: '',
 	    LocName: null,
 	    JobNotes: null,		 
 	    EmpName: null,
@@ -45,22 +44,119 @@ constructor(props){
         active: true,
 		event: null,
 		eventstatus: true,
+        jobs: null,
+        job: null,
+		jobstatus: true,
+        pickers: null,
+        auth: null,
     }
 
 }
 
+async fetchJobsFromApi() {
+
+ 
+	await fetch(URL + 'jobs_json.php')
+      .then((response) => response.json())
+      .then((responseJson) => {
+
+        this.setState({
+          isLoading: false,
+          jobs: responseJson.jobs,
+        }, function(){
+
+        });
+
+      })
+      .catch((error) =>{
+        console.error(error);
+      });
+	  let pickers = [];
+	 for (let i=0; i < this.state.jobs.length ; i++) {
+	    pickers.push(<Picker.Item key={i} label = {this.state.jobs[i].LocName} value={i} />);
+     }
+	//console.log(pickers);
+	this.setState({pickers: pickers});
+	
+}
+
+
+async authEmpInstApi() {
+
+ 
+	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}`)
+      .then((response2) => response2.json())
+      .then((responseJson2) => {
+
+        this.setState({
+          isLoading: false,
+          auth: responseJson2,
+        }, function(){
+
+        });
+
+      })
+      .catch((error) =>{
+        console.error(error);
+      });
+
+      console.log(this.state.auth);
+	  if (this.state.auth.authorized == 0)
+	  {
+		  this.props.navigation.navigate('Alternative');
+		  console.log('not authorized');
+	  }
+	  if (this.state.auth.EmpActive == 1)
+	  {
+		  console.log('logged in');
+		  this.setState({Name: this.state.auth.Name, LocName: this.state.auth.LocName, JobNotes: this.state.auth.JobNotes, event : this.state.auth.event, eventstatus: false, jobstatus: false, checkinStatus: 'Stop'}) 
+	  }
+	  
+	  
+     return this.state.auth;	
+}
+
+async authEventLogApi() {
+
+ 
+	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&event=${this.state.event}&Name=${this.state.Name}&checkinStatus=${this.state.checkinStatus}&latitude=${this.state.latitude}&longitude=${this.state.longitude}`)
+      .then((response2) => response2.json())
+      .then((responseJson2) => {
+
+        this.setState({
+          isLoading: false,
+          auth: responseJson2,
+        }, function(){
+
+        });
+
+      })
+      .catch((error) =>{
+        console.error(error);
+      });
+
+      console.log(this.state.auth);
+	  if (this.state.auth.authorized == 0)
+	  {
+		  this.props.navigation.navigate('Alternative');
+		  console.log('not authorized');
+		  return false;
+	  }
+	  if (this.state.auth.EmpActive == 1)
+	  {
+		  console.log('logged in');
+	  }
+	  else
+	 {
+		  console.log('logged out');
+     }
+	  
+     return this.state.auth;	
+}
 
 async componentDidMount () {
 
-      const Name = await AsyncStorage.getItem('Name');
-      this.setState({Name: Name});
-
-	  const LocName = await AsyncStorage.getItem('LocName');
-	  this.setState({LocName: LocName});
-
-	  const JobNotes = await AsyncStorage.getItem('JobNotes');
-	  this.setState({JobNotes: JobNotes});
-
+	  
 	  const EmpName = await AsyncStorage.getItem('EmpName');
 	  this.setState({EmpName: EmpName});
 
@@ -72,6 +168,11 @@ async componentDidMount () {
 
 	  const Bio = await AsyncStorage.getItem('Bio');
 	  this.setState({Bio: Bio});
+	  
+	
+	  await this.authEmpInstApi();
+	  await this.fetchJobsFromApi();
+      
 
      this.watchId = navigator.geolocation.watchPosition(
 
@@ -95,7 +196,6 @@ async componentDidMount () {
 
     );
 
-      console.log(this.state);
   
 }
 
@@ -107,22 +207,51 @@ async componentDidMount () {
 
  async checkStatus() {
 	
-	if (this.state.checkinStatus == 'Start') {
-		this.setState({checkinStatus: 'Stop', active: !this.state.active});
+	if (this.state.checkinStatus == 'Start' && !this.state.jobstatus && !this.state.eventstatus) {
+		await this.authEventLogApi();
+		if (this.state.auth.EmpActive == '1')
+		{
+			this.setState({checkinStatus: 'Stop', active: !this.state.active});
+		}
 	}
-	else {
-		this.setState({checkinStatus: 'Start', active: !this.state.active});
+	else if (this.state.checkinStatus == 'Stop' && !this.state.jobstatus && !this.state.eventstatus) {
+		await this.authEventLogApi();
+		if (this.state.auth.EmpActive != '1')
+		{
+			this.setState({checkinStatus: 'Start', active: !this.state.active});
+			this.updateEvent();
+			this.updateJobStatus();
+			this.props.navigation.navigate('Home');
+		}
+
+
 	}
-	console.log(this.state);
+
+	//console.log(this.state);
+
 }
 
   updateEvent = (event) => {
-	  if (event != '')
+
+	   this.setState({ event: event, eventstatus: !this.state.eventstatus })
+
+   }
+ updateJobStatus = () => {
+
+	   this.setState({job: null, jobstatus: !this.state.jobstatus, Name: null, LocName: null, JobNotes: null})
+   
+  
+  }
+ updateJob = (job) => {
+	  if (job != '')
 	  {
-	      this.setState({ event: event, eventstatus: !this.state.eventstatus })
+	      this.setState({ job: job, jobstatus: !this.state.jobstatus, Name: this.state.jobs[job].Name, LocName: this.state.jobs[job].LocName, JobNotes: this.state.jobs[job].JobNotes })
 	  }
    }
+buttonDone = () => {
 
+	this.props.navigation.navigate('Home');
+}
 
 
  render() {
@@ -134,10 +263,16 @@ async componentDidMount () {
 	<View style={styles.container}>
     <View style={styles.welcomeContainer}>
 			<View style={styles.buttonContainer}>
-		      <Text style={styles.getStartedText}>
-               Job {this.state.LocName}
-	          </Text>
+ 	        <View>
+	        {
+            this.state.jobstatus ? <Picker selectedValue = {this.state.job} onValueChange = {this.updateJob}>
+			   <Picker.Item label = "Select Job" value = "" />
+				{this.state.pickers}
 
+			</Picker> : <Text style={styles.getStartedText}>{this.state.LocName}</Text>
+            }
+			   </View>
+            
          </View>
 			<View style={styles.buttonContainer}>
 		      <Text style={styles.getStartedText}>
@@ -160,16 +295,16 @@ async componentDidMount () {
 			   <Picker.Item label = "Select Event" value = "" />
                <Picker.Item label = "Travel" value = "travel" />
                <Picker.Item label = "Check In" value = "checkin" />
-               <Picker.Item label = "Check Out" value = "checkout" />
             </Picker> : <Text style={styles.getStartedText}>{this.state.event}</Text>
             }
    
          </View>
+	
 
          </View>
 			<View style={styles.buttonContainer}>
 		      <Text style={styles.getStartedText}>
-               Current Checkin Status {this.state.checkinStatus} and Job# {this.state.Name}
+               Status {this.state.checkinStatus} {this.state.event} and Job# {this.state.Name}
 	          </Text>
 
          </View>
@@ -179,12 +314,7 @@ async componentDidMount () {
 		     <Text style={styles.getStartedText}> Longitude: {this.state.longitude} </Text>
 
          </View>
-			<View style={styles.buttonContainer}>
-		      <Text style={styles.getStartedText}>
-               Done
-	          </Text>
-
-         </View>
+	
 	</View>
     </View>
     );
