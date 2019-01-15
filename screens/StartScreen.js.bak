@@ -50,6 +50,8 @@ constructor(props){
         pickers: null,
         auth: null,
 		timer: null,
+        violation: null,
+	    image: null;
     }
 
 }
@@ -119,8 +121,13 @@ async authEmpInstApi() {
 
 async authEventLogApi() {
 
- 
-	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&event=${this.state.event}&Name=${this.state.Name}&checkinStatus=${this.state.checkinStatus}&latitude=${this.state.latitude}&longitude=${this.state.longitude}`)
+	
+	if (__DEV__ && this.state.latitude == null)
+	{
+		this.setState({latitude: '33.3333', longitude: '-88.9888'});
+	}
+	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&event=${this.state.event}&Name=${this.state.Name}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}`;
+	  await fetch(authurl)
       .then((response2) => response2.json())
       .then((responseJson2) => {
 
@@ -162,7 +169,7 @@ timeHome = () => {
 
 async componentDidMount () {
 
-	  setTimeout(this.timeHome, 30000);
+	  setTimeout(this.timeHome, 100000);
 	
 	  const EmpName = await AsyncStorage.getItem('EmpName');
 	  this.setState({EmpName: EmpName});
@@ -175,7 +182,9 @@ async componentDidMount () {
 
 	  const Bio = await AsyncStorage.getItem('Bio');
 	  this.setState({Bio: Bio});
-	  
+	  const violation = await AsyncStorage.getItem('violation');
+	  const image = await AsyncStorage.getItem('image');
+	  this.setState({violation: violation, image: image});
 	
 	  await this.authEmpInstApi();
 	  await this.fetchJobsFromApi();

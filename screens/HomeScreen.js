@@ -37,6 +37,7 @@ export default class HomeScreen extends React.Component {
     EmpNo: null,
     Bio: null,
     uids: null,
+
   };
 
 
@@ -45,6 +46,7 @@ export default class HomeScreen extends React.Component {
 
 
 	const EmpNo = await AsyncStorage.getItem('EmpNo');
+
 	if (EmpNo === null)
 	{
 		this.props.navigation.navigate('Alternative');
@@ -52,6 +54,10 @@ export default class HomeScreen extends React.Component {
 	else
 	{
 		this.setState({EmpNo: EmpNo});
+		await AsyncStorage.removeItem('Bio');
+		await AsyncStorage.removeItem('violation');
+		await AsyncStorage.removeItem('image');
+
 	}
 	this.checkDeviceForHardware();
   }
