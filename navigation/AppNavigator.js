@@ -4,6 +4,7 @@
   import AlternativeScreen from '../screens/AlternativeScreen';
   import JobsScreen from '../screens/JobsScreen';
   import StartScreen from '../screens/StartScreen';
+  import { createAppContainer } from 'react-navigation';
 
   const AppNavigator = createStackNavigator({
     Home: { screen: HomeScreen },
@@ -13,5 +14,7 @@
     Jobs: {screen: JobsScreen},
   });
 
-  export default AppNavigator;
+  const AppContainer = createAppContainer(AppNavigator);
+
+  export default AppContainer;
 

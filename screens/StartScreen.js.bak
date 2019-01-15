@@ -16,7 +16,7 @@ import {
   Dimensions,  
   Picker,
 } from 'react-native';
-import Expo, { Constants } from 'expo';
+import Expo, { Constants, Location, Permissions } from 'expo';
 
 import styles from '../components/styles';
 
@@ -24,6 +24,9 @@ import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, U
 
 
 export default class StartScreen extends Component {
+
+	  watchID: ?number = null;
+
 
 constructor(props){
     super(props);
@@ -51,7 +54,9 @@ constructor(props){
         auth: null,
 		timer: null,
         violation: null,
-	    image: null;
+	    image: null,
+		lastposition: null,
+		locationstatus: null,
     }
 
 }
@@ -167,8 +172,28 @@ timeHome = () => {
 	
 }
 
+
+_getLocationAsync = async () => {
+
+	let { status } = await Permissions.askAsync(Permissions.LOCATION);
+	if (status !== 'granted') 
+	{
+	   this.setState({locationstatus: status});
+	}
+
+}
+
+
 async componentDidMount () {
 
+	  this._getLocationAsync();
+	  if (!this.state.locationstatus)
+	  {
+		 let location = await Location.getCurrentPositionAsync({});
+		 console.log(location);
+		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
+	  }
+	 
 	  setTimeout(this.timeHome, 100000);
 	
 	  const EmpName = await AsyncStorage.getItem('EmpName');
@@ -188,31 +213,18 @@ async componentDidMount () {
 	
 	  await this.authEmpInstApi();
 	  await this.fetchJobsFromApi();
-      
 
-     this.watchId = navigator.geolocation.watchPosition(
-
-      (position) => {
-
-        this.setState({
-
-          latitude: position.coords.latitude,
-
-          longitude: position.coords.longitude,
-
-          error: null,
-
-        });
-
-      },
-
-      (error) => this.setState({ error: error.message }),
-
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000, distanceFilter: 10 },
-
-    );
+options = {
+  enableHighAccuracy: false,
+  timeout: 5000,
+  maximumAge: 0
+};
 
   
+}
+
+error(err) {
+  Alert.alert('ERROR(' + err.code + '): ' + err.message);
 }
 
  componentWillUnmount() {
@@ -266,7 +278,7 @@ async componentDidMount () {
    }
 buttonDone = () => {
 
-	this.props.navigation.navigate('Home');
+	//this.props.navigation.navigate('Home');
 }
 
 

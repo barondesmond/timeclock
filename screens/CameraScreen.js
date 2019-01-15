@@ -170,7 +170,7 @@ export default class App extends Component {
 	{
 		 await AsyncStorage.setItem('violation', this.state.violation);
 		await AsyncStorage.setItem('image', this.state.image);
-		this.props.navigation.navigate('Start');
+		//this.props.navigation.navigate('Start');
 	}
 
 

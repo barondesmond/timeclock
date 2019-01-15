@@ -40,7 +40,7 @@ export default class AlternativeScreen extends Component {
 
 async fetchEmployeeFromApi (EmpName, Email) {
    
-  const emp_url = URL + `empauth_json.php?EmpName=${EmpName}&Email=${Email}&installationID=${Constants.installationId}`;
+  const emp_url = URL + `empauth_json.php?EmpName=${EmpName}&Email=${Email}&installationId=${Constants.installationId}`;
   console.log(emp_url);
 
   let response = await fetch(emp_url)
@@ -86,7 +86,7 @@ async saveKey(EmpName, Email, EmpNo) {
 	console.log(EmpName);
 	console.log(Email);
 	console.log(EmpNo);
-	this.props.navigation.navigate('Home');
+	//this.props.navigation.navigate('Home');
 
 
   }

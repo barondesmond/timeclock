@@ -9,14 +9,14 @@ import {
   View,
   Button,
   Alert,
-  Navigator,
+  Navigation,
   AsyncStorage,
 } from 'react-native';
 import { WebBrowser, Constants } from 'expo';
 
 import { MonoText } from '../components/StyledText';
 
-import { createStackNavigator, createAppContainer } from 'react-navigation';
+
 
 import styles from '../components/styles';
 
@@ -49,7 +49,9 @@ export default class HomeScreen extends React.Component {
 
 	if (EmpNo === null)
 	{
-		this.props.navigation.navigate('Alternative');
+
+		  this.props.navigation.navigate('Alternate');
+		  
 	}
 	else
 	{
@@ -145,7 +147,7 @@ resetKeys = async ()  => {
  await AsyncStorage.removeItem('JobNotes');
  await AsyncStorage.removeItem('Bio');
 
- await this.props.navigation.navigate('Alternative');
+ this.props.navigation.navigate('Alternative');
 }
   render() 
   {

@@ -45,10 +45,10 @@ export default class JobsScreen extends React.Component {
 
       const Name = await AsyncStorage.getItem('Name');
       const LocName = await AsyncStorage.getItem('LocName');
-      const JobNotes = await AysncStorage.getItem('JobNotes');
+      const JobNotes = await AsyncStorage.getItem('JobNotes');
 	  if (Name != null && LocName != null && JobNotes != null)
       {
-		  this.props.navigation.navigate('Start');
+		  //this.props.navigation.navigate('Start');
       }
 	  else
 	 {
@@ -91,7 +91,7 @@ export default class JobsScreen extends React.Component {
 	console.log(Name);
 	console.log(LocName);
 	console.log(JobNotes);
-	this.props.navigation.navigate('Start');
+	//this.props.navigation.navigate('Start');
 
 
   }

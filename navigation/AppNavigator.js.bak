@@ -13,5 +13,7 @@
     Jobs: {screen: JobsScreen},
   });
 
-  export default AppNavigator;
+  const AppContainer = createAppContainer(AppNavigator);
+
+  export default AppContainer;
 

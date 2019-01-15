@@ -133,7 +133,6 @@ export default class App extends Component {
 
           style={styles.maybeRenderImageText}>
 		   Post Image {image} and Reason {this.state.violation}
-          {image}
 
         </Text>
 

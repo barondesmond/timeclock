@@ -22,29 +22,13 @@ const HomeStack = createStackNavigator({
   Camera: CameraScreen,
 
   });
+const AppContainer = createAppContainer(HomeStack);
 
 HomeStack.navigationOptions = {
 	title: 'Welcome to the app!',
 
 };
 
-const LinksStack = createStackNavigator({
-  Links: LinksScreen,
-});
-
-LinksStack.navigationOptions = {
-	title: 'Welcome to the app!',
-  
-};
-
-const SettingsStack = createStackNavigator({
-  Settings: SettingsScreen,
-});
-
-SettingsStack.navigationOptions = {
-	title: 'Welcome to the app!',
-
-};
 
 const PrimaryStack = createStackNavigator({
 	Primary: PrimaryScreen,

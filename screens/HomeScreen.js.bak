@@ -9,14 +9,14 @@ import {
   View,
   Button,
   Alert,
-  Navigator,
+  Navigation,
   AsyncStorage,
 } from 'react-native';
 import { WebBrowser, Constants } from 'expo';
 
 import { MonoText } from '../components/StyledText';
 
-import { createStackNavigator, createAppContainer } from 'react-navigation';
+
 
 import styles from '../components/styles';
 
@@ -49,13 +49,15 @@ export default class HomeScreen extends React.Component {
 
 	if (EmpNo === null)
 	{
-		this.props.navigation.navigate('Alternative');
+
+		  this.props.navigation.navigate('Alternate');
+		  
 	}
 	else
 	{
 		this.setState({EmpNo: EmpNo});
-		await Async.removeItem('Bio');
-		await Async.removeItem('violation');
+		await AsyncStorage.removeItem('Bio');
+		await AsyncStorage.removeItem('violation');
 		await AsyncStorage.removeItem('image');
 
 	}
@@ -108,7 +110,7 @@ export default class HomeScreen extends React.Component {
 		if (this.state.EmpNo == null)
         { 
 			console.log(this.state);
-			this.props.navigation.navigate('Alternative');
+			//this.props.navigation.navigate('Alternative');
         }
 		else
 		{
@@ -116,11 +118,11 @@ export default class HomeScreen extends React.Component {
             const Name = await AsyncStorage.getItem('Name');
 			if (Name != null)
 			{
-				this.props.navigation.navigate('Start');
+				//this.props.navigation.navigate('Start');
 			}
 			else
 			{
-				this.props.navigation.navigate('Start');
+				//this.props.navigation.navigate('Start');
             }
         }
 
@@ -145,7 +147,7 @@ resetKeys = async ()  => {
  await AsyncStorage.removeItem('JobNotes');
  await AsyncStorage.removeItem('Bio');
 
- await this.props.navigation.navigate('Alternative');
+ this.props.navigation.navigate('Alternative');
 }
   render() 
   {

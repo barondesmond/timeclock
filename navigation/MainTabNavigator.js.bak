@@ -1,6 +1,6 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation';
 
 import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
@@ -24,17 +24,8 @@ const HomeStack = createStackNavigator({
   });
 
 HomeStack.navigationOptions = {
-  tabBarLabel: 'Home',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
-      }
-    />
-  ),
+	title: 'Welcome to the app!',
+
 };
 
 const LinksStack = createStackNavigator({
@@ -42,13 +33,8 @@ const LinksStack = createStackNavigator({
 });
 
 LinksStack.navigationOptions = {
-  tabBarLabel: 'Jobs',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'}
-    />
-  ),
+	title: 'Welcome to the app!',
+  
 };
 
 const SettingsStack = createStackNavigator({
@@ -56,13 +42,8 @@ const SettingsStack = createStackNavigator({
 });
 
 SettingsStack.navigationOptions = {
-  tabBarLabel: 'Employees',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-options' : 'md-options'}
-    />
-  ),
+	title: 'Welcome to the app!',
+
 };
 
 const PrimaryStack = createStackNavigator({
@@ -82,9 +63,7 @@ CameraStack.navigationOptions = {
   };
 
 const AlternativeStack = createStackNavigator({
-	Primary: PrimaryScreen,
     Alternative: AlternativeScreen,
-    Jobs: JobsScreen,
 });
 
 AlternativeStack.navigationOptions = {
