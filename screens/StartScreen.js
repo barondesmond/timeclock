@@ -241,7 +241,7 @@ error(err) {
 		if (this.state.auth.EmpActive != '1')
 		{
 			this.setState({checkinStatus: 'Start', active: !this.state.active});
-			this.updateEvent();
+			this.updateEventStatus();
 			this.updateJobStatus();
 
 		}
@@ -258,12 +258,29 @@ error(err) {
 	   this.setState({ event: event, eventstatus: !this.state.eventstatus })
 
    }
+   updateEventStatus = () => {
+	  
+	  this.setState({event: null, eventstatus: !this.state.eventstatus})
+   }
+
  updateJobStatus = () => {
 
 	   this.setState({job: null, jobstatus: !this.state.jobstatus, Name: null, LocName: null, JobNotes: null})
    
   
   }
+ resetJobStatus = () => {
+	 if (this.state.active)
+	 {
+		 this.updateJobStatus();
+	 }
+ }
+resetEventStatus = () => {
+	 if (this.state.active)
+	 {
+		 this.updateEventStatus();
+	 }
+ }
  updateJob = (job) => {
 	  if (job != '')
 	  {
@@ -291,7 +308,7 @@ buttonDone = () => {
 			   <Picker.Item label = "Select Job" value = "" />
 				{this.state.pickers}
 
-			</Picker> : <Text style={styles.getStartedText}>{this.state.LocName}</Text>
+			</Picker> : <Button style={styles.buttonContainer} title={this.state.LocName}  onPress={this.resetJobStatus}/>
             }
 			   </View>
             
@@ -317,7 +334,7 @@ buttonDone = () => {
 			   <Picker.Item label = "Select Event" value = "" />
                <Picker.Item label = "Travel" value = "travel" />
                <Picker.Item label = "Check In" value = "checkin" />
-            </Picker> : <Text style={styles.getStartedText}>{this.state.event}</Text>
+            </Picker> : <Button style={styles.buttonContainer} title={this.state.event}  onPress={this.resetEventStatus} />
             }
    
          </View>

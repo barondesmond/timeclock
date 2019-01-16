@@ -127,14 +127,12 @@ export default class App extends Component {
 
 
 
-        <Text
+        <Button title="Continue"
 
           onPress={this._copyToClipboard}
 
-          style={styles.maybeRenderImageText}>
-		   Post Image {image} and Reason {this.state.violation}
+          style={styles.maybeRenderImageText} />
 
-        </Text>
 
 		    <TextInput placeholder="violation" 
         style={{height: 40, borderColor: 'gray', borderWidth: 1}}
@@ -183,7 +181,10 @@ async componentDidMount () {
 	  const EmpNo = await AsyncStorage.getItem('EmpNo');
 	  this.setState({EmpNo: EmpNo});
 	  console.log(this.state);
-
+	  if (!this.state.EmpNo)
+	  {
+		  this.props.navigation.navigate('Alternative');
+	  }
 
 }
 

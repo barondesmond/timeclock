@@ -46,15 +46,17 @@ async fetchEmployeeFromApi (EmpName, Email) {
   let response = await fetch(emp_url)
 				.catch((error) => console.warn("fetch error:", error))
   
- response = await response.json();
-  console.log(response);
-   if (response.authorized == 1)
+	  console.log(response);
+
+ responsejson = await response.json();
+   this.setState({data: responsejson});
+
+   if (responsejson.authorized == 1)
    {
-   const EmpNo = response.EmpNo;
-   const Email = response.Email;
-   const EmpName = response.EmpName;
+   const EmpNo = responsejson.EmpNo;
+   const Email = responsejson.Email;
+   const EmpName = responsejson.EmpName;
    this.setState({EmpNo: EmpNo});
-   this.setState({data: response});
    this.saveKey(EmpName, Email, EmpNo);
    }
    else
@@ -86,7 +88,7 @@ async saveKey(EmpName, Email, EmpNo) {
 	console.log(EmpName);
 	console.log(Email);
 	console.log(EmpNo);
-	//this.props.navigation.navigate('Home');
+	this.props.navigation.goBack();
 
 
   }

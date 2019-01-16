@@ -110,7 +110,7 @@ export default class HomeScreen extends React.Component {
 		if (this.state.EmpNo == null)
         { 
 			console.log(this.state);
-			//this.props.navigation.navigate('Alternative');
+			this.props.navigation.navigate('Alternative');
         }
 		else
 		{
@@ -118,11 +118,11 @@ export default class HomeScreen extends React.Component {
             const Name = await AsyncStorage.getItem('Name');
 			if (Name != null)
 			{
-				//this.props.navigation.navigate('Start');
+				this.props.navigation.navigate('Start');
 			}
 			else
 			{
-				//this.props.navigation.navigate('Start');
+				this.props.navigation.navigate('Start');
             }
         }
 

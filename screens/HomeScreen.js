@@ -61,6 +61,7 @@ export default class HomeScreen extends React.Component {
 		await AsyncStorage.removeItem('image');
 
 	}
+	console.log(this.state);
 	this.checkDeviceForHardware();
   }
 

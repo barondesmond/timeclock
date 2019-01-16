@@ -127,19 +127,18 @@ export default class App extends Component {
 
 
 
-        <Text
+     
 
-          onPress={this._copyToClipboard}
-
-          style={styles.maybeRenderImageText}>
-		   Post Image {image} and Reason {this.state.violation}
-
-        </Text>
 
 		    <TextInput placeholder="violation" 
         style={{height: 40, borderColor: 'gray', borderWidth: 1}}
                   onChangeText={data => this.setState({ violation: data })}
       />
+   <Button title="Continue"
+
+          onPress={this._copyToClipboard}
+
+          style={styles.maybeRenderImageText} />
       </View>
 
     );
@@ -170,7 +169,7 @@ export default class App extends Component {
 	{
 		 await AsyncStorage.setItem('violation', this.state.violation);
 		await AsyncStorage.setItem('image', this.state.image);
-		//this.props.navigation.navigate('Start');
+		this.props.navigation.navigate('Start');
 	}
 
 
@@ -183,7 +182,10 @@ async componentDidMount () {
 	  const EmpNo = await AsyncStorage.getItem('EmpNo');
 	  this.setState({EmpNo: EmpNo});
 	  console.log(this.state);
-
+	  if (!this.state.EmpNo)
+	  {
+		  this.props.navigation.navigate('Alternative');
+	  }
 
 }
 

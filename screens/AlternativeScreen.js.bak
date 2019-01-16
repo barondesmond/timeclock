@@ -40,21 +40,23 @@ export default class AlternativeScreen extends Component {
 
 async fetchEmployeeFromApi (EmpName, Email) {
    
-  const emp_url = URL + `empauth_json.php?EmpName=${EmpName}&Email=${Email}&installationID=${Constants.installationId}`;
+  const emp_url = URL + `empauth_json.php?EmpName=${EmpName}&Email=${Email}&installationId=${Constants.installationId}`;
   console.log(emp_url);
 
   let response = await fetch(emp_url)
 				.catch((error) => console.warn("fetch error:", error))
   
- response = await response.json();
-  console.log(response);
-   if (response.authorized == 1)
+	  console.log(response);
+
+ responsejson = await response.json();
+   this.setState({data: responsejson});
+
+   if (responsejson.authorized == 1)
    {
-   const EmpNo = response.EmpNo;
-   const Email = response.Email;
-   const EmpName = response.EmpName;
+   const EmpNo = responsejson.EmpNo;
+   const Email = responsejson.Email;
+   const EmpName = responsejson.EmpName;
    this.setState({EmpNo: EmpNo});
-   this.setState({data: response});
    this.saveKey(EmpName, Email, EmpNo);
    }
    else
