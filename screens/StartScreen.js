@@ -57,6 +57,9 @@ constructor(props){
 	    image: null,
 		lastposition: null,
 		locationstatus: null,
+        joblatitude: null,
+		joblongitude: null,
+		jobdistance: null,
     }
 
 }
@@ -64,7 +67,7 @@ constructor(props){
 async fetchJobsFromApi() {
 
  
-	await fetch(URL + 'jobs_json.php')
+	await fetch(URL + `jobs_json.php?latitude=${this.state.latitude}&longitude=${this.state.longitude}`)
       .then((response) => response.json())
       .then((responseJson) => {
 
@@ -229,7 +232,7 @@ error(err) {
 
  async checkStatus() {
 	
-	if (this.state.checkinStatus == 'Start' && !this.state.jobstatus && !this.state.eventstatus) {
+	if (this.state.checkinStatus == 'Start' && !this.state.jobstatus && !this.state.eventstatus && (this.state.event=='travel' || (this.state.event=='checkin' && (this.state.jobdistance == null || this.state.jobdistance < 2)))) {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive == '1')
 		{
@@ -265,7 +268,7 @@ error(err) {
 
  updateJobStatus = () => {
 
-	   this.setState({job: null, jobstatus: !this.state.jobstatus, Name: null, LocName: null, JobNotes: null})
+	   this.setState({job: null, jobstatus: !this.state.jobstatus, Name: null, LocName: null, JobNotes: null, jobdistance: null, joblatitude: null, joblongitude: null})
    
   
   }
@@ -284,7 +287,7 @@ resetEventStatus = () => {
  updateJob = (job) => {
 	  if (job != '')
 	  {
-	      this.setState({ job: job, jobstatus: !this.state.jobstatus, Name: this.state.jobs[job].Name, LocName: this.state.jobs[job].LocName, JobNotes: this.state.jobs[job].JobNotes })
+	      this.setState({ job: job, jobstatus: !this.state.jobstatus, Name: this.state.jobs[job].Name, LocName: this.state.jobs[job].LocName, JobNotes: this.state.jobs[job].JobNotes, jobdistance: this.state.jobs[job].distance, joblatitude: this.state.jobs[job].latitude, joblongitude: this.state.jobs[job].longitude })
 	  }
    }
 buttonDone = () => {
@@ -351,6 +354,9 @@ buttonDone = () => {
 		     <Text style={styles.getStartedText}>GPS </Text>
 			 <Text style={styles.getStartedText}> Latitude : {this.state.latitude} </Text>
 		     <Text style={styles.getStartedText}> Longitude: {this.state.longitude} </Text>
+			 <Text style={styles.getStartedText}> JobLatitude : {this.state.joblatitude} </Text>
+			 <Text style={styles.getStartedText}> JobLongitude: {this.state.joblongitude} </Text>
+			 <Text style={styles.getStartedText}> JobDistance : {this.state.jobdistance} </Text>
 
          </View>
 	
