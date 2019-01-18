@@ -25,26 +25,6 @@ import styles from '../components/styles';
 import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, URL, STORAGE_KEY} from '../constants/common';
 
 
-circ = StyleSheet.create({
-	
-	circleContainerStart: {
-    borderRadius: Math.round(Dimensions.get('window').width + Dimensions.get('window').height) / 2,
-    width: Dimensions.get('window').width * 0.5,
-    height: Dimensions.get('window').width * 0.5,
-	justifyContent: 'center',
-	backgroundColor: 'green' ,
-    alignItems: 'center',
-	},
-	circleContainerStop: {
-    borderRadius: Math.round(Dimensions.get('window').width + Dimensions.get('window').height) / 2,
-    width: Dimensions.get('window').width * 0.5,
-    height: Dimensions.get('window').width * 0.5,
-	justifyContent: 'center',
-	backgroundColor: 'red' ,
-    alignItems: 'center',
-	},
-
-	});
 
 
 export default class JobScreen extends Component {
@@ -87,7 +67,7 @@ constructor(props){
         isJobVisible: false,
 		isEventVisible: false,
 		isNotesVisible: false,
-        gps: false,
+        gps: __DEV__,
     }
 
 }
@@ -313,7 +293,7 @@ error(err) {
 
  updateJobStatus = () => {
 
-	   this.setState({job: null, jobstatus: !this.state.jobstatus , isJobVisible: true})
+	   this.setState({jobstatus: !this.state.jobstatus, LocName: 'Select Job', job: null, Notes: null, Name: null, jobdistance: null, joblatitude: null, joblongitude: null})
    
   
   }
@@ -360,7 +340,7 @@ buttonDone = () => {
 		        </ScrollView>
                </Modal>
 			  {
-			   this.state.jobstatus? <Button title="Select Job" onPress = {() => this.setState({isJobVisible: true})} /> : <Button style={styles.buttonContainer} title={this.state.LocName}  onPress={this.resetJobStatus} /> 
+			   this.state.jobstatus? <Button title={this.state.LocName} onPress = {() => this.setState({isJobVisible: true})} /> : <Button style={styles.buttonContainer} title={this.state.LocName}  onPress={this.resetJobStatus} /> 
 			   }
          </View>
 
@@ -384,9 +364,8 @@ buttonDone = () => {
 				  </TouchableHighlight>
 
             </View>
-
-			<TouchableHighlight style={this.state.active? circ.circleContainerStart: circ.circleContainerStop} onPress = { () =>  this.checkStatus() } >
-	     <Text> 
+			<TouchableHighlight style={this.state.active? styles.circleContainerStart: styles.circleContainerStop} onPress = { () =>  this.checkStatus() } >
+	     <Text style={styles.getCircleText}> 
 	 {this.state.checkinStatus}
 	         </Text>
             </TouchableHighlight>

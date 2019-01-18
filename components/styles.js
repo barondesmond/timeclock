@@ -51,6 +51,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
     marginBottom: 20,
+	
   },
   welcomeImage: {
     width: 100,
@@ -77,6 +78,31 @@ export default StyleSheet.create({
   getStartedText: {
     fontSize: 17,
     color: 'rgba(96,100,109, 1)',
+    lineHeight: 24,
+    textAlign: 'center',
+  },
+	circleContainerStart: {
+    borderRadius: Math.round(Dimensions.get('window').width + Dimensions.get('window').height) / 2,
+    width: Dimensions.get('window').width * 0.5,
+    height: Dimensions.get('window').width * 0.5,
+	justifyContent: 'center',
+	backgroundColor: 'green' ,
+    alignItems: 'center',
+    borderWidth: 2,
+	},
+	circleContainerStop: {
+    borderRadius: Math.round(Dimensions.get('window').width + Dimensions.get('window').height) / 2,
+    width: Dimensions.get('window').width * 0.5,
+    height: Dimensions.get('window').width * 0.5,
+	justifyContent: 'center',
+	backgroundColor: 'red' ,
+    alignItems : 'center',
+    borderWidth: 2,
+   },
+
+ getCircleText: {
+    fontSize: 25,
+    color: 'black',
     lineHeight: 24,
     textAlign: 'center',
   },
