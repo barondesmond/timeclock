@@ -164,7 +164,49 @@ resetKeys = async ()  => {
 
  this.props.navigation.navigate('Alternative');
 }
-  render() 
+
+renderDispatchPortal = () => {
+
+if (!__DEV__)
+{
+	return false;
+}
+
+	return(
+     <View>
+     <View style={styles.welcomeContainer}>
+
+            <Text style={styles.getStartedText}>
+              Dispatch Portal
+            </Text>
+     </View>
+
+			  <View style={styles.contentContainer}>
+          <View style={styles.buttonContainer}>
+
+			  <Button title="Primary Login"
+                   onPress={
+            this.state.compatible
+              ? this.checkForBiometricsDispatch
+              : this.showIncompatibleAlert
+          }
+          />
+			  </View>
+          </View>
+		  <View style={styles.contentContainer}>
+          <View style={styles.buttonContainer}>
+
+			  <Button title="Alternate Login" value="Camera"
+			  onPress={this.buttonDispatch}
+			  />
+		  </View>
+            </View>
+     </View>
+	);
+};
+
+
+render() 
   {
     return (
       <View style={styles.container}>
@@ -205,35 +247,7 @@ resetKeys = async ()  => {
 			  />
 		  </View>
          </View>  
-        <View style={styles.welcomeContainer}>
-
-            <Text style={styles.getStartedText}>
-              Dispatch Portal
-            </Text>
-          </View>
-
-
-			  <View style={styles.contentContainer}>
-          <View style={styles.buttonContainer}>
-
-			  <Button title="Primary Login"
-                   onPress={
-            this.state.compatible
-              ? this.checkForBiometricsDispatch
-              : this.showIncompatibleAlert
-          }
-          />
-			  </View>
-          </View>
-		  <View style={styles.contentContainer}>
-          <View style={styles.buttonContainer}>
-
-			  <Button title="Alternate Login" value="Camera"
-			  onPress={this.buttonDispatch}
-			  />
-		  </View>
-            </View>
-
+	  {this.renderDispatchPortal()}
 			  
 	  {__DEV__ ? <Button title="Reset" onPress={this.resetKeys} /> : null}
 
