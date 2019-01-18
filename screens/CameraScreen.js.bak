@@ -127,17 +127,18 @@ export default class App extends Component {
 
 
 
-        <Button title="Continue"
-
-          onPress={this._copyToClipboard}
-
-          style={styles.maybeRenderImageText} />
+     
 
 
 		    <TextInput placeholder="violation" 
         style={{height: 40, borderColor: 'gray', borderWidth: 1}}
                   onChangeText={data => this.setState({ violation: data })}
       />
+   <Button title="Continue"
+
+          onPress={this._copyToClipboard}
+
+          style={styles.maybeRenderImageText} />
       </View>
 
     );

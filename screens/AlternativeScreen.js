@@ -61,7 +61,7 @@ async fetchEmployeeFromApi (EmpName, Email) {
    }
    else
 	{
-	  Alert.alert('Employee Not Authorized on Device ');
+	  Alert.alert('Employee Not Authorized ' + responsejson.auth);
 	   return false;
     }
  

@@ -37,6 +37,7 @@ export default class HomeScreen extends React.Component {
     EmpNo: null,
     Bio: null,
     uids: null,
+    Screen: null,
 
   };
 
@@ -59,7 +60,7 @@ export default class HomeScreen extends React.Component {
 		await AsyncStorage.removeItem('Bio');
 		await AsyncStorage.removeItem('violation');
 		await AsyncStorage.removeItem('image');
-
+		this.setState({Screen: null});
 	}
 	console.log(this.state);
 	this.checkDeviceForHardware();
@@ -80,6 +81,19 @@ export default class HomeScreen extends React.Component {
     );
   };
 
+checkForBiometricsDispatch = async () => {
+    let biometricRecords = await Expo.LocalAuthentication.isEnrolledAsync();
+    if (!biometricRecords) {
+      Alert.alert('No Biometrics Found',
+        'Please ensure you have set up biometrics in your OS settings.'
+      );
+    } else {
+		this.setState({Screen: 'Dispatch'});
+      this.handleLoginPress();
+    }
+  };
+
+
   checkForBiometrics = async () => {
     let biometricRecords = await Expo.LocalAuthentication.isEnrolledAsync();
     if (!biometricRecords) {
@@ -87,6 +101,7 @@ export default class HomeScreen extends React.Component {
         'Please ensure you have set up biometrics in your OS settings.'
       );
     } else {
+		this.setState({Screen: 'Job'});
       this.handleLoginPress();
     }
   };
@@ -116,15 +131,8 @@ export default class HomeScreen extends React.Component {
 		else
 		{
 		    await AsyncStorage.setItem('Bio', this.state.EmpNo);
-            const Name = await AsyncStorage.getItem('Name');
-			if (Name != null)
-			{
-				this.props.navigation.navigate('Start');
-			}
-			else
-			{
-				this.props.navigation.navigate('Start');
-            }
+			this.props.navigation.navigate(this.state.Screen);
+            
         }
 
     } else {
@@ -133,10 +141,16 @@ export default class HomeScreen extends React.Component {
   };
 
  
- buttonClickListener = () =>{
+ buttonJob = () =>{
 
 
-  this.props.navigation.navigate('Camera');
+  this.props.navigation.navigate('Camera', {Screen: 'Job'} );
+}
+
+ buttonDispatch = () =>{
+
+
+  this.props.navigation.navigate('Camera', {Screen: 'Dispatch'} );
 }
 
 resetKeys = async ()  => {
@@ -186,13 +200,41 @@ resetKeys = async ()  => {
 		  <View style={styles.contentContainer}>
           <View style={styles.buttonContainer}>
 
-			  <Button title="Alternate Login"
-			  onPress={this.buttonClickListener}
+			  <Button title="Alternate Login" 
+			  onPress={this.buttonJob}
 			  />
 		  </View>
+         </View>  
+        <View style={styles.welcomeContainer}>
+
+            <Text style={styles.getStartedText}>
+              Dispatch Portal
+            </Text>
+          </View>
 
 
+			  <View style={styles.contentContainer}>
+          <View style={styles.buttonContainer}>
+
+			  <Button title="Primary Login"
+                   onPress={
+            this.state.compatible
+              ? this.checkForBiometricsDispatch
+              : this.showIncompatibleAlert
+          }
+          />
 			  </View>
+          </View>
+		  <View style={styles.contentContainer}>
+          <View style={styles.buttonContainer}>
+
+			  <Button title="Alternate Login" value="Camera"
+			  onPress={this.buttonDispatch}
+			  />
+		  </View>
+            </View>
+
+			  
 	  {__DEV__ ? <Button title="Reset" onPress={this.resetKeys} /> : null}
 
       </View>

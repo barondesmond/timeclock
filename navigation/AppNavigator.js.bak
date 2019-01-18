@@ -2,15 +2,17 @@
   import HomeScreen from '../screens/HomeScreen';
   import CameraScreen from '../screens/CameraScreen';
   import AlternativeScreen from '../screens/AlternativeScreen';
-  import JobsScreen from '../screens/JobsScreen';
-  import StartScreen from '../screens/StartScreen';
+  import JobScreen from '../screens/JobScreen';
+  import Dispatch from '../screens/DispatchScreen';
+
+  import { createAppContainer } from 'react-navigation';
 
   const AppNavigator = createStackNavigator({
     Home: { screen: HomeScreen },
     Camera: { screen: CameraScreen},
     Alternative: { screen: AlternativeScreen},
-    Start: {screen: StartScreen},
-    Jobs: {screen: JobsScreen},
+    Job: {screen: JobScreen},
+	Dispatch: {screen: DispatchScreen},
   });
 
   const AppContainer = createAppContainer(AppNavigator);

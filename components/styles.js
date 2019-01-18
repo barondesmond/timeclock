@@ -20,8 +20,8 @@ import { WebBrowser, Constants } from 'expo';
 
 export default StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
+    flex : 1,
+	backgroundColor: '#ffffff',
 
 	},
 
@@ -38,7 +38,14 @@ export default StyleSheet.create({
     alignSelf: 'stretch',
 
 	},
- 
+   jobNotesContainer: {
+    height: 100,
+    margin: 5,
+	backgroundColor: '#DDDDDD',
+    alignSelf: 'stretch',
+
+	},
+
 
   welcomeContainer: {
     alignItems: 'center',

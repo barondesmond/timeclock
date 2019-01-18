@@ -169,7 +169,9 @@ export default class App extends Component {
 	{
 		 await AsyncStorage.setItem('violation', this.state.violation);
 		await AsyncStorage.setItem('image', this.state.image);
-		this.props.navigation.navigate('Start');
+		const Screen = this.props.navigation.getParam('Screen', 'Home');
+
+		this.props.navigation.navigate(Screen);
 	}
 
 
@@ -184,6 +186,7 @@ async componentDidMount () {
 	  console.log(this.state);
 	  if (!this.state.EmpNo)
 	  {
+
 		  this.props.navigation.navigate('Alternative');
 	  }
 
