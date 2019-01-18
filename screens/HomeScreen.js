@@ -38,15 +38,51 @@ export default class HomeScreen extends React.Component {
     Bio: null,
     uids: null,
     Screen: null,
-
+    isLoading: true,
+	auth: null,
   };
 
 
+async authEmpInstApi() {
 
-  async componentDidMount() {
+ 
+	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}`)
+      .then((response2) => response2.json())
+      .then((responseJson2) => {
 
+        this.setState({
+          isLoading: false,
+          auth: responseJson2,
+        }, function(){
+
+        });
+
+      })
+      .catch((error) =>{
+        console.error(error);
+      });
+
+      console.log(this.state.auth);
+	  if (this.state.auth.authorized == 0)
+	  {
+		  this.props.navigation.navigate('Alternative');
+		  console.log('not authorized');
+	  }
+	  if (this.state.auth.EmpActive == 1)
+	  {
+		  console.log('logged in');
+		  //this.setState({Name: this.state.auth.Name, LocName: this.state.auth.LocName, JobNotes: this.state.auth.JobNotes, event : this.state.auth.event, eventstatus: false, jobstatus: false, checkinStatus: 'Stop', active: false, isJobVisible: false}) 
+	  }
+	  
+	  
+     return this.state.auth;	
+}
+
+
+  async componentWillMount() {
 
 	const EmpNo = await AsyncStorage.getItem('EmpNo');
+
 
 	if (EmpNo === null)
 	{
@@ -62,7 +98,12 @@ export default class HomeScreen extends React.Component {
 		await AsyncStorage.removeItem('image');
 		this.setState({Screen: null});
 	}
-	console.log(this.state);
+	if (this.state.EmpNo != null)
+	{
+	    const auth = await this.authEmpInstApi();
+		console.log(this.state.auth);
+
+	}	
 	this.checkDeviceForHardware();
   }
 
@@ -201,6 +242,7 @@ return(
 };
 renderDispatchPortal = () => {
 
+console.log(this.state.isLoading);
 if (!__DEV__)
 {
 	return false;
@@ -239,12 +281,20 @@ if (!__DEV__)
 	);
 };
 
+
+
 renderDevice = () => {
 
 if (!__DEV__)
 {
 	return false;
 }
+
+if (this.state.auth)
+{
+	console.log(this.state.auth);
+}
+
 
 return (	  <View style={styles.welcomeContainer}>
 			<Text> Device: {Constants.installationId} </Text>

@@ -49,7 +49,7 @@ constructor(props){
         checkinStatus: 'Start',
         csBack: 'green',
         active: true,
-		event: null,
+		event: 'Select Event',
 		eventstatus: true,
         jobs: null,
         job: null,
@@ -257,7 +257,7 @@ error(err) {
 
  async checkStatus() {
 	
-	if (this.state.checkinStatus == 'Start' && !this.state.jobstatus && !this.state.eventstatus && (this.state.event=='travel' || (this.state.event=='checkin' && (this.state.jobdistance == null || this.state.jobdistance < 2)))) {
+	if (this.state.checkinStatus == 'Start' && !this.state.jobstatus && !this.state.eventstatus && (this.state.event=='Travel' || __DEV__ || (this.state.event=='On Job' && (this.state.jobdistance == null || this.state.jobdistance < 2)))) {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive == '1')
 		{
@@ -269,8 +269,8 @@ error(err) {
 		if (this.state.auth.EmpActive != '1')
 		{
 			this.setState({checkinStatus: 'Start', active: !this.state.active});
-			this.updateEventStatus();
-			this.updateJobStatus();
+			//this.updateEventStatus();
+			//this.updateJobStatus();
 
 		}
 
@@ -282,18 +282,18 @@ error(err) {
 }
 
   updateEvent = (event) => {
-
-	   this.setState({ event: event, eventstatus: !this.state.eventstatus })
-
+		console.log(event);
+	   this.setState({ event: event, eventstatus: !this.state.eventstatus, isEventVisible: false })
+       //this.setState({isEventVisible: false});
    }
    updateEventStatus = () => {
 	  
-	  this.setState({event: null, eventstatus: !this.state.eventstatus})
+	  this.setState({eventstatus: !this.state.eventstatus})
    }
 
  updateJobStatus = () => {
 
-	   this.setState({jobstatus: !this.state.jobstatus, LocName: 'Select Job', job: null, Notes: null, Name: null, jobdistance: null, joblatitude: null, joblongitude: null})
+	   this.setState({jobstatus: !this.state.jobstatus})
    
   
   }
@@ -320,6 +320,7 @@ buttonDone = () => {
 	//this.props.navigation.navigate('Home');
 }
 
+			
 
  render() {
 
@@ -370,26 +371,22 @@ buttonDone = () => {
 	         </Text>
             </TouchableHighlight>
 	
-    
-		<View style={styles.buttonContainer}>
-            <View>
 
-      
+   	 <View style={styles.buttonContainer}>
+      <Modal animationType = {"slide"} transparent = {true}
+                   visible = {this.state.isEventVisible}
+                   onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
+  		        <ScrollView style={styles.buttonContainer}>
+	           <Button title="Travel" onPress={()=>this.updateEvent('Travel')} />
+		           <Button title="On Job" onPress={()=>this.updateEvent('On Job')} />
+		        </ScrollView>
+      </Modal>
+		{
+    	    this.state.eventstatus? <Button title={this.state.event} onPress = {() => this.setState({isEventVisible: true})} /> : <Button style={styles.buttonContainer} title={this.state.event}  onPress={this.resetEventStatus} /> 
+         }
+		</View>
 
-
-
-	        {
-            this.state.eventstatus ? <Picker selectedValue = {this.state.event} onValueChange = {this.updateEvent}>
-			   <Picker.Item label = "Select Event" value = "" />
-               <Picker.Item label = "Travel" value = "travel" />
-               <Picker.Item label = "Check In" value = "checkin" />
-            </Picker> : <Button style={styles.buttonContainer} title={this.state.event}  onPress={this.resetEventStatus} />
-            }
-   
-            </View>
-	
-
-        </View>
+      	   
 			<View style={styles.buttonContainer}>
 		      <Text style={styles.getStartedText}>
                Status {this.state.checkinStatus} {this.state.event} and Job# {this.state.Name}
