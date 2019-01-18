@@ -165,6 +165,40 @@ resetKeys = async ()  => {
  this.props.navigation.navigate('Alternative');
 }
 
+renderJobPortal = () => {
+
+return(
+<View>
+        <View style={styles.welcomeContainer}>
+            <Text style={styles.getStartedText}>
+              Job Portal
+            </Text>
+          </View>
+
+
+			  <View style={styles.contentContainer}>
+          <View style={styles.buttonContainer}>
+
+			  <Button title="Primary Login"
+                   onPress={
+            this.state.compatible
+              ? this.checkForBiometrics
+              : this.showIncompatibleAlert
+          }
+          />
+			  </View>
+          </View>
+		  <View style={styles.contentContainer}>
+          <View style={styles.buttonContainer}>
+
+			  <Button title="Alternate Login" 
+			  onPress={this.buttonJob}
+			  />
+		  </View>
+         </View>  
+</View>
+    )
+};
 renderDispatchPortal = () => {
 
 if (!__DEV__)
@@ -205,6 +239,17 @@ if (!__DEV__)
 	);
 };
 
+renderDevice = () => {
+
+if (!__DEV__)
+{
+	return false;
+}
+
+return (	  <View style={styles.welcomeContainer}>
+			<Text> Device: {Constants.installationId} </Text>
+          </View>);
+}
 
 render() 
   {
@@ -219,34 +264,10 @@ render()
               }
               style={styles.welcomeImage}
             />
-
-			<Text> Device: {Constants.installationId} </Text>
-            <Text style={styles.getStartedText}>
-              Job Portal
-            </Text>
           </View>
-
-
-			  <View style={styles.contentContainer}>
-          <View style={styles.buttonContainer}>
-
-			  <Button title="Primary Login"
-                   onPress={
-            this.state.compatible
-              ? this.checkForBiometrics
-              : this.showIncompatibleAlert
-          }
-          />
-			  </View>
-          </View>
-		  <View style={styles.contentContainer}>
-          <View style={styles.buttonContainer}>
-
-			  <Button title="Alternate Login" 
-			  onPress={this.buttonJob}
-			  />
-		  </View>
-         </View>  
+	  
+      {this.renderDevice()}
+	  {this.renderJobPortal()}
 	  {this.renderDispatchPortal()}
 			  
 	  {__DEV__ ? <Button title="Reset" onPress={this.resetKeys} /> : null}
