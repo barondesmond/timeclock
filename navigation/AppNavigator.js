@@ -4,6 +4,7 @@
   import AlternativeScreen from '../screens/AlternativeScreen';
   import JobScreen from '../screens/JobScreen';
   import DispatchScreen from '../screens/DispatchScreen';
+  import EmployeeScreen from '../screens/EmployeeScreen';
 
   import { createAppContainer } from 'react-navigation';
 
@@ -13,7 +14,9 @@
     Alternative: { screen: AlternativeScreen},
     Job: {screen: JobScreen},
 	Dispatch: {screen: DispatchScreen},
-  });
+	Employee: {screen: EmployeeScreen},
+
+	});
 
   const AppContainer = createAppContainer(AppNavigator);
 

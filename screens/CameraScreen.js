@@ -24,14 +24,14 @@ import { Constants, ImagePicker, Permissions } from 'expo';
 import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, URL, STORAGE_KEY} from '../constants/common';
 
 
-export default class App extends Component {
+export default class CameraScreen extends Component {
 
   state = {
 
     image: null,
     uploading: false,
     violation: '',
-    EmpNo: null,
+    EmpNo: null
   };
 
 
@@ -169,7 +169,7 @@ export default class App extends Component {
 	{
 		 await AsyncStorage.setItem('violation', this.state.violation);
 		await AsyncStorage.setItem('image', this.state.image);
-		const Screen = this.props.navigation.getParam('Screen', 'Home');
+		const Screen = await AsyncStorage.getItem('Screen');
 
 		this.props.navigation.navigate(Screen);
 	}
@@ -182,8 +182,8 @@ async componentDidMount () {
 
 
 	  const EmpNo = await AsyncStorage.getItem('EmpNo');
+
 	  this.setState({EmpNo: EmpNo});
-	  console.log(this.state);
 	  if (!this.state.EmpNo)
 	  {
 

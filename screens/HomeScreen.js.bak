@@ -37,49 +37,12 @@ export default class HomeScreen extends React.Component {
     EmpNo: null,
     Bio: null,
     uids: null,
-    Screen: null,
     isLoading: true,
 	auth: null,
   };
 
 
-async authEmpInstApi() {
-
- 
-	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}`)
-      .then((response2) => response2.json())
-      .then((responseJson2) => {
-
-        this.setState({
-          isLoading: false,
-          auth: responseJson2,
-        }, function(){
-
-        });
-
-      })
-      .catch((error) =>{
-        console.error(error);
-      });
-
-      console.log(this.state.auth);
-	  if (this.state.auth.authorized == 0)
-	  {
-		  this.props.navigation.navigate('Alternative');
-		  console.log('not authorized');
-	  }
-	  if (this.state.auth.EmpActive == 1)
-	  {
-		  console.log('logged in');
-		  //this.setState({Name: this.state.auth.Name, LocName: this.state.auth.LocName, JobNotes: this.state.auth.JobNotes, event : this.state.auth.event, eventstatus: false, jobstatus: false, checkinStatus: 'Stop', active: false, isJobVisible: false}) 
-	  }
-	  
-	  
-     return this.state.auth;	
-}
-
-
-  async componentDidMount() {
+  async componentWillMount() {
 
 	const EmpNo = await AsyncStorage.getItem('EmpNo');
 
@@ -96,14 +59,8 @@ async authEmpInstApi() {
 		await AsyncStorage.removeItem('Bio');
 		await AsyncStorage.removeItem('violation');
 		await AsyncStorage.removeItem('image');
-		this.setState({Screen: null});
 	}
-	if (this.state.EmpNo != null)
-	{
-	    const auth = await this.authEmpInstApi();
-		console.log(this.state.auth);
 
-	}	
 	this.checkDeviceForHardware();
   }
 
@@ -122,18 +79,6 @@ async authEmpInstApi() {
     );
   };
 
-checkForBiometricsDispatch = async () => {
-    let biometricRecords = await Expo.LocalAuthentication.isEnrolledAsync();
-    if (!biometricRecords) {
-      Alert.alert('No Biometrics Found',
-        'Please ensure you have set up biometrics in your OS settings.'
-      );
-    } else {
-		this.setState({Screen: 'Dispatch'});
-      this.handleLoginPress();
-    }
-  };
-
 
   checkForBiometrics = async () => {
     let biometricRecords = await Expo.LocalAuthentication.isEnrolledAsync();
@@ -142,7 +87,6 @@ checkForBiometricsDispatch = async () => {
         'Please ensure you have set up biometrics in your OS settings.'
       );
     } else {
-		this.setState({Screen: 'Job'});
       this.handleLoginPress();
     }
   };
@@ -166,53 +110,70 @@ checkForBiometricsDispatch = async () => {
 
 		if (this.state.EmpNo == null)
         { 
-			console.log(this.state);
 			this.props.navigation.navigate('Alternative');
         }
 		else
 		{
 		    await AsyncStorage.setItem('Bio', this.state.EmpNo);
-			this.props.navigation.navigate(this.state.Screen);
-            
+	    	const Screen =  await AsyncStorage.getItem('Screen');
+
+			this.props.navigation.navigate(Screen);            
         }
 
     } else {
-	    this.buttonClickListener;
+	    this.props.navigation.navigate('Camera');
 	}
   };
 
  
- buttonJob = () =>{
+ 
 
+alternateLogin = async (newscreen) => {
 
-  this.props.navigation.navigate('Camera', {Screen: 'Job'} );
-}
+		AsyncStorage.setItem('Screen', newscreen);
 
- buttonDispatch = () =>{
+     this.props.navigation.navigate('Camera');
 
-
-  this.props.navigation.navigate('Camera', {Screen: 'Dispatch'} );
 }
 
 resetKeys = async ()  => {
  
  await AsyncStorage.removeItem('Name');
- await AsyncStorage.removeItem('LocName');
  await AsyncStorage.removeItem('Email');
  await AsyncStorage.removeItem('EmpNo');
- await AsyncStorage.removeItem('JobNotes');
  await AsyncStorage.removeItem('Bio');
+ await AsyncStorage.removeItem('Screen');
 
  this.props.navigation.navigate('Alternative');
 }
 
-renderJobPortal = () => {
+primaryLogin = (newscreen) => {
+
+
+	AsyncStorage.setItem('Screen', newscreen);
+
+	
+	if (this.state.compatible)
+	{
+        this.checkForBiometrics();
+	}
+	else
+	{
+
+       this.props.navigation.navigate('Camera');
+
+	}
+}		
+
+renderPortal = (newscreen) => {
+
+  
 
 return(
 <View>
         <View style={styles.welcomeContainer}>
             <Text style={styles.getStartedText}>
-              Job Portal
+	{newscreen} Portal
             </Text>
           </View>
 
@@ -221,11 +182,8 @@ return(
           <View style={styles.buttonContainer}>
 
 			  <Button title="Primary Login"
-                   onPress={
-            this.state.compatible
-              ? this.checkForBiometrics
-              : this.showIncompatibleAlert
-          }
+                   onPress={() => this.primaryLogin(newscreen)}
+   
           />
 			  </View>
           </View>
@@ -233,52 +191,12 @@ return(
           <View style={styles.buttonContainer}>
 
 			  <Button title="Alternate Login" 
-			  onPress={this.buttonJob}
+			  onPress={() => this.alternateLogin(newscreen)}
 			  />
 		  </View>
          </View>  
 </View>
     )
-};
-renderDispatchPortal = () => {
-
-console.log(this.state.isLoading);
-if (!__DEV__)
-{
-	return false;
-}
-
-	return(
-     <View>
-     <View style={styles.welcomeContainer}>
-
-            <Text style={styles.getStartedText}>
-              Dispatch Portal
-            </Text>
-     </View>
-
-			  <View style={styles.contentContainer}>
-          <View style={styles.buttonContainer}>
-
-			  <Button title="Primary Login"
-                   onPress={
-            this.state.compatible
-              ? this.checkForBiometricsDispatch
-              : this.showIncompatibleAlert
-          }
-          />
-			  </View>
-          </View>
-		  <View style={styles.contentContainer}>
-          <View style={styles.buttonContainer}>
-
-			  <Button title="Alternate Login" value="Camera"
-			  onPress={this.buttonDispatch}
-			  />
-		  </View>
-            </View>
-     </View>
-	);
 };
 
 
@@ -317,8 +235,8 @@ render()
           </View>
 	  
       {this.renderDevice()}
-	  {this.renderJobPortal()}
-	  {this.renderDispatchPortal()}
+	  {this.renderPortal('Job')}
+	  {this.renderPortal('Dispatch')}
 			  
 	  {__DEV__ ? <Button title="Reset" onPress={this.resetKeys} /> : null}
 

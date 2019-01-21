@@ -142,12 +142,15 @@ async authEmpInstApi() {
 		  this.props.navigation.navigate('Alternative');
 		  console.log('not authorized');
 	  }
-	  if (this.state.auth.EmpActive == 1)
+	  if (this.state.auth.EmpActive == 1 && this.state.auth.Screen == 'Job')
 	  {
 		  console.log('logged in');
 		  this.setState({Name: this.state.auth.Name, LocName: this.state.auth.LocName, JobNotes: this.state.auth.JobNotes, event : this.state.auth.event, eventstatus: false, jobstatus: false, checkinStatus: 'Stop', active: false, isJobVisible: false}) 
 	  }
-	  
+      if (this.state.auth.EmpActive == 1 && this.state.auth.Screen != 'Job')
+	 {
+         this.props.navigation.navigate(this.state.auth.Screen);
+	 } 
 	  
      return this.state.auth;	
 }
@@ -159,7 +162,8 @@ async authEventLogApi() {
 	{
 		this.setState({latitude: '33.3333', longitude: '-88.9888'});
 	}
-	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&event=${this.state.event}&Name=${this.state.Name}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}`;
+	Screen = await AsyncStorage.getItem('Screen');
+	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&event=${this.state.event}&Name=${this.state.Name}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}`;
 	  await fetch(authurl)
       .then((response2) => response2.json())
       .then((responseJson2) => {
@@ -185,7 +189,16 @@ async authEventLogApi() {
 	  }
 	  if (this.state.auth.EmpActive == 1)
 	  {
-		  console.log('logged in');
+		  if (this.state.auth.Screen == 'Job')
+		  {
+			  console.log('logged in');
+
+		  }
+		  else
+		  {
+			  console.log('logged in at ' . this.state.auth.Screen);
+			  this.props.navigation.navigate(this.state.auth.Screen);
+		  }
 	  }
 	  else
 	 {
@@ -257,7 +270,7 @@ error(err) {
 
  async checkStatus() {
 	
-	if (this.state.checkinStatus == 'Start' && !this.state.jobstatus && !this.state.eventstatus && (this.state.event=='Travel' || __DEV__ || (this.state.event=='On Job' && (this.state.jobdistance == null || this.state.jobdistance < 2)))) {
+	if (this.state.checkinStatus == 'Start' && !this.state.jobstatus && !this.state.eventstatus && (this.state.event=='Traveling' || __DEV__ || (this.state.event=='Working' && (this.state.jobdistance == null || this.state.jobdistance < 2)))) {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive == '1')
 		{
@@ -377,8 +390,8 @@ buttonDone = () => {
                    visible = {this.state.isEventVisible}
                    onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
   		        <ScrollView style={styles.buttonContainer}>
-	           <Button title="Travel" onPress={()=>this.updateEvent('Travel')} />
-		           <Button title="On Job" onPress={()=>this.updateEvent('On Job')} />
+	           <Button title="Traveling" onPress={()=>this.updateEvent('Traveling')} />
+		           <Button title="Working" onPress={()=>this.updateEvent('Working')} />
 		        </ScrollView>
       </Modal>
 		{
@@ -389,7 +402,7 @@ buttonDone = () => {
       	   
 			<View style={styles.buttonContainer}>
 		      <Text style={styles.getStartedText}>
-               Status {this.state.checkinStatus} {this.state.event} and Job# {this.state.Name}
+               Status {this.state.checkinStatus} {this.state.event} at Job# {this.state.Name}
 	          </Text>
 
             </View>

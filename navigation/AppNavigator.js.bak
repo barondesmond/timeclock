@@ -3,7 +3,7 @@
   import CameraScreen from '../screens/CameraScreen';
   import AlternativeScreen from '../screens/AlternativeScreen';
   import JobScreen from '../screens/JobScreen';
-  import Dispatch from '../screens/DispatchScreen';
+  import DispatchScreen from '../screens/DispatchScreen';
 
   import { createAppContainer } from 'react-navigation';
 

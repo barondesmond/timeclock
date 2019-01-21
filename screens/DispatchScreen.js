@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import {
   Text,
   View,
+  ScrollView,
   StyleSheet,
   TouchableOpacity,
   Platform,
@@ -15,12 +16,15 @@ import {
   TouchableHighlight,
   Dimensions,  
   Picker,
+  Modal
 } from 'react-native';
 import Expo, { Constants, Location, Permissions } from 'expo';
 
 import styles from '../components/styles';
 
 import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, URL, STORAGE_KEY} from '../constants/common';
+
+
 
 
 export default class DispatchScreen extends Component {
@@ -32,9 +36,6 @@ constructor(props){
     super(props);
     this.state = {
 
-        Dispatch: '',
-	    LocName: null,
-	    JobNotes: null,		 
 	    EmpName: null,
 		Email: null,
         EmpNo: null,
@@ -45,11 +46,12 @@ constructor(props){
         checkinStatus: 'Start',
         csBack: 'green',
         active: true,
-		event: null,
+		event: 'Select Event',
 		eventstatus: true,
-        jobs: null,
-        job: null,
-		jobstatus: true,
+        dispatchs: null,
+        Dispatch: '',
+		DispatchName: 'Select Dispatch',
+		dispatchstatus: true,
         pickers: null,
         auth: null,
 		timer: null,
@@ -57,23 +59,27 @@ constructor(props){
 	    image: null,
 		lastposition: null,
 		locationstatus: null,
-        joblatitude: null,
-		joblongitude: null,
-		jobdistance: null,
+        dispatchlatitude: null,
+		dispatchlongitude: null,
+		dispatchdistance: null,
+        isDispatchVisible: false,
+		isEventVisible: false,
+		isNotesVisible: false,
+        gps: __DEV__,
     }
 
 }
 
-async fetchJobsFromApi() {
+async fetchDispatchsFromApi() {
 
  
-	await fetch(URL + `dispatch_json.php?latitude=${this.state.latitude}&longitude=${this.state.longitude}`)
+	await fetch(URL + `dispatchs_json.php?latitude=${this.state.latitude}&longitude=${this.state.longitude}&ServiceMan=${this.state.EmpNo}&dev=${__DEV__}`)
       .then((response) => response.json())
       .then((responseJson) => {
 
         this.setState({
           isLoading: false,
-          jobs: responseJson.jobs,
+          dispatchs: responseJson.dispatchs,
         }, function(){
 
         });
@@ -83,19 +89,44 @@ async fetchJobsFromApi() {
         console.error(error);
       });
 	  let pickers = [];
-	 for (let i=0; i < this.state.jobs.length ; i++) {
-	    pickers.push(<Picker.Item key={i} label = {this.state.jobs[i].LocName} value={i} />);
-     }
-	//console.log(pickers);
-	this.setState({pickers: pickers});
+	 if (this.state.dispatchs == null)
+	 {
+		 const rm = await AsyncStorage.removeItem('Screen');
+		 this.props.navigation.navigate('Home');
+	 }
+	 else
+	 {
+	   for (let i=0; i < this.state.dispatchs.length ; i++) {
+	      pickers.push(<Button key={this.state.dispatchs[i].Dispatch} title = {this.state.dispatchs[i].DispatchName} value={i} onPress={()=>this.updateDispatch(i)} />);
+       }
+		this.setState({pickers: pickers});
+
+	 }
 	
 }
 
+renderGPS = () => {
+
+if (!this.state.gps)
+{
+	return false;
+}
+return (
+			<View style={styles.buttonContainer}>
+			     <Text style={styles.getStartedText}>GPS </Text>
+			 <Text style={styles.getStartedText}> Latitude : {this.state.latitude} </Text>
+		     <Text style={styles.getStartedText}> Longitude: {this.state.longitude} </Text>
+			 <Text style={styles.getStartedText}> DispatchLatitude : {this.state.dispatchlatitude} </Text>
+			 <Text style={styles.getStartedText}> DispatchLongitude: {this.state.dispatchlongitude} </Text>
+			 <Text style={styles.getStartedText}> DispatchDistance : {this.state.dispatchdistance} </Text>
+	        </View>
+ );
+};
 
 async authEmpInstApi() {
 
  
-	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}`)
+	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&dev=${__DEV__}`)
       .then((response2) => response2.json())
       .then((responseJson2) => {
 
@@ -120,7 +151,11 @@ async authEmpInstApi() {
 	  if (this.state.auth.EmpActive == 1)
 	  {
 		  console.log('logged in');
-		  this.setState({Dispatch: this.state.auth.Dispatch, LocName: this.state.auth.LocName, JobNotes: this.state.auth.JobNotes, event : this.state.auth.event, eventstatus: false, jobstatus: false, checkinStatus: 'Stop', active: false}) 
+		  if (this.state.auth.Screen != 'Dispatch')
+		  {
+			  this.props.navigation.navigate(this.state.auth.Screen);
+		  }
+		  this.setState({Dispatch: this.state.auth.Dispatch, DispatchName: this.state.auth.DispatchName, DispatchNotes: this.state.auth.DispatchNotes, event : this.state.auth.event, eventstatus: false, dispatchstatus: false, checkinStatus: 'Stop', active: false, isDispatchVisible: false}) 
 	  }
 	  
 	  
@@ -134,7 +169,8 @@ async authEventLogApi() {
 	{
 		this.setState({latitude: '33.3333', longitude: '-88.9888'});
 	}
-	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&event=${this.state.event}&Dispatch=${this.state.Dispatch}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}`;
+	Screen = await AsyncStorage.getItem('Screen');
+	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&event=${this.state.event}&Dispatch=${this.state.Dispatch}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}&dev=${__DEV__}`;
 	  await fetch(authurl)
       .then((response2) => response2.json())
       .then((responseJson2) => {
@@ -215,7 +251,7 @@ async componentDidMount () {
 	  this.setState({violation: violation, image: image});
 	
 	  await this.authEmpInstApi();
-	  await this.fetchJobsFromApi();
+	  await this.fetchDispatchsFromApi();
 
   
 }
@@ -232,20 +268,20 @@ error(err) {
 
  async checkStatus() {
 	
-	if (this.state.checkinStatus == 'Start' && !this.state.jobstatus && !this.state.eventstatus && (this.state.event=='travel' || (this.state.event=='checkin' && (this.state.jobdistance == null || this.state.jobdistance < 2)))) {
+	if (this.state.checkinStatus == 'Start' && !this.state.dispatchstatus && !this.state.eventstatus && (this.state.event=='Traveling' || __DEV__ || (this.state.event=='Working' && (this.state.dispatchdistance == null || this.state.dispatchdistance < 2)))) {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive == '1')
 		{
 			this.setState({checkinStatus: 'Stop', active: !this.state.active});
 		}
 	}
-	else if (this.state.checkinStatus == 'Stop' && !this.state.jobstatus && !this.state.eventstatus) {
+	else if (this.state.checkinStatus == 'Stop' && !this.state.dispatchstatus && !this.state.eventstatus) {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive != '1')
 		{
 			this.setState({checkinStatus: 'Start', active: !this.state.active});
-			this.updateEventStatus();
-			this.updateJobStatus();
+			//this.updateEventStatus();
+			//this.updateJobStatus();
 
 		}
 
@@ -257,25 +293,25 @@ error(err) {
 }
 
   updateEvent = (event) => {
-
-	   this.setState({ event: event, eventstatus: !this.state.eventstatus })
-
+		console.log(event);
+	   this.setState({ event: event, eventstatus: !this.state.eventstatus, isEventVisible: false })
+       //this.setState({isEventVisible: false});
    }
    updateEventStatus = () => {
 	  
-	  this.setState({event: null, eventstatus: !this.state.eventstatus})
+	  this.setState({eventstatus: !this.state.eventstatus, isEventVisible: true})
    }
 
- updateJobStatus = () => {
+ updateDispatchStatus = () => {
 
-	   this.setState({job: null, jobstatus: !this.state.jobstatus, Dispatch: null, LocName: null, JobNotes: null, jobdistance: null, joblatitude: null, joblongitude: null})
+	   this.setState({dispatchstatus: !this.state.dispatchstatus, isDispatchVisible: true})
    
   
   }
- resetJobStatus = () => {
+ resetDispatchStatus = () => {
 	 if (this.state.active)
 	 {
-		 this.updateJobStatus();
+		 this.updateDispatchStatus();
 	 }
  }
 resetEventStatus = () => {
@@ -284,17 +320,15 @@ resetEventStatus = () => {
 		 this.updateEventStatus();
 	 }
  }
- updateJob = (job) => {
-	  if (job != '')
-	  {
-	      this.setState({ job: job, jobstatus: !this.state.jobstatus, Dispatch: this.state.jobs[job].Dispatch, LocName: this.state.jobs[job].LocName, JobNotes: this.state.jobs[job].JobNotes, jobdistance: this.state.jobs[job].distance, joblatitude: this.state.jobs[job].latitude, joblongitude: this.state.jobs[job].longitude })
-	  }
+ updateDispatch = (i) => {
+
+		console.log(this.state.dispatchs[i]);
+		this.setState({ Dispatch: this.state.dispatchs[i].Dispatch, dispatchstatus: !this.state.dispatchstatus,  DispatchName: this.state.dispatchs[i].DispatchName, DispatchNotes: this.state.dispatchs[i].DispatchNotes, dispatchdistance: this.state.dispatchs[i].distance, dispatchlatitude: this.state.dispatchs[i].latitude, dispatchlongitude: this.state.dispatchs[i].longitude, isDispatchVisible: false })
+	    console.log(this.state);
    }
-buttonDone = () => {
 
-	//this.props.navigation.navigate('Home');
-}
 
+			
 
  render() {
 
@@ -305,60 +339,70 @@ buttonDone = () => {
 	<View style={styles.container}>
     <View style={styles.welcomeContainer}>
 			<View style={styles.buttonContainer}>
- 	        <View>
-	        {
-            this.state.jobstatus ? <Picker selectedValue = {this.state.job} onValueChange = {this.updateJob}>
-			   <Picker.Item label = "Select Dispatch" value = "" />
-				{this.state.pickers}
-
-			</Picker> : <Button style={styles.buttonContainer} title={this.state.LocName}  onPress={this.resetJobStatus}/>
-            }
-			   </View>
-            
+   
+	            <Modal animationType = {"slide"} transparent = {true}
+                   visible = {this.state.isDispatchVisible}
+                   onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
+   
+  		        <ScrollView style={styles.buttonContainer}>
+			      {this.state.pickers}
+		        </ScrollView>
+               </Modal>
+			  {
+			   this.state.dispatchstatus? <Button title={this.state.DispatchName} onPress = {() => this.setState({isDispatchVisible: true})} /> : <Button style={styles.buttonContainer} title={this.state.DispatchName}  onPress={this.resetDispatchStatus} /> 
+			   }
          </View>
-			<View style={styles.buttonContainer}>
-		      <Text style={styles.getStartedText}>
-	          Notes {this.state.JobNotes}
+
+            <Modal animationType = {"slide"} transparent = {true}
+                   visible = {this.state.isNotesVisible}
+                   onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
+   
+  		        <ScrollView style={styles.buttonContainer}>
+				<Text style={styles.getStartedText}>
+			      {this.state.DispatchNotes}
+                </Text>
+                <Button title="Close Notes" onPress={()=>this.setState({isNotesVisible: false})} />
+				</ScrollView>
+               </Modal>
+
+			<View style={styles.jobNotesContainer}>
+		      <TouchableHighlight onPress={() => this.setState({isNotesVisible: true})}>
+				<Text style={styles.getStartedText}>
+	          Notes {this.state.DispatchNotes}
 	          </Text>
+				  </TouchableHighlight>
 
-         </View>
-
-			<TouchableHighlight style={this.state.active? circ.circleContainerStart: circ.circleContainerStop} onPress = { () =>  this.checkStatus() } >
-	     <Text> 
+            </View>
+			<TouchableHighlight style={this.state.active? styles.circleContainerStart: styles.circleContainerStop} onPress = { () =>  this.checkStatus() } >
+	     <Text style={styles.getCircleText}> 
 	 {this.state.checkinStatus}
 	         </Text>
             </TouchableHighlight>
 	
-    
-		<View style={styles.buttonContainer}>
-            <View>
-	        {
-            this.state.eventstatus ? <Picker selectedValue = {this.state.event} onValueChange = {this.updateEvent}>
-			   <Picker.Item label = "Select Event" value = "" />
-               <Picker.Item label = "Travel" value = "travel" />
-               <Picker.Item label = "Check In" value = "checkin" />
-            </Picker> : <Button style={styles.buttonContainer} title={this.state.event}  onPress={this.resetEventStatus} />
-            }
-   
-         </View>
-	
 
-         </View>
+   	 <View style={styles.buttonContainer}>
+      <Modal animationType = {"slide"} transparent = {true}
+                   visible = {this.state.isEventVisible}
+                   onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
+  		        <ScrollView style={styles.buttonContainer}>
+	           <Button title="Traveling" onPress={()=>this.updateEvent('Traveling')} />
+		           <Button title="Working" onPress={()=>this.updateEvent('Working')} />
+		        </ScrollView>
+      </Modal>
+		{
+    	    this.state.eventstatus? <Button title={this.state.event} onPress = {() => this.setState({isEventVisible: true})} /> : <Button style={styles.buttonContainer} title={this.state.event}  onPress={this.resetEventStatus} /> 
+         }
+		</View>
+
+      	   
 			<View style={styles.buttonContainer}>
 		      <Text style={styles.getStartedText}>
-               Status {this.state.checkinStatus} {this.state.event} and Job# {this.state.Dispatch}
+               Status {this.state.checkinStatus} {this.state.event} at Dispatch# {this.state.Dispatch}
 	          </Text>
 
-         </View>
-			<View style={styles.buttonContainer}>
-		     <Text style={styles.getStartedText}>GPS </Text>
-			 <Text style={styles.getStartedText}> Latitude : {this.state.latitude} </Text>
-		     <Text style={styles.getStartedText}> Longitude: {this.state.longitude} </Text>
-			 <Text style={styles.getStartedText}> JobLatitude : {this.state.joblatitude} </Text>
-			 <Text style={styles.getStartedText}> JobLongitude: {this.state.joblongitude} </Text>
-			 <Text style={styles.getStartedText}> JobDistance : {this.state.jobdistance} </Text>
+            </View>
+			{this.renderGPS()}     
 
-         </View>
 	
 	</View>
     </View>
@@ -366,23 +410,3 @@ buttonDone = () => {
  }
 }
 
-circ = StyleSheet.create({
-	
-	circleContainerStart: {
-    borderRadius: Math.round(Dimensions.get('window').width + Dimensions.get('window').height) / 2,
-    width: Dimensions.get('window').width * 0.5,
-    height: Dimensions.get('window').width * 0.5,
-	justifyContent: 'center',
-	backgroundColor: 'green' ,
-    alignItems: 'center',
-	},
-	circleContainerStop: {
-    borderRadius: Math.round(Dimensions.get('window').width + Dimensions.get('window').height) / 2,
-    width: Dimensions.get('window').width * 0.5,
-    height: Dimensions.get('window').width * 0.5,
-	justifyContent: 'center',
-	backgroundColor: 'red' ,
-    alignItems: 'center',
-	},
-
-	});
