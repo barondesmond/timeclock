@@ -115,9 +115,17 @@ export default class HomeScreen extends React.Component {
 		else
 		{
 		    await AsyncStorage.setItem('Bio', this.state.EmpNo);
-	    	const Screen =  await AsyncStorage.getItem('Screen');
+			const auth = await this.authEmpInstApi();
+		    const Screen =  await AsyncStorage.getItem('Screen');
 
-			this.props.navigation.navigate(Screen);            
+			if (this.state.auth.EmpActive == 1 && this.state.auth.Screen != Screen)
+            {
+		          this.props.navigation.navigate(this.state.auth.Screen);
+            }
+			else
+			{
+				this.props.navigation.navigate(Screen);
+			}	
         }
 
     } else {
@@ -125,13 +133,44 @@ export default class HomeScreen extends React.Component {
 	}
   };
 
+async authEmpInstApi() {
+
+ 
+	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}`)
+      .then((response2) => response2.json())
+      .then((responseJson2) => {
+
+        this.setState({
+          isLoading: false,
+          auth: responseJson2,
+        }, function(){
+
+        });
+
+      })
+      .catch((error) =>{
+        console.error(error);
+      });
+
+      console.log(this.state.auth);
+	  
+     return this.state.auth;	
+}
  
  
 
 alternateLogin = async (newscreen) => {
 
-		AsyncStorage.setItem('Screen', newscreen);
+	  const auth = await this.authEmpInstApi();
 
+      if (this.state.auth.EmpActive == 1 && this.state.auth.Screen != newscreen)
+      {
+		  AsyncStorage.setItem('Screen', this.state.auth.Screen);
+      }
+	  else
+	  {
+		AsyncStorage.setItem('Screen', newscreen);
+	  }
      this.props.navigation.navigate('Camera');
 
 }
@@ -147,9 +186,10 @@ resetKeys = async ()  => {
  this.props.navigation.navigate('Alternative');
 }
 
-primaryLogin = (newscreen) => {
+primaryLogin = async (newscreen) => {
 
-
+	
+ 
 	AsyncStorage.setItem('Screen', newscreen);
 
 	
@@ -159,10 +199,9 @@ primaryLogin = (newscreen) => {
 	}
 	else
 	{
-
        this.props.navigation.navigate('Camera');
-
 	}
+	
 }		
 
 renderPortal = (newscreen) => {
