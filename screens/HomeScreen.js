@@ -120,7 +120,7 @@ export default class HomeScreen extends React.Component {
 
 			if (this.state.auth.EmpActive == 1 && this.state.auth.Screen != Screen)
             {
-		          this.props.navigation.navigate(this.state.auth.Screen);
+				 Alert.alert('You are logged into ' + this.state.auth.Screen + ' Portal');
             }
 			else
 			{
@@ -165,7 +165,7 @@ alternateLogin = async (newscreen) => {
 
       if (this.state.auth.EmpActive == 1 && this.state.auth.Screen != newscreen)
       {
-		  AsyncStorage.setItem('Screen', this.state.auth.Screen);
+		 Alert.alert('You are logged into ' + this.state.auth.Screen + ' Portal');
       }
 	  else
 	  {

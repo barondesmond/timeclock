@@ -165,10 +165,12 @@ alternateLogin = async (newscreen) => {
 
       if (this.state.auth.EmpActive == 1 && this.state.auth.Screen != newscreen)
       {
-		  this.props.navigation.navigate(this.state.auth.Screen);
+		  AsyncStorage.setItem('Screen', this.state.auth.Screen);
       }
+	  else
+	  {
 		AsyncStorage.setItem('Screen', newscreen);
-
+	  }
      this.props.navigation.navigate('Camera');
 
 }
