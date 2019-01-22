@@ -286,10 +286,14 @@ error(err) {
 			//this.updateJobStatus();
 
 		}
-
-
 	}
-
+	else
+	 {
+		if (this.state.checkinStatus == 'Start' && this.state.event== 'Working' && (this.state.jobdistance != null && this.state.jobdistance > 2))
+		{
+			Alert.alert('Not within range ' + this.state.jobdistance); 
+		}
+	 }
 	//console.log(this.state);
 
 }

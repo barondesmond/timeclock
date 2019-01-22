@@ -286,10 +286,14 @@ error(err) {
 			//this.updateJobStatus();
 
 		}
-
-
 	}
-
+	else
+	 {
+		if (this.state.checkinStatus == 'Start' && this.state.event== 'Working' && this.state.jobdistance > 2)
+		{
+			Alert.alert('Not within range ' + this.state.jobdistance); 
+		}
+	 }
 	//console.log(this.state);
 
 }
@@ -402,7 +406,7 @@ buttonDone = () => {
       	   
 			<View style={styles.buttonContainer}>
 		      <Text style={styles.getStartedText}>
-               Status {this.state.checkinStatus} {this.state.event} and Job# {this.state.Name}
+               Status {this.state.checkinStatus} {this.state.event} at Job# {this.state.Name}
 	          </Text>
 
             </View>
