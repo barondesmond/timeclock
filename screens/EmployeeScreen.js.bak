@@ -48,9 +48,6 @@ constructor(props){
         active: true,
 		event: 'Select Event',
 		eventstatus: true,
-        dispatchs: null,
-        Dispatch: '',
-		DispatchName: 'Select Dispatch',
 		dispatchstatus: true,
         pickers: null,
         auth: null,
@@ -59,10 +56,6 @@ constructor(props){
 	    image: null,
 		lastposition: null,
 		locationstatus: null,
-        dispatchlatitude: null,
-		dispatchlongitude: null,
-		dispatchdistance: null,
-        isDispatchVisible: false,
 		isEventVisible: false,
 		isNotesVisible: false,
         gps: __DEV__,
@@ -70,40 +63,7 @@ constructor(props){
 
 }
 
-async fetchDispatchsFromApi() {
 
- 
-	await fetch(URL + `dispatchs_json.php?latitude=${this.state.latitude}&longitude=${this.state.longitude}&ServiceMan=${this.state.EmpNo}&dev=${__DEV__}`)
-      .then((response) => response.json())
-      .then((responseJson) => {
-
-        this.setState({
-          isLoading: false,
-          dispatchs: responseJson.dispatchs,
-        }, function(){
-
-        });
-
-      })
-      .catch((error) =>{
-        console.error(error);
-      });
-	  let pickers = [];
-	 if (this.state.dispatchs == null)
-	 {
-		 const rm = await AsyncStorage.removeItem('Screen');
-		 this.props.navigation.navigate('Home');
-	 }
-	 else
-	 {
-	   for (let i=0; i < this.state.dispatchs.length ; i++) {
-	      pickers.push(<Button key={this.state.dispatchs[i].Dispatch} title = {this.state.dispatchs[i].DispatchName} value={i} onPress={()=>this.updateDispatch(i)} />);
-       }
-		this.setState({pickers: pickers});
-
-	 }
-	
-}
 
 renderGPS = () => {
 
@@ -151,11 +111,10 @@ async authEmpInstApi() {
 	  if (this.state.auth.EmpActive == 1)
 	  {
 		  console.log('logged in');
-		  if (this.state.auth.Screen != 'Dispatch')
+		  if (this.state.auth.Screen != 'Employee')
 		  {
 			  this.props.navigation.navigate(this.state.auth.Screen);
 		  }
-		  this.setState({Dispatch: this.state.auth.Dispatch, DispatchName: this.state.auth.DispatchName, DispatchNotes: this.state.auth.DispatchNotes, event : this.state.auth.event, eventstatus: false, dispatchstatus: false, checkinStatus: 'Stop', active: false, isDispatchVisible: false}) 
 	  }
 	  
 	  
@@ -170,7 +129,7 @@ async authEventLogApi() {
 		this.setState({latitude: '33.3333', longitude: '-88.9888'});
 	}
 	Screen = await AsyncStorage.getItem('Screen');
-	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&event=${this.state.event}&Dispatch=${this.state.Dispatch}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.dispatchlatitude}&longitude=${this.state.longitude}&Screen=${Screen}&dev=${__DEV__}`;
+	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&event=${this.state.event}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}&dev=${__DEV__}`;
 	  await fetch(authurl)
       .then((response2) => response2.json())
       .then((responseJson2) => {
@@ -251,7 +210,6 @@ async componentDidMount () {
 	  this.setState({violation: violation, image: image});
 	
 	  await this.authEmpInstApi();
-	  await this.fetchDispatchsFromApi();
 
   
 }
@@ -268,14 +226,14 @@ error(err) {
 
  async checkStatus() {
 	
-	if (this.state.checkinStatus == 'Start' && !this.state.dispatchstatus && !this.state.eventstatus && (this.state.event=='Traveling' || __DEV__ || (this.state.event=='Working' && (this.state.dispatchdistance == null || this.state.dispatchdistance < 2)))) {
+	if (this.state.checkinStatus == 'Start'  && !this.state.eventstatus) {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive == '1')
 		{
 			this.setState({checkinStatus: 'Stop', active: !this.state.active});
 		}
 	}
-	else if (this.state.checkinStatus == 'Stop' && !this.state.dispatchstatus && !this.state.eventstatus) {
+	else if (this.state.checkinStatus == 'Stop'  && !this.state.eventstatus) {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive != '1')
 		{
@@ -302,30 +260,15 @@ error(err) {
 	  this.setState({eventstatus: !this.state.eventstatus, isEventVisible: true})
    }
 
- updateDispatchStatus = () => {
+ 
 
-	   this.setState({dispatchstatus: !this.state.dispatchstatus, isDispatchVisible: true})
-   
-  
-  }
- resetDispatchStatus = () => {
-	 if (this.state.active)
-	 {
-		 this.updateDispatchStatus();
-	 }
- }
 resetEventStatus = () => {
 	 if (this.state.active)
 	 {
 		 this.updateEventStatus();
 	 }
  }
- updateDispatch = (i) => {
-
-		console.log(this.state.dispatchs[i]);
-		this.setState({ Dispatch: this.state.dispatchs[i].Dispatch, dispatchstatus: !this.state.dispatchstatus,  DispatchName: this.state.dispatchs[i].DispatchName, DispatchNotes: this.state.dispatchs[i].DispatchNotes, dispatchdistance: this.state.dispatchs[i].distance, dispatchlatitude: this.state.dispatchs[i].latitude, dispatchlongitude: this.state.dispatchs[i].longitude, isDispatchVisible: false })
-	    console.log(this.state);
-   }
+ 
 
 
 			
@@ -365,7 +308,7 @@ resetEventStatus = () => {
       	   
 			<View style={styles.buttonContainer}>
 		      <Text style={styles.getStartedText}>
-               Status {this.state.checkinStatus} {this.state.event} and Dispatch# {this.state.Dispatch}
+               Status {this.state.checkinStatus} {this.state.event}
 	          </Text>
 
             </View>

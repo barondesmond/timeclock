@@ -48,9 +48,6 @@ constructor(props){
         active: true,
 		event: 'Select Event',
 		eventstatus: true,
-        dispatchs: null,
-        Dispatch: '',
-		DispatchName: 'Select Dispatch',
 		dispatchstatus: true,
         pickers: null,
         auth: null,
@@ -59,10 +56,6 @@ constructor(props){
 	    image: null,
 		lastposition: null,
 		locationstatus: null,
-        dispatchlatitude: null,
-		dispatchlongitude: null,
-		dispatchdistance: null,
-        isDispatchVisible: false,
 		isEventVisible: false,
 		isNotesVisible: false,
         gps: __DEV__,
@@ -70,40 +63,7 @@ constructor(props){
 
 }
 
-async fetchDispatchsFromApi() {
 
- 
-	await fetch(URL + `dispatchs_json.php?latitude=${this.state.latitude}&longitude=${this.state.longitude}&ServiceMan=${this.state.EmpNo}&dev=${__DEV__}`)
-      .then((response) => response.json())
-      .then((responseJson) => {
-
-        this.setState({
-          isLoading: false,
-          dispatchs: responseJson.dispatchs,
-        }, function(){
-
-        });
-
-      })
-      .catch((error) =>{
-        console.error(error);
-      });
-	  let pickers = [];
-	 if (this.state.dispatchs == null)
-	 {
-		 const rm = await AsyncStorage.removeItem('Screen');
-		 this.props.navigation.navigate('Home');
-	 }
-	 else
-	 {
-	   for (let i=0; i < this.state.dispatchs.length ; i++) {
-	      pickers.push(<Button key={this.state.dispatchs[i].Dispatch} title = {this.state.dispatchs[i].DispatchName} value={i} onPress={()=>this.updateDispatch(i)} />);
-       }
-		this.setState({pickers: pickers});
-
-	 }
-	
-}
 
 renderGPS = () => {
 
@@ -151,11 +111,12 @@ async authEmpInstApi() {
 	  if (this.state.auth.EmpActive == 1)
 	  {
 		  console.log('logged in');
-		  if (this.state.auth.Screen != 'Dispatch')
+		  if (this.state.auth.Screen != 'Employee')
 		  {
 			  this.props.navigation.navigate(this.state.auth.Screen);
 		  }
-		  this.setState({Dispatch: this.state.auth.Dispatch, DispatchName: this.state.auth.DispatchName, DispatchNotes: this.state.auth.DispatchNotes, event : this.state.auth.event, eventstatus: false, dispatchstatus: false, checkinStatus: 'Stop', active: false, isDispatchVisible: false}) 
+		  this.setState({event : this.state.auth.event, eventstatus: false,  checkinStatus: 'Stop', active: false}); 
+
 	  }
 	  
 	  
@@ -251,7 +212,6 @@ async componentDidMount () {
 	  this.setState({violation: violation, image: image});
 	
 	  await this.authEmpInstApi();
-	  await this.fetchDispatchsFromApi();
 
   
 }

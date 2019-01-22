@@ -65,6 +65,12 @@ constructor(props){
         isDispatchVisible: false,
 		isEventVisible: false,
 		isNotesVisible: false,
+        Add1: '',
+		Add2: '',
+		City: '',
+		State: '',
+		Zip: '',
+		Phone1: '',
         gps: __DEV__,
     }
 
@@ -155,7 +161,7 @@ async authEmpInstApi() {
 		  {
 			  this.props.navigation.navigate(this.state.auth.Screen);
 		  }
-		  this.setState({Dispatch: this.state.auth.Dispatch, DispatchName: this.state.auth.DispatchName, DispatchNotes: this.state.auth.DispatchNotes, event : this.state.auth.event, eventstatus: false, dispatchstatus: false, checkinStatus: 'Stop', active: false, isDispatchVisible: false}) 
+		  this.setState({Dispatch: this.state.auth.Dispatch, DispatchName: this.state.auth.DispatchName, DispatchNotes: this.state.auth.DispatchNotes, Add1: this.state.auth.Add1, Add2: this.state.auth.Add2, City: this.state.auth.City, State: this.state.auth.State, Zip: this.state.auth.Zip, Phone1: this.state.auth.Phone1,event : this.state.auth.event, eventstatus: false, dispatchstatus: false, checkinStatus: 'Stop', active: false, isDispatchVisible: false}) 
 	  }
 	  
 	  
@@ -323,12 +329,32 @@ resetEventStatus = () => {
  updateDispatch = (i) => {
 
 		console.log(this.state.dispatchs[i]);
-		this.setState({ Dispatch: this.state.dispatchs[i].Dispatch, dispatchstatus: !this.state.dispatchstatus,  DispatchName: this.state.dispatchs[i].DispatchName, DispatchNotes: this.state.dispatchs[i].DispatchNotes, dispatchdistance: this.state.dispatchs[i].distance, dispatchlatitude: this.state.dispatchs[i].latitude, dispatchlongitude: this.state.dispatchs[i].longitude, isDispatchVisible: false })
+		this.setState({ Dispatch: this.state.dispatchs[i].Dispatch, dispatchstatus: !this.state.dispatchstatus,  DispatchName: this.state.dispatchs[i].DispatchName, DispatchNotes: this.state.dispatchs[i].DispatchNotes, Add1: this.state.dispatchs[i].Add1, Add2: this.state.dispatchs[i].Add2, City: this.state.dispatchs[i].City, State: this.state.dispatchs[i].State, Zip: this.state.dispatchs[i].Zip, Phone1: this.state.dispatchs[i].Phone1, dispatchdistance: this.state.dispatchs[i].distance, dispatchlatitude: this.state.dispatchs[i].latitude, dispatchlongitude: this.state.dispatchs[i].longitude, isDispatchVisible: false })
 	    console.log(this.state);
    }
 
+renderAddress = () => {
 
-			
+	if (this.state.Add1 == '')
+	{
+		return false;
+	}
+	return(
+		      <View style={styles.buttonContainer}>
+			<Text style={styles.getStartedText}>
+					Address: {this.state.Add1} {this.state.Add2}
+            </Text>
+			<Text style={styles.getStartedText}>
+
+				  {this.state.City}, {this.state.State} {this.state.Zip}
+            </Text>
+			<Text style={styles.getStartedText}>
+	             Phone: {this.state.Phone1}         
+			</Text>
+		</View>
+	
+		)
+}			
 
  render() {
 
@@ -352,7 +378,7 @@ resetEventStatus = () => {
 			   this.state.dispatchstatus? <Button title={this.state.DispatchName} onPress = {() => this.setState({isDispatchVisible: true})} /> : <Button style={styles.buttonContainer} title={this.state.DispatchName}  onPress={this.resetDispatchStatus} /> 
 			   }
          </View>
-
+	 {this.renderAddress()}
             <Modal animationType = {"slide"} transparent = {true}
                    visible = {this.state.isNotesVisible}
                    onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
@@ -397,7 +423,7 @@ resetEventStatus = () => {
       	   
 			<View style={styles.buttonContainer}>
 		      <Text style={styles.getStartedText}>
-               Status {this.state.checkinStatus} {this.state.event} and Dispatch# {this.state.Dispatch}
+               Status {this.state.checkinStatus} {this.state.event} at Dispatch# {this.state.Dispatch}
 	          </Text>
 
             </View>
