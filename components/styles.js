@@ -50,7 +50,7 @@ export default StyleSheet.create({
   welcomeContainer: {
     alignItems: 'center',
     marginTop: 10,
-    marginBottom: 20,
+    marginBottom: 10,
 	
   },
   welcomeImage: {
@@ -60,7 +60,11 @@ export default StyleSheet.create({
     marginTop: 3,
     marginLeft: -10,
   },
-  getStartedContainer: {
+  getPortalText: {
+	alignItems: 'flex-start',
+    textAlign: 'left',
+  },
+	getStartedContainer: {
     alignItems: 'center',
     marginHorizontal: 50,
   },

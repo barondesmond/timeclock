@@ -206,12 +206,12 @@ primaryLogin = async (newscreen) => {
 
 renderPortal = (newscreen) => {
 
-  
+  const portal = newscreen + " Login";
 
 return(
 <View>
-        <View style={styles.welcomeContainer}>
-            <Text style={styles.getStartedText}>
+        <View style={styles.getPortalText}>
+            <Text style={styles.getPortalText}>
 	{newscreen} Portal
             </Text>
           </View>
@@ -220,20 +220,13 @@ return(
 			  <View style={styles.contentContainer}>
           <View style={styles.buttonContainer}>
 
-			  <Button title="Primary Login"
+			  <Button title={portal}
                    onPress={() => this.primaryLogin(newscreen)}
    
           />
 			  </View>
           </View>
-		  <View style={styles.contentContainer}>
-          <View style={styles.buttonContainer}>
 
-			  <Button title="Alternate Login" 
-			  onPress={() => this.alternateLogin(newscreen)}
-			  />
-		  </View>
-         </View>  
 </View>
     )
 };
