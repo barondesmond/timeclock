@@ -16,7 +16,8 @@ import {
   TouchableHighlight,
   Dimensions,  
   Picker,
-  Modal
+  Modal,
+  TextInput
 } from 'react-native';
 import Expo, { Constants, Location, Permissions } from 'expo';
 
@@ -71,7 +72,9 @@ constructor(props){
 		State: '',
 		Zip: '',
 		Phone1: '',
-        gps: __DEV__,
+		addDispatchNote: '',
+		isVisibleDispatchNote: false,
+		gps: __DEV__,
     }
 
 }
@@ -399,10 +402,63 @@ renderMaybeWorking = () => {
 
 	return(
 		<View style={styles.buttonContainer}>
-<Button title="Switch Status to Working" onPress={this.workingStatus} />
+<Button title="Switch Status to Working" onPress={this.workingStatus}  />
 		</View>	
    );
 }
+
+visiableAddDispatchNote = () => {
+
+	this.setState({isVisibleDispatchNote: true});
+}
+
+
+addDispatchNote = async () => {
+
+	const post = await this.authEmpInstApi();
+	Alert.alert('Note', this.state.AddDispatchNote,  [{text: 'Note Posted', onPress: () => { this.setState({ isVisisbleDispatchNote: false }) } }]);
+
+}
+
+renderWorkingDispatchNotes = () => {
+	if (this.isLoading==true)
+	{
+		return false
+	}
+	if (this.state.event != 'Working')
+	{
+		return false;
+	}
+	return(<View>
+            <Modal animationType = {"slide"} transparent = {true}
+                   visible = {this.state.isVisibleDispatchNote}
+                   onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
+   
+  		        <ScrollView style={styles.buttonContainer}>
+			      	    <TextInput placeholder="Note" multiline={true}     numberOfLines={4}
+        style={{height: 200, borderColor: 'gray', borderWidth: 1}}
+                  onChangeText={data => this.setState({ AddDispatchNote: data })}
+      />
+		   <Button key="Post" title="Post Note"
+
+          onPress={this.addDispatchNote}
+
+          style={styles.buttonContainer} value="Post" />
+
+		   <Button key="Close" title="Close Note"
+
+          onPress={() => this.setState({isVisibleDispatchNote: false})} value="Close"
+
+          style={styles.buttonContainer} />
+		        </ScrollView>
+               </Modal>
+		<View style={styles.buttonContainer}>
+			<Button key="Open" title="Add Note" onPress={() => this.setState({isVisibleDispatchNote: true})} value="Open" />
+		 </View>
+        </View>
+   )
+}
+
  render() {
 
 
@@ -473,8 +529,9 @@ renderMaybeWorking = () => {
                Status {this.state.checkinStatus} {this.state.event} at Dispatch# {this.state.Dispatch}
 	          </Text>
 	 {this.renderMaybeWorking()}
+	 {this.renderWorkingDispatchNotes()}
             </View>
-			     
+	   
 
 	
 	</View>
