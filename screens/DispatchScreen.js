@@ -302,14 +302,21 @@ error(err) {
 		console.log(event);
 	   this.setState({ event: event, eventstatus: !this.state.eventstatus, isEventVisible: false })
        //this.setState({isEventVisible: false});
+	  clearInterval();
+	  setTimeout(this.timeHome, 100000);
+
    }
    updateEventStatus = () => {
 	  
+	  clearInterval();
+	  setTimeout(this.timeHome, 100000);
 	  this.setState({eventstatus: !this.state.eventstatus, isEventVisible: true})
    }
 
  updateDispatchStatus = () => {
 
+	  clearInterval();
+	  setTimeout(this.timeHome, 100000);
 	   this.setState({dispatchstatus: !this.state.dispatchstatus, isDispatchVisible: true})
    
   
@@ -335,6 +342,10 @@ resetEventStatus = () => {
 
 renderAddress = () => {
 
+	if (this.state.isLoading == true)
+	{
+		return false;
+	}
 	if (this.state.Add1 == '')
 	{
 		return false;
@@ -353,8 +364,45 @@ renderAddress = () => {
 		</View>
 	
 		)
-}			
+}
 
+workingStatus = async () => {
+
+    clearInterval();
+	setTimeout(this.timeHome, 100000);
+	this.setState({checkinStatus: 'Start', event: 'Working'}); 
+	Alert.alert(this.state.checkinStatus + ' ' + this.state.event + ' for a living');
+
+	const auth = await this.authEventLogApi();
+	Alert.alert(this.state.checkinStatus + ' ' + this.state.event + ' auth ' + auth.authorized);
+	console.log(auth);
+	this.setState({checkinStatus: 'Stop'});
+
+	
+
+}
+
+renderMaybeWorking = () => {
+	
+	if (this.isLoading==true)
+	{
+		return false;
+	}
+	if (this.state.dispatchdistance != null &&  this.state.dispatchdistance > 2 && __DEV__==false)
+	{
+		return false;
+	}
+	if (this.state.event != 'Traveling' || this.state.checkinStatus != 'Stop')
+	{
+		return false;
+	}
+
+	return(
+		<View style={styles.buttonContainer}>
+<Button title="Switch Status to Working" onPress={this.workingStatus} />
+		</View>	
+   );
+}
  render() {
 
 
@@ -424,9 +472,9 @@ renderAddress = () => {
 		      <Text style={styles.getStartedText}>
                Status {this.state.checkinStatus} {this.state.event} at Dispatch# {this.state.Dispatch}
 	          </Text>
-
+	 {this.renderMaybeWorking()}
             </View>
-			{this.renderGPS()}     
+			     
 
 	
 	</View>
