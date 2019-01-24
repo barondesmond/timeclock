@@ -23,6 +23,8 @@ import { Constants, ImagePicker, Permissions } from 'expo';
 
 import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, URL, STORAGE_KEY} from '../constants/common';
 
+import styles from '../components/styles';
+
 
 export default class CameraScreen extends Component {
 
@@ -49,11 +51,14 @@ export default class CameraScreen extends Component {
     return (
 
       <View style={styles.container}>
-
+	<View style={styles.welcomeContainer}>
+	<Text style={[styles.Red]}> This is a policy violation.  Biometric approval recommended for login.
+		
+		 </Text>
         <StatusBar barStyle="default" />
 
 
-
+	
         <Button onPress={this._takePhoto} title="Take a photo" />
 
 
@@ -63,6 +68,7 @@ export default class CameraScreen extends Component {
         {this._maybeRenderUploadingOverlay()}
 
       </View>
+    </View>
 
     );
 
@@ -129,7 +135,9 @@ export default class CameraScreen extends Component {
 
      
 
-
+			<Text style={styles.buttonContainer}>
+			Please enter reason for violation
+			</Text>
 		    <TextInput placeholder="violation" 
         style={{height: 40, borderColor: 'gray', borderWidth: 1}}
                   onChangeText={data => this.setState({ violation: data })}
@@ -370,93 +378,6 @@ console.log(opt);
 
 
 
-const styles = StyleSheet.create({
-
-  container: {
-
-    alignItems: 'center',
-
-    flex: 1,
-
-    justifyContent: 'center',
-
-  },
-
-  exampleText: {
-
-    fontSize: 20,
-
-    marginBottom: 20,
-
-    marginHorizontal: 15,
-
-    textAlign: 'center',
-
-  },
-
-  maybeRenderUploading: {
-
-    alignItems: 'center',
-
-    backgroundColor: 'rgba(0,0,0,0.4)',
-
-    justifyContent: 'center',
-
-  },
-
-  maybeRenderContainer: {
-
-    borderRadius: 3,
-
-    elevation: 2,
-
-    marginTop: 30,
-
-    shadowColor: 'rgba(0,0,0,1)',
-
-    shadowOpacity: 0.2,
-
-    shadowOffset: {
-
-      height: 4,
-
-      width: 4,
-
-    },
-
-    shadowRadius: 5,
-
-    width: 250,
-
-  },
-
-  maybeRenderImageContainer: {
-
-    borderTopLeftRadius: 3,
-
-    borderTopRightRadius: 3,
-
-    overflow: 'hidden',
-
-  },
-
-  maybeRenderImage: {
-
-    height: 250,
-
-    width: 250,
-
-  },
-
-  maybeRenderImageText: {
-
-    paddingHorizontal: 10,
-
-    paddingVertical: 10,
-
-  }
-
-});
 
 
 
