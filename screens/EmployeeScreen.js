@@ -59,7 +59,9 @@ constructor(props){
 		locationstatus: null,
 		isEventVisible: false,
 		isNotesVisible: false,
+		isVisibleEmployeeNote: false,
 		addEmployeeNote: '',
+		isTimeHome: true,
         gps: __DEV__,
     }
 
@@ -230,7 +232,7 @@ error(err) {
 
  async checkStatus() {
 	
-	if (this.state.checkinStatus == 'Start'  && !this.state.eventstatus) {
+	if (this.state.checkinStatus == 'Start'  && !this.state.eventstatus && this.state.addEmployeeNote!='') {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive == '1')
 		{
@@ -273,6 +275,40 @@ resetEventStatus = () => {
 	 }
  }
  
+ renderEmployeeNotes = () => {
+	if (this.isLoading==true)
+	{
+		return false;
+	}
+
+
+	return(<View>
+            <Modal animationType = {"slide"} transparent = {false}
+                   visible = {this.state.isVisibleEmployeeNote}
+                   onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
+  		        <ScrollView style={styles.buttonContainer}>
+   
+			      	    <TextInput placeholder={this.state.addEmployeeNote} multiline={true}     numberOfLines={4}
+        style={styles.noteContainer}
+                  onChangeText={data => this.setState({ addEmployeeNote: data })}
+      />
+	
+		   <Button key="Close" title="Close Note"
+
+          onPress={() => this.setState({isVisibleEmployeeNote: false, isTimeHome:true})} value="Close"
+
+          style={styles.buttonContainer} />
+			
+               </ScrollView>
+               </Modal>
+		<View style={styles.buttonContainer}><Text>
+	 {this.state.addEmployeeNote}
+			   </Text>
+			<Button key="Open" title="Add Note" onPress={() => this.setState({isVisibleEmployeeNote: true, isTimeHome:false})} value="Open" />
+			</View>
+		  </View>
+   )
+}
 
 
 			
@@ -317,14 +353,7 @@ resetEventStatus = () => {
 
             </View>
 
-		        <View style={styles.buttonContainer}>
-   
-			      	    <TextInput placeholder="Note" multiline={true}     numberOfLines={4}
-        style={styles.noteContainer}
-                  onChangeText={data => this.setState({ addEmployeeNote: data })}
-      />
-			
-               </View>
+	 {this.renderEmployeeNotes()}
 
 			{this.renderGPS()}     
 
