@@ -16,7 +16,8 @@ import {
   TouchableHighlight,
   Dimensions,  
   Picker,
-  Modal
+  Modal,
+  TextInput,
 } from 'react-native';
 import Expo, { Constants, Location, Permissions } from 'expo';
 
@@ -38,7 +39,8 @@ constructor(props){
 
         Name: '',
 	    LocName: 'Select Job',
-	    JobNotes: null,		 
+	    JobNotes: null,
+		AddJobNote: '',
 	    EmpName: null,
 		Email: null,
         EmpNo: null,
@@ -67,6 +69,8 @@ constructor(props){
         isJobVisible: false,
 		isEventVisible: false,
 		isNotesVisible: false,
+        isVisibleJobNote: false,
+		isTimeHome: true,
         gps: __DEV__,
     }
 
@@ -75,7 +79,7 @@ constructor(props){
 async fetchJobsFromApi() {
 
  
-	await fetch(URL + `jobs_json.php?latitude=${this.state.latitude}&longitude=${this.state.longitude}`)
+	await fetch(URL + `jobs_json.php?latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}`)
       .then((response) => response.json())
       .then((responseJson) => {
 
@@ -120,7 +124,7 @@ return (
 async authEmpInstApi() {
 
  
-	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}`)
+	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&dev=${__DEV__}`)
       .then((response2) => response2.json())
       .then((responseJson2) => {
 
@@ -163,7 +167,7 @@ async authEventLogApi() {
 		this.setState({latitude: '33.3333', longitude: '-88.9888'});
 	}
 	Screen = await AsyncStorage.getItem('Screen');
-	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&event=${this.state.event}&Name=${this.state.Name}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}`;
+	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&event=${this.state.event}&Name=${this.state.Name}&AddJobNote=${this.state.AddJobNote}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}&dev=${__DEV__}`;
 	  await fetch(authurl)
       .then((response2) => response2.json())
       .then((responseJson2) => {
@@ -209,8 +213,14 @@ async authEventLogApi() {
 }
 timeHome = () => {
 
-	this.props.navigation.navigate('Home');
-	
+	if (this.state.isTimeHome)
+	{
+		this.props.navigation.navigate('Home');
+	}
+	else
+	{
+	    setTimeout(this.timeHome, 100000);
+	}
 }
 
 
@@ -332,10 +342,64 @@ resetEventStatus = () => {
 		this.setState({ job: this.state.jobs[i].Name, jobstatus: !this.state.jobstatus, Name: this.state.jobs[i].Name, LocName: this.state.jobs[i].LocName, JobNotes: this.state.jobs[i].JobNotes, jobdistance: this.state.jobs[i].distance, joblatitude: this.state.jobs[i].latitude, joblongitude: this.state.jobs[i].longitude, isJobVisible: false })
 	    console.log(this.state);
    }
-buttonDone = () => {
 
-	//this.props.navigation.navigate('Home');
+
+addJobNote = async () => {
+
+	if (this.state.addJobNote == '' || this.state.checkinStatus != 'Stop')
+	{
+		console.log(this.state.data);
+		this.setState({isVisibleJobNote: false});
+		return false;
+	}
+	this.setState({checkinStatus: 'addNote', isTimeHome:false});
+	const post = await this.authEventLogApi();
+	console.log(post);
+	this.setState({checkinStatus: 'Stop', JobNotes: post.JobNotes, isVisibleJobhNote: false});
+	
 }
+
+renderWorkingJobNotes = () => {
+	if (this.isLoading==true)
+	{
+		return false;
+	}
+	if (this.state.event != 'Working')
+	{
+		return false;
+	}
+
+	return(<View>
+            <Modal animationType = {"slide"} transparent = {false}
+                   visible = {this.state.isVisibleJobNote}
+                   onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
+  		        <ScrollView style={styles.buttonContainer}>
+   
+			      	    <TextInput placeholder="Note" multiline={true}     numberOfLines={4}
+        style={styles.noteContainer}
+                  onChangeText={data => this.setState({ addJobNote: data })}
+      />
+		   <Button key="Post" title="Post Note"
+
+          onPress={this.addJobNote}
+
+          style={styles.buttonContainer} value="Post" />
+
+		   <Button key="Close" title="Close Note"
+
+          onPress={() => this.setState({isVisibleJobNote: false, isTimeHome:true})} value="Close"
+
+          style={styles.buttonContainer} />
+			
+               </ScrollView>
+               </Modal>
+		<View style={styles.buttonContainer}>
+			<Button key="Open" title="Add Note" onPress={() => this.setState({isVisibleJobNote: true, isTimeHome:false})} value="Open" />
+			</View>
+		  </View>
+   )
+}
+
 
 			
 
@@ -353,8 +417,10 @@ buttonDone = () => {
                    visible = {this.state.isJobVisible}
                    onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
    
-  		        <ScrollView style={styles.buttonContainer}>
+  	           <ScrollView style={styles.buttonContainer}>
+  		        <View style={styles.noteText}>
 			      {this.state.pickers}
+			   </View>
 		        </ScrollView>
                </Modal>
 			  {
@@ -367,10 +433,10 @@ buttonDone = () => {
                    onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
    
   		        <ScrollView style={styles.buttonContainer}>
-				<Text style={styles.getStartedText}>
+				<Text style={styles.noteText}>
 			      {this.state.JobNotes}
                 </Text>
-                <Button title="CLose Notes" onPress={()=>this.setState({isNotesVisible: false})} />
+                <Button title="Close Notes" onPress={()=>this.setState({isNotesVisible: false})} />
 				</ScrollView>
                </Modal>
 
@@ -390,12 +456,14 @@ buttonDone = () => {
 	
 
    	 <View style={styles.buttonContainer}>
-      <Modal animationType = {"slide"} transparent = {true}
+      <Modal animationType = {"slide"} transparent = {false}
                    visible = {this.state.isEventVisible}
                    onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
   		        <ScrollView style={styles.buttonContainer}>
+			     <View style={styles.noteText} >
 	           <Button title="Traveling" onPress={()=>this.updateEvent('Traveling')} />
 		           <Button title="Working" onPress={()=>this.updateEvent('Working')} />
+                 </View>
 		        </ScrollView>
       </Modal>
 		{
@@ -408,6 +476,7 @@ buttonDone = () => {
 		      <Text style={styles.getStartedText}>
                Status {this.state.checkinStatus} {this.state.event} at Job# {this.state.Name}
 	          </Text>
+			 {this.renderWorkingJobNotes()}
 
             </View>
 			{this.renderGPS()}     

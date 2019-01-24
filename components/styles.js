@@ -38,6 +38,20 @@ export default StyleSheet.create({
     alignSelf: 'stretch',
 
 	},
+noteText: {
+    margin: 5,
+	marginTop: 60,
+	backgroundColor: '#DDDDDD',
+	borderColor: 'gray', 
+	},
+ noteContainer: {
+    margin: 5,
+	marginTop: 60,
+	backgroundColor: '#DDDDDD',
+    height: 200, 
+	borderColor: 'gray', 
+	borderWidth: 1
+	},
    jobNotesContainer: {
     height: 100,
     margin: 5,

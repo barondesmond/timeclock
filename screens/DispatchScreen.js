@@ -444,7 +444,7 @@ renderWorkingDispatchNotes = () => {
    
   		        <ScrollView style={styles.buttonContainer}>
 			      	    <TextInput placeholder="Note" multiline={true}     numberOfLines={4}
-        style={{height: 200, borderColor: 'gray', borderWidth: 1}}
+        style={styles.noteContainer}
                   onChangeText={data => this.setState({ addDispatchNote: data })}
       />
 		   <Button key="Post" title="Post Note"
@@ -477,13 +477,14 @@ renderWorkingDispatchNotes = () => {
     <View style={styles.welcomeContainer}>
 			<View style={styles.buttonContainer}>
    
-	            <Modal animationType = {"slide"} transparent = {true}
+	            <Modal animationType = {"slide"} transparent = {false}
                    visible = {this.state.isDispatchVisible}
                    onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
-   
-  		        <ScrollView style={styles.buttonContainer}>
+                <ScrollView style={styles.buttonContainer}>
+  		        <View style={styles.noteText}>
 			      {this.state.pickers}
-		        </ScrollView>
+		        </View>
+					</ScrollView>
                </Modal>
 			  {
 			   this.state.dispatchstatus? <Button title={this.state.DispatchName} onPress = {() => this.setState({isDispatchVisible: true})} /> : <Button style={styles.buttonContainer} title={this.state.DispatchName}  onPress={this.resetDispatchStatus} /> 
@@ -495,11 +496,12 @@ renderWorkingDispatchNotes = () => {
                    onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
    
   		        <ScrollView style={styles.buttonContainer}>
-				<Text style={styles.getStartedText}>
+				<Text style={styles.noteText}>
 			      {this.state.DispatchNotes}
                 </Text>
                 <Button title="Close Notes" onPress={()=>this.setState({isNotesVisible: false})} />
 				</ScrollView>
+				
                </Modal>
 
 			<View style={styles.jobNotesContainer}>
