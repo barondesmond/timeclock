@@ -1,0 +1,30 @@
+import React, { Component } from 'react';
+
+import {
+    ScrollView,
+    Text,
+    TextInput,
+    View,
+	Alert,
+	Navigator,
+    Button,
+	Concat
+} from 'react-native';
+
+
+
+export default class JobsScreen extends Component {
+
+
+ render() {
+    return (
+      <View style={styles.container}>
+
+
+
+
+
+const styles = StyleSheet.create({
+  container: { }
+
+
