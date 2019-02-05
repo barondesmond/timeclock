@@ -24,7 +24,7 @@
       "**/*"
     ],
     "ios": {
-      "bundleIdentifier": "com.plisolutions.timeclock"
+      "bundleIdentifier": "com.plisolutions.timeclock",
       "supportsTablet": true,
 	    "infoPlist": {
         "NSLocationAlwaysUsageDescription" : "needs gps data.", 
