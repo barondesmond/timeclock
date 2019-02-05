@@ -1,5 +1,6 @@
 {
   "expo": {
+    "scheme": "Primelogic TimeClock"
     "name": "timeclock",
     "slug": "timeclock",
     "privacy": "public",
