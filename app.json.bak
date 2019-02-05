@@ -4,6 +4,9 @@
     "slug": "timeclock",
     "privacy": "public",
     "sdkVersion": "32.0.0",
+     "ios": {
+      "bundleIdentifier": "com.plisolutions.timeclock"
+
     "platforms": [
       "ios",
       "android"
