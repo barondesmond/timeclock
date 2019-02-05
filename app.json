@@ -30,7 +30,6 @@
           "NSAllowsArbitraryLoads" : true,
           "NSAllowsArbitraryLoadsForMedia": true, 
           "NSAllowsArbitraryLoadsInWebContent": true, 
-          "NSExceptionAllowsInsecureHTTPLoads": true
         }
       }
    }

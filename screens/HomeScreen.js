@@ -253,7 +253,7 @@ if (this.state.auth)
 
 
 return (	  <View style={styles.welcomeContainer}>
-			<Text> Device: {Constants.installationId} </Text>
+			<Text> User: {this.state.EmpNo} </Text><Text> Device: {Constants.installationId} </Text>
           </View>);
 }
 

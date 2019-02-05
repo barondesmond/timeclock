@@ -117,7 +117,7 @@ export default class HomeScreen extends React.Component {
 		    await AsyncStorage.setItem('Bio', this.state.EmpNo);
 			const auth = await this.authEmpInstApi();
 		    const Screen =  await AsyncStorage.getItem('Screen');
-			if (this.auth.authorized != 1)
+			if (auth.authorized != 1)
 			{
 				this.props.navigation.navigate('Alternative');
 			}
@@ -253,7 +253,7 @@ if (this.state.auth)
 
 
 return (	  <View style={styles.welcomeContainer}>
-			<Text> Device: {Constants.installationId} </Text>
+			<Text> User: {this.state.EmpNo<} </Text><Text> Device: {Constants.installationId} </Text>
           </View>);
 }
 
