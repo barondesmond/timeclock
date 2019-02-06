@@ -3,7 +3,7 @@
     "scheme": "PrimelogicTimeClock",
     "name": "timeclock",
     "slug": "timeclock",
-    "privacy": "public",
+    "privacy": "unlisted",
     "sdkVersion": "32.0.0",
   
     "platforms": [
@@ -12,7 +12,7 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/splash.png",
+    "icon": "./assets/images/icon.png",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",

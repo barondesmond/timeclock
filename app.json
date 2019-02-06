@@ -3,7 +3,7 @@
     "scheme": "PrimelogicTimeClock",
     "name": "timeclock",
     "slug": "timeclock",
-    "privacy": "public",
+    "privacy": "unlisted",
     "sdkVersion": "32.0.0",
   
     "platforms": [
@@ -24,6 +24,11 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+  "notification": {
+    "icon": "./assets/images/icon.png",
+    "color": "#000000",
+    "androidMode": "default"
+     },
     "ios": {
       "bundleIdentifier": "com.plisolutions.timeclock",
       "supportsTablet": true,
