@@ -1,6 +1,6 @@
 {
   "expo": {
-    "scheme": "Primelogic TimeClock",
+    "scheme": "PrimelogicTimeClock",
     "name": "timeclock",
     "slug": "timeclock",
     "privacy": "public",
@@ -12,7 +12,7 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/splash.png",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
