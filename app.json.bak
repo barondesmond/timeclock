@@ -24,6 +24,11 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+  "notification": {
+    "icon": "./assets/images/icon.png",
+    "color": "#000000",
+    "androidMode": "default"
+     },
     "ios": {
       "bundleIdentifier": "com.plisolutions.timeclock",
       "supportsTablet": true,
