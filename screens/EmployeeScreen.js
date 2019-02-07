@@ -59,6 +59,7 @@ constructor(props){
 		locationstatus: null,
 		isEventVisible: false,
 		isNotesVisible: false,
+		isLoading: true,
 		addEmployeeNote: '',
         gps: __DEV__,
     }
@@ -78,9 +79,6 @@ return (
 			     <Text style={styles.getStartedText}>GPS </Text>
 			 <Text style={styles.getStartedText}> Latitude : {this.state.latitude} </Text>
 		     <Text style={styles.getStartedText}> Longitude: {this.state.longitude} </Text>
-			 <Text style={styles.getStartedText}> DispatchLatitude : {this.state.dispatchlatitude} </Text>
-			 <Text style={styles.getStartedText}> DispaatchLongitude: {this.state.dispatchlongitude} </Text>
-			 <Text style={styles.getStartedText}> DispatchDistance : {this.state.dispatchdistance} </Text>
 	        </View>
  );
 };
@@ -159,6 +157,7 @@ async authEventLogApi() {
 	  }
 	  if (this.state.auth.EmpActive == 1)
 	  {
+		  
 		  console.log('logged in');
 	  }
 	  else
@@ -229,26 +228,36 @@ error(err) {
   }
 
  async checkStatus() {
+
+	if (this.state.checkinStatus == 'Start' && !this.state.eventstatus && this.state.addEmployeeNote == '')
+	{
+		Alert.alert('Employee Note Required');
+		return false;
+	}
+	if (this.state.checkinStatus == 'Start' && this.state.event=='Select Event')
+	{
+		Alert.alert('Employee Event Required');
+		return false;
+	}
 	
-	if (this.state.checkinStatus == 'Start'  && !this.state.eventstatus) {
+	if (this.state.checkinStatus == 'Start'  && !this.state.eventstatus && this.state.addEmployeeNote != '') {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive == '1')
 		{
-			this.setState({checkinStatus: 'Stop', active: !this.state.active});
+			this.setState({checkinStatus: 'Stop', active: !this.state.active, addEmployeeNote: ''});
+			return false;
 		}
 	}
 	else if (this.state.checkinStatus == 'Stop'  && !this.state.eventstatus) {
-		await this.authEventLogApi();
-		if (this.state.auth.EmpActive != '1')
-		{
-			this.setState({checkinStatus: 'Start', active: !this.state.active});
-			//this.updateEventStatus();
-			//this.updateJobStatus();
-
-		}
-
-
+			await this.authEventLogApi();
+			if (this.state.auth.EmpActive != '1')
+			{
+				this.setState({checkinStatus: 'Start', active: !this.state.active});
+				return false;
+			}
+	
 	}
+
 
 	//console.log(this.state);
 
@@ -273,8 +282,49 @@ resetEventStatus = () => {
 	 }
  }
  
+ 
+ 
+ addNote = () => {
 
+if (this.state.checkinStatus == 'Stop')
+{
+	return false;
+}
+return(
+	<View style={styles.buttonContainer}>
+			<Button key="Open" title="Add Note" onPress={() => this.setState({isNotesVisible: true})} value="Open" />
+		 </View>
+);
+}
 
+renderEmployeeNotes = () => {
+
+	if (this.state.isLoading)
+	{
+		return false;
+	}
+	return(<View>
+            <Modal animationType = {"slide"} transparent = {false}
+                   visible = {this.state.isNotesVisible}
+                   onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
+   
+  		        <ScrollView style={styles.buttonContainer}>
+			      	    <TextInput placeholder="Note" multiline={true}     numberOfLines={4}
+        style={styles.noteContainer} value={this.state.addEmployeeNote} 
+                  onChangeText={data => this.setState({ addEmployeeNote: data })}
+      />
+		   <Button key="Post" title="Post Note"
+
+          onPress={() => this.setState({isNotesVisible: false})}
+
+          style={styles.buttonContainer} value="Post" />
+
+		        </ScrollView>
+               </Modal>
+				</View>
+   );
+
+}
 			
 
  render() {
@@ -316,15 +366,8 @@ resetEventStatus = () => {
 	          </Text>
 
             </View>
-
-		        <View style={styles.buttonContainer}>
-   
-			      	    <TextInput placeholder="Note" multiline={true}     numberOfLines={4}
-        style={styles.noteContainer}
-                  onChangeText={data => this.setState({ addEmployeeNote: data })}
-      />
-			
-               </View>
+	 {this.addNote()}
+	 {this.renderEmployeeNotes()}
 
 			{this.renderGPS()}     
 
