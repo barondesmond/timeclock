@@ -82,7 +82,7 @@ constructor(props){
 async fetchDispatchsFromApi() {
 
  
-	await fetch(URL + `dispatchs_json.php?latitude=${this.state.latitude}&longitude=${this.state.longitude}&ServiceMan=${this.state.EmpNo}&EmpNo=${this.state.EmpNo}&${Constants.installationId}&dev=${__DEV__}`)
+	await fetch(URL + `dispatchs_json.php?latitude=${this.state.latitude}&longitude=${this.state.longitude}&ServiceMan=${this.state.EmpNo}&EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&dev=${__DEV__}`)
       .then((response) => response.json())
       .then((responseJson) => {
 
@@ -424,6 +424,33 @@ renderMaybeWorking = () => {
    );
 }
 
+customerComplete = () => {
+
+	this.props.navigation.navigate('DispatchComplete');
+}
+
+renderCustomerComplete = () => {
+	
+	if (this.isLoading==true)
+	{
+		return false;
+	}
+	if (this.state.dispatchdistance != null &&  this.state.dispatchdistance > 2 && __DEV__==false)
+	{
+		return false;
+	}
+	if (this.state.event != 'Working' || this.state.checkinStatus != 'Stop')
+	{
+		return false;
+	}
+
+	return(
+		<View style={styles.buttonContainer}>
+<Button title="Complete Job" onPress={this.customerComplete}  />
+		</View>	
+   );
+}
+
 visiableAddDispatchNote = () => {
 
 	this.setState({isVisibleDispatchNote: true});
@@ -556,7 +583,9 @@ renderWorkingDispatchNotes = () => {
                Status {this.state.checkinStatus} {this.state.event} at Dispatch# {this.state.Dispatch}
 	          </Text>
 	 {this.renderMaybeWorking()}
+	 {this.renderCustomerComplete()}
 	 {this.renderWorkingDispatchNotes()}
+
             </View>
 	   
 
