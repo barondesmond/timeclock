@@ -110,7 +110,7 @@ export default class HomeScreen extends React.Component {
 
 		if (this.state.EmpNo == null)
         { 
-			this.props.navigation.navigate('Alternative');
+			this.props.navigation.navigate('Alternative', {onGoBack: () => this.primaryLogin(Screen)});
         }
 		else
 		{
@@ -119,7 +119,7 @@ export default class HomeScreen extends React.Component {
 		    const Screen =  await AsyncStorage.getItem('Screen');
 			if (auth.authorized != 1)
 			{
-				this.props.navigation.navigate('Alternative');
+				this.props.navigation.navigate('Alternative', {onGoBack: () => this.primaryLogin(Screen)});
 			}
 			else
 			{
@@ -189,12 +189,15 @@ resetKeys = async ()  => {
  await AsyncStorage.removeItem('Bio');
  await AsyncStorage.removeItem('Screen');
 
- this.props.navigation.navigate('Alternative');
+ this.props.navigation.navigate('Alternative', {onGoBack: () => this.primaryLogin(this.state.Screen)});
 }
 
 primaryLogin = async (newscreen) => {
 
-	
+	if (!newscreen)
+	{
+		return false;
+	}
  
 	AsyncStorage.setItem('Screen', newscreen);
 

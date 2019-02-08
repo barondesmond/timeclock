@@ -75,7 +75,9 @@ constructor(props){
 		addDispatchNote: '',
 		customer : false,
 		customerimage: null,
-		isVisibleDispatchNote: false,        
+		isVisibleDispatchNote: false,    
+		isLoadingEvent: true,
+		isLoading: true,
 		gps: __DEV__,
     }
 
@@ -170,7 +172,7 @@ async authEventLogApi() {
       .then((responseJson2) => {
 
         this.setState({
-          isLoading: false,
+          isLoadingEvent: false,
           auth: responseJson2,
         }, function(){
 
@@ -217,6 +219,20 @@ _getLocationAsync = async () => {
 
 }
 
+async componentDidUpdate () {
+
+	console.log(this.state.customer);
+	console.log(this.state.customerimage);
+	if (this.state.customerimage == null && this.state.customer == false)
+	{
+
+	  const customer = await AsyncStorage.getItem('customer');
+	  const customerimage = await AsyncStorage.getItem('customerimage');
+	  this.setState({customer: customer, customerimage: customerimage, isLoadingEvent: false});
+
+	}
+
+}
 
 async componentDidMount () {
 
@@ -244,8 +260,11 @@ async componentDidMount () {
 	  const image = await AsyncStorage.getItem('image');
 	  const customer = await AsyncStorage.getItem('customer');
 	  const customerimage = await AsyncStorage.getItem('customerimage');
-	  this.setState({violation: violation, image: image, customer: customer, customerimage: customerimage});
-
+	  this.setState({violation: violation, image: image});
+	  if (this.customer && this.customerimage)
+	  {
+		  this.setState({customer: customer, customerimage: customerimage});
+	  }
 	  const auth = await this.authEmpInstApi();
 	  if (auth.authorized == 0)
 	  {
@@ -265,27 +284,32 @@ async componentDidMount () {
   
 }
 
+
 error(err) {
   Alert.alert('ERROR(' + err.code + '): ' + err.message);
 }
 
  componentWillUnmount() {
 
-    navigator.geolocation.clearWatch(this.watchId);
+	this.setState({isLoadingEvent: true});
+	navigator.geolocation.clearWatch(this.watchId);
     clearInterval();
   }
 
 checkStatus =  async () => {
 	
 	 console.log(this.state.checkinStatus);
-
-	 if (this.state.checkinStatus == 'Stop' && !this.state.dispatchstatus && !this.state.eventstatus && this.state.customer != false && this.state.customerimage != null ) {
+	 const customer = await AsyncStorage.getItem('customer');
+	 const customerimage = await AsyncStorage.getItem('customerimage');
+	 console.log(customer);
+	 if (this.state.checkinStatus == 'Stop' && !this.state.dispatchstatus && !this.state.eventstatus && customer != ''  && customerimage != '') {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive != '1')
 		{
 			this.setState({checkinStatus: 'Start', active: !this.state.active, customer:false, customerimage:null});
 			await AsyncStorage.removeItem('customer');
 			await AsyncStorage.removeItem('customerimage');
+			Alert.alert('Dispatch Complete');
 			this.props.navigation.navigate('Home');
 		}
 
@@ -328,13 +352,20 @@ renderAddress = () => {
 
 customerComplete = () => {
 
-	
-	this.props.navigation.navigate('CustomerAccept');
+	if (this.state.customer != false && this.state.customerimage != null)
+	{
+		this.checkStatus();
+	}
+	else
+	{
+		this.props.navigation.navigate('CustomerAccept', {
+      onGoBack: () => this.checkStatus()});
+	}
 }
 
 renderCustomerComplete = () => {
 	
-	if (this.state.isLoading==true)
+	if (this.state.isLoading==true || this.state.isLoadingEvent==true)
 	{
 		return false;
 	}
@@ -346,7 +377,8 @@ renderCustomerComplete = () => {
 	{
 		return false;
 	}
-	console.log(this.state.checkinStatus);
+	console.log(this.state.customer);
+	console.log(this.state.customerimage);
 	if (this.state.customer != false && this.state.customerimage != null)
 	{
 		return (

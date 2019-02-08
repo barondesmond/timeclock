@@ -129,7 +129,7 @@ export default class CustomerAcceptScreen extends Component {
 		await AsyncStorage.setItem('customer', this.state.violation);
 		await AsyncStorage.setItem('customerimage', this.state.customerimage);
 
-		this.props.navigation.navigate('DispatchComplete');
+		await this.props.navigation.goBack();
 	}
   };
 
@@ -147,7 +147,7 @@ async componentDidMount () {
 	  }
 	  if (this.state.customerimage == null)
 	  {
-		  this.takePhoto();
+		  this._takePhoto();
 	  }
 
 }
