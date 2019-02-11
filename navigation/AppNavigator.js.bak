@@ -5,8 +5,9 @@
   import JobScreen from '../screens/JobScreen';
   import DispatchScreen from '../screens/DispatchScreen';
   import DispatchCompleteScreen from '../screens/DispatchCompleteScreen';
-  import CustomerAcceptScreen from '../screensCustomerAcceptScreen';
+  import CustomerAcceptScreen from '../screens/CustomerAcceptScreen';
   import EmployeeScreen from '../screens/EmployeeScreen';
+  import DocumentScreen from '../screens/DocumentScreen';
 
   import { createAppContainer } from 'react-navigation';
 
@@ -19,6 +20,7 @@
 	DispatchComplete: {screen:DispatchCompleteScreen},
 	Employee: {screen: EmployeeScreen},
 	CustomerAccept: {screen: CustomerAcceptScreen}
+	Document: {screen: DocumentScreen}
 	});
 
   const AppContainer = createAppContainer(AppNavigator);
