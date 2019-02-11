@@ -123,7 +123,7 @@ export default class HomeScreen extends React.Component {
 			}
 			else
 			{
-				if (this.state.auth.EmpActive == 1 && this.state.auth.Screen != Screen)
+				if (this.state.auth.EmpActive == 1 && this.state.auth.Screen != Screen && Screen != 'Document')
 		     {
 					 Alert.alert('You are logged into ' + this.state.auth.Screen + ' Portal');
 		     }

@@ -278,7 +278,8 @@ render()
       {this.renderDevice()}
 	  {this.renderPortal('Job')}
 	  {this.renderPortal('Dispatch')}
-	  {this.renderPortal('Employee')}			  
+	  {this.renderPortal('Employee')}
+	  {this.renderPortal('Document')}
 	  {__DEV__ ? <Button title="Reset" onPress={this.resetKeys} /> : null}
 
       </View>
