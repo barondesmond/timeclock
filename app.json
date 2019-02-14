@@ -7,8 +7,7 @@
     "sdkVersion": "32.0.0",
   
     "platforms": [
-      "ios",
-      "android"
+      "ios"
     ],
     "version": "1.0.4",
     "orientation": "portrait",
