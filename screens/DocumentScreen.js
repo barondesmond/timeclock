@@ -32,7 +32,8 @@ export default class CameraScreen extends Component {
     image: null,
     uploading: false,
     violation: '',
-    EmpNo: null
+    EmpNo: null,
+	pickerResult: null
   };
 
 
@@ -130,7 +131,7 @@ export default class CameraScreen extends Component {
 			<Text style={styles.buttonContainer}>
 			Please enter Document Reference
 			</Text>
-		    <TextInput placeholder="Ref#" 
+		    <TextInput placeholder="Amount" 
         style={{height: 40, borderColor: 'gray', borderWidth: 1}}
                   onChangeText={data => this.setState({ violation: data })}
       />
@@ -219,8 +220,8 @@ async componentDidMount () {
       });
 
 
-
-      this._handleImagePicked(pickerResult);
+		this.setState({image: pickerResult.uri});
+      //this._handleImagePicked(pickerResult);
 
     }
 
@@ -251,8 +252,8 @@ async componentDidMount () {
       });
 
 
-
-      this._handleImagePicked(pickerResult);
+		this.setState({image: pickerResult.uri});
+      //this._handleImagePicked(pickerResult);
 
     }
 

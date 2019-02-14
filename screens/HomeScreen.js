@@ -199,23 +199,39 @@ primaryLogin = async (newscreen) => {
 		return false;
 	}
  
-	AsyncStorage.setItem('Screen', newscreen);
-
-	
-	if (this.state.compatible)
+	if (newscreen == 'Document')
 	{
-        this.checkForBiometrics();
+		this.props.navigation.navigate(newscreen);
 	}
 	else
 	{
-       this.props.navigation.navigate('Camera');
+		AsyncStorage.setItem('Screen', newscreen);
+
+	
+		if (this.state.compatible)
+		{
+	     this.checkForBiometrics();
+		}
+		else
+		{
+	    this.props.navigation.navigate('Camera');
+		}
 	}
 	
 }		
 
 renderPortal = (newscreen) => {
 
-  const portal = newscreen + " Login";
+  portal = '';
+  if (newscreen != 'Document')
+  {
+	  portal = newscreen + " Login";
+
+  }
+  else
+	{
+	  portal = newscreen + " Scanner";
+	}
 
 return(
 <View>

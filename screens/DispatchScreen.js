@@ -108,6 +108,7 @@ async fetchDispatchsFromApi() {
 	   for (let i=0; i < this.state.dispatchs.length ; i++) {
 	      pickers.push(<Button key={this.state.dispatchs[i].Dispatch} title = {this.state.dispatchs[i].DispatchName} value={i} onPress={()=>this.updateDispatch(i)} />);
        }
+	   pickers.push(<Button key="close" title="Close Dispatch" onPress={()=>this.setState({isDispatchVisible: false})} />);
 		this.setState({pickers: pickers});
 
 	 }
@@ -218,11 +219,7 @@ async authEventLogApi() {
 	  
      return this.state.auth;	
 }
-timeHome = () => {
 
-	this.props.navigation.navigate('Home');
-	
-}
 
 
 _getLocationAsync = async () => {
@@ -246,7 +243,6 @@ async componentDidMount () {
 		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
 	  }
 	 
-	  setTimeout(this.timeHome, 100000);
 	
 	  const EmpName = await AsyncStorage.getItem('EmpName');
 	  this.setState({EmpName: EmpName});
@@ -306,9 +302,8 @@ error(err) {
 		if (this.state.auth.EmpActive != '1')
 		{
 			this.setState({checkinStatus: 'Start', active: !this.state.active});
-			//this.updateEventStatus();
-			//this.updateJobStatus();
-
+			this.props.navigation.navigate('Home');
+			Alert.alert('Dispatch Work Done');
 		}
 
 
@@ -322,21 +317,17 @@ error(err) {
 		console.log(event);
 	   this.setState({ event: event, eventstatus: !this.state.eventstatus, isEventVisible: false })
        //this.setState({isEventVisible: false});
-	  clearInterval();
-	  setTimeout(this.timeHome, 100000);
-
+	
    }
    updateEventStatus = () => {
 	  
-	  clearInterval();
-	  setTimeout(this.timeHome, 100000);
+
 	  this.setState({eventstatus: !this.state.eventstatus, isEventVisible: true})
    }
 
  updateDispatchStatus = () => {
 
-	  clearInterval();
-	  setTimeout(this.timeHome, 100000);
+
 	   this.setState({dispatchstatus: !this.state.dispatchstatus, isDispatchVisible: true})
    
   
@@ -388,8 +379,7 @@ renderAddress = () => {
 
 workingStatus = async () => {
 
-    clearInterval();
-	setTimeout(this.timeHome, 100000);
+
 	this.setState({checkinStatus: 'Start', event: 'Working'}); 
 	//Alert.alert(this.state.checkinStatus + ' ' + this.state.event + ' for a living');
 
@@ -426,8 +416,7 @@ renderMaybeWorking = () => {
 
 customerComplete = () => {
 
-	clearInterval();
-	setTimeout(this.timeHome, 100000);
+
 
 	this.props.navigation.navigate('DispatchComplete');
 }
@@ -470,6 +459,7 @@ addDispatchNote = async () => {
 	}
 	this.setState({checkinStatus: 'addNote'});
 	const post = await this.authEventLogApi();
+
 	console.log(post);
 	this.setState({checkinStatus: 'Stop', DispatchNotes: post.DispatchNotes, isVisibleDispatchNote: false});
 	
@@ -481,6 +471,10 @@ renderWorkingDispatchNotes = () => {
 		return false
 	}
 	if (this.state.event != 'Working')
+	{
+		return false;
+	}
+	if (this.state.checkinStatus != 'Stop')
 	{
 		return false;
 	}
@@ -571,9 +565,13 @@ renderWorkingDispatchNotes = () => {
                    visible = {this.state.isEventVisible}
                    onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
   		        <ScrollView style={styles.buttonContainer}>
+			     <View style={styles.noteText} >
+
 	           <Button title="Traveling" onPress={()=>this.updateEvent('Traveling')} />
 		           <Button title="Working" onPress={()=>this.updateEvent('Working')} />
-		        </ScrollView>
+				   <Button title="Close Event" onPress={()=>this.setState({isEventVisible: false})} />
+				</View>
+			   </ScrollView>
       </Modal>
 		{
     	    this.state.eventstatus? <Button title={this.state.event} onPress = {() => this.setState({isEventVisible: true})} /> : <Button style={styles.buttonContainer} title={this.state.event}  onPress={this.resetEventStatus} /> 

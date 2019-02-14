@@ -40,7 +40,7 @@ constructor(props){
         Name: '',
 	    LocName: 'Select Job',
 	    JobNotes: null,
-		AddJobNote: '',
+		addJobNote: '',
 	    EmpName: null,
 		Email: null,
         EmpNo: null,
@@ -98,6 +98,7 @@ async fetchJobsFromApi() {
 	 for (let i=0; i < this.state.jobs.length ; i++) {
 	    pickers.push(<Button key={this.state.jobs[i].Name} title = {this.state.jobs[i].LocName} value={i} onPress={()=>this.updateJob(i)} />);
      }
+	 pickers.push(<Button key="close" title="Close Jobs" onPress={()=>this.setState({isJobVisible: false})} />);
 	//console.log(pickers);
 	this.setState({pickers: pickers});
 	
@@ -167,7 +168,7 @@ async authEventLogApi() {
 		this.setState({latitude: '33.3333', longitude: '-88.9888'});
 	}
 	Screen = await AsyncStorage.getItem('Screen');
-	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&event=${this.state.event}&Name=${this.state.Name}&AddJobNote=${this.state.AddJobNote}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}&dev=${__DEV__}`;
+	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&event=${this.state.event}&Name=${this.state.Name}&addJobNote=${this.state.addJobNote}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}&dev=${__DEV__}`;
 	  await fetch(authurl)
       .then((response2) => response2.json())
       .then((responseJson2) => {
@@ -211,17 +212,7 @@ async authEventLogApi() {
 	  
      return this.state.auth;	
 }
-timeHome = () => {
 
-	if (this.state.isTimeHome)
-	{
-		this.props.navigation.navigate('Home');
-	}
-	else
-	{
-	    setTimeout(this.timeHome, 100000);
-	}
-}
 
 
 _getLocationAsync = async () => {
@@ -246,7 +237,6 @@ async componentDidMount () {
 		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
 	  }
 	 
-	  setTimeout(this.timeHome, 100000);
 	
 	  const EmpName = await AsyncStorage.getItem('EmpName');
 	  this.setState({EmpName: EmpName});
@@ -265,6 +255,7 @@ async componentDidMount () {
 	
 	  await this.authEmpInstApi();
 	  await this.fetchJobsFromApi();
+	
 
   
 }
@@ -281,11 +272,19 @@ error(err) {
 
  async checkStatus() {
 	
+	if (this.state.checkinStatus == 'Start' && this.state.event=='Select Event')
+	{
+		Alert.alert('Job Event Required');
+		return false;
+	}
+	
+
 	if (this.state.checkinStatus == 'Start' && !this.state.jobstatus && !this.state.eventstatus && (this.state.event=='Traveling' || __DEV__ || (this.state.event=='Working' && (this.state.jobdistance == null || this.state.jobdistance < 2)))) {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive == '1')
 		{
 			this.setState({checkinStatus: 'Stop', active: !this.state.active});
+			return false;
 		}
 	}
 	else if (this.state.checkinStatus == 'Stop' && !this.state.jobstatus && !this.state.eventstatus) {
@@ -295,7 +294,7 @@ error(err) {
 			this.setState({checkinStatus: 'Start', active: !this.state.active});
 			//this.updateEventStatus();
 			//this.updateJobStatus();
-
+			return false;
 		}
 	}
 	else
@@ -303,8 +302,15 @@ error(err) {
 		if (this.state.checkinStatus == 'Start' && this.state.event== 'Working' && (this.state.jobdistance != null && this.state.jobdistance > 2))
 		{
 			Alert.alert('Not within range ' + this.state.jobdistance); 
+			return false;
 		}
 	 }
+	 if (this.state.LocName != 'Select Job' && this.state.jobstatus)
+	 {
+		 Alert.alert(this.state.LocName + ' job status state invalid');
+		 return false;
+	 }
+	Alert.alert('Error ' + this.state.checkinStatus + ' ' + this.state.event + ' ' + this.state.auth.EmpActive);
 	//console.log(this.state);
 
 }
@@ -356,7 +362,7 @@ addJobNote = async () => {
 	this.setState({checkinStatus: 'addNote', isTimeHome:false});
 	const post = await this.authEventLogApi();
 	console.log(post);
-	this.setState({checkinStatus: 'Stop', JobNotes: post.JobNotes, isVisibleJobhNote: false});
+	this.setState({checkinStatus: 'Stop', JobNotes: post.JobNotes, isVisibleJobNote: false});
 	
 }
 
@@ -366,6 +372,10 @@ renderWorkingJobNotes = () => {
 		return false;
 	}
 	if (this.state.event != 'Working')
+	{
+		return false;
+	}
+	if (this.state.checkinStatus != 'Stop')
 	{
 		return false;
 	}
@@ -464,6 +474,7 @@ renderWorkingJobNotes = () => {
 			     <View style={styles.noteText} >
 	           <Button title="Traveling" onPress={()=>this.updateEvent('Traveling')} />
 		           <Button title="Working" onPress={()=>this.updateEvent('Working')} />
+				     <Button title="Close Event" onPress={()=>this.setState({isEventVisible: false})} />
                  </View>
 		        </ScrollView>
       </Modal>

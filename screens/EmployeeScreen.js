@@ -195,7 +195,6 @@ async componentDidMount () {
 		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
 	  }
 	 
-	  setTimeout(this.timeHome, 100000);
 	
 	  const EmpName = await AsyncStorage.getItem('EmpName');
 	  this.setState({EmpName: EmpName});
@@ -252,12 +251,15 @@ error(err) {
 			await this.authEventLogApi();
 			if (this.state.auth.EmpActive != '1')
 			{
+
 				this.setState({checkinStatus: 'Start', active: !this.state.active});
+				Alert.alert('Employee Stop Working');
+				this.props.navigation.navigate('Home');
+
 				return false;
 			}
 	
 	}
-
 
 	//console.log(this.state);
 
@@ -350,8 +352,11 @@ renderEmployeeNotes = () => {
                    visible = {this.state.isEventVisible}
                    onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
   		        <ScrollView style={styles.buttonContainer}>
+					   <View style={styles.noteText}>
 	           <Button title="Traveling" onPress={()=>this.updateEvent('Traveling')} />
 		           <Button title="Working" onPress={()=>this.updateEvent('Working')} />
+					   <Button title="Close Event" onPress={()=>this.setState({isEventVisible: false})} />
+				   </View>
 		        </ScrollView>
       </Modal>
 		{

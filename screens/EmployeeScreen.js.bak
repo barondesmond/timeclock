@@ -157,6 +157,7 @@ async authEventLogApi() {
 	  }
 	  if (this.state.auth.EmpActive == 1)
 	  {
+		  
 		  console.log('logged in');
 	  }
 	  else
@@ -194,7 +195,6 @@ async componentDidMount () {
 		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
 	  }
 	 
-	  setTimeout(this.timeHome, 100000);
 	
 	  const EmpName = await AsyncStorage.getItem('EmpName');
 	  this.setState({EmpName: EmpName});
@@ -243,7 +243,7 @@ error(err) {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive == '1')
 		{
-			this.setState({checkinStatus: 'Stop', active: !this.state.active});
+			this.setState({checkinStatus: 'Stop', active: !this.state.active, addEmployeeNote: ''});
 			return false;
 		}
 	}
@@ -251,12 +251,16 @@ error(err) {
 			await this.authEventLogApi();
 			if (this.state.auth.EmpActive != '1')
 			{
+
 				this.setState({checkinStatus: 'Start', active: !this.state.active});
+				Alert.alert('Employee Stop Working');
+				this.props.navigation.navigate('Home');
+
 				return false;
 			}
 	
 	}
-
+	Alert.alert('State Error ' + this.state.checkinStatus + ' ' . this.state.addEmployeeNote);
 
 	//console.log(this.state);
 
@@ -349,8 +353,11 @@ renderEmployeeNotes = () => {
                    visible = {this.state.isEventVisible}
                    onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
   		        <ScrollView style={styles.buttonContainer}>
+					   <View style={styles.noteText}>
 	           <Button title="Traveling" onPress={()=>this.updateEvent('Traveling')} />
 		           <Button title="Working" onPress={()=>this.updateEvent('Working')} />
+					   <Button title="Close Event" onPress={()=>this.setState({isEventVisible: false})} />
+				   </View>
 		        </ScrollView>
       </Modal>
 		{
