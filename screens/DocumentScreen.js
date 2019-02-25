@@ -129,7 +129,7 @@ export default class CameraScreen extends Component {
 
 		<View>
 			<Text style={styles.buttonContainer}>
-			Please enter Document Reference
+			Please enter Amount of Receipt
 			</Text>
 		    <TextInput placeholder="Amount" 
         style={{height: 40, borderColor: 'gray', borderWidth: 1}}
