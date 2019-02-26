@@ -288,9 +288,9 @@ error(err) {
     clearInterval();
   }
 
- async checkStatus() {
+ async checkStatus(override) {
 	
-	if (this.state.checkinStatus == 'Start' && !this.state.dispatchstatus && !this.state.eventstatus && (this.state.event=='Traveling' || __DEV__ || (this.state.event=='Working' && (this.state.dispatchdistance == null || this.state.dispatchdistance < 2)))) {
+	if (this.state.checkinStatus == 'Start' && !this.state.dispatchstatus && !this.state.eventstatus && (this.state.event=='Traveling' || override || (this.state.event=='Working' && (this.state.dispatchdistance != null && this.state.dispatchdistance < 2)))) {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive == '1')
 		{
@@ -305,9 +305,21 @@ error(err) {
 			this.props.navigation.navigate('Home');
 			Alert.alert('Dispatch Work Done');
 		}
-
-
 	}
+	else
+	 {
+		if (this.state.checkinStatus == 'Start' && this.state.event== 'Working' && (this.state.dispatchdistance == null || this.state.dispatchdistance > 2))
+		{
+			Alert.alert('Not within range of ' + this.state.DispatchName + ' or gps not valid ' + this.state.dispatchdistance); 
+			this.props.navigation.navigate('JobLocation', {onGoBack: () => this.checkStatus(true), LocName: this.state.DispatchName});
+			return false;
+		}
+	 }
+	 if (this.state.LocName != 'Select Dispatch' && this.state.dispatchstatus)
+	 {
+		 Alert.alert(this.state.DispatcName + ' dispatch status state invalid');
+		 return false;
+	 }
 
 	//console.log(this.state);
 

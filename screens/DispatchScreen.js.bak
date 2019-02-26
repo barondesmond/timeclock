@@ -474,6 +474,10 @@ renderWorkingDispatchNotes = () => {
 	{
 		return false;
 	}
+	if (this.state.checkinStatus != 'Stop')
+	{
+		return false;
+	}
 	return(<View>
             <Modal animationType = {"slide"} transparent = {true}
                    visible = {this.state.isVisibleDispatchNote}

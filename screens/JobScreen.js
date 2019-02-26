@@ -267,7 +267,7 @@ error(err) {
     clearInterval();
   }
 
- async checkStatus() {
+ async checkStatus(override) {
 	
 	if (this.state.checkinStatus == 'Start' && this.state.event=='Select Event')
 	{
@@ -276,7 +276,7 @@ error(err) {
 	}
 	
 
-	if (this.state.checkinStatus == 'Start' && !this.state.jobstatus && !this.state.eventstatus && (this.state.event=='Traveling'  || (this.state.event=='Working' && (this.state.jobdistance != null && this.state.jobdistance < 2)))) {
+	if (this.state.checkinStatus == 'Start' && !this.state.jobstatus && !this.state.eventstatus && (this.state.event=='Traveling'  || (this.state.event=='Working' && (this.state.jobdistance != null && this.state.jobdistance < 2)) || override)) {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive == '1')
 		{
@@ -289,8 +289,8 @@ error(err) {
 		if (this.state.auth.EmpActive != '1')
 		{
 			this.setState({checkinStatus: 'Start', active: !this.state.active});
-			//this.updateEventStatus();
-			//this.updateJobStatus();
+			this.props.navigation.navigate('Home');
+			Alert.alert('Job Work Done');
 			return false;
 		}
 	}
@@ -299,7 +299,7 @@ error(err) {
 		if (this.state.checkinStatus == 'Start' && this.state.event== 'Working' && (this.state.jobdistance == null || this.state.jobdistance > 2))
 		{
 			Alert.alert('Not within range of ' + this.state.LocName + ' or gps not valid ' + this.state.jobdistance); 
-			this.props.navigation.navigate('JobLocation', {onGoBack: () => this.authEmpInstApi(), LocName: this.state.LocName});
+			this.props.navigation.navigate('JobLocation', {onGoBack: () => this.checkStatus(true), LocName: this.state.LocName});
 			return false;
 		}
 	 }
