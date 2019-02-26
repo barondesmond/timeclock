@@ -55,7 +55,7 @@ constructor(props){
 		eventstatus: true,
         jobs: null,
         job: null,
-		jobstatus: false,
+		jobstatus: true,
         pickers: null,
         auth: null,
 		timer: null,
@@ -163,10 +163,7 @@ async authEmpInstApi() {
 async authEventLogApi() {
 
 	
-	if (__DEV__ && this.state.latitude == null)
-	{
-		this.setState({latitude: '33.3333', longitude: '-88.9888'});
-	}
+
 	Screen = await AsyncStorage.getItem('Screen');
 	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&event=${this.state.event}&Name=${this.state.Name}&addJobNote=${this.state.addJobNote}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}&dev=${__DEV__}`;
 	  await fetch(authurl)
@@ -255,10 +252,7 @@ async componentDidMount () {
 	
 	  await this.authEmpInstApi();
 	  await this.fetchJobsFromApi();
-	  if (this.state.jobs != null)
-	  {
-		  this.setState({jobstatus: true});
-	  }
+	
 
   
 }
@@ -282,7 +276,7 @@ error(err) {
 	}
 	
 
-	if (this.state.checkinStatus == 'Start' && !this.state.jobstatus && !this.state.eventstatus && (this.state.event=='Traveling' || __DEV__ || (this.state.event=='Working' && (this.state.jobdistance == null || this.state.jobdistance < 2)))) {
+	if (this.state.checkinStatus == 'Start' && !this.state.jobstatus && !this.state.eventstatus && (this.state.event=='Traveling'  || (this.state.event=='Working' && (this.state.jobdistance != null && this.state.jobdistance < 2)))) {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive == '1')
 		{
@@ -302,9 +296,10 @@ error(err) {
 	}
 	else
 	 {
-		if (this.state.checkinStatus == 'Start' && this.state.event== 'Working' && (this.state.jobdistance != null && this.state.jobdistance > 2))
+		if (this.state.checkinStatus == 'Start' && this.state.event== 'Working' && (this.state.jobdistance == null || this.state.jobdistance > 2))
 		{
-			Alert.alert('Not within range ' + this.state.jobdistance); 
+			Alert.alert('Not within range of ' + this.state.LocName + ' or gps not valid ' + this.state.jobdistance.); 
+			this.props.navigation.navigate('JobLocation', {onGoBack: () => this.authEmpInstApi(), LocName: this.state.LocName});
 			return false;
 		}
 	 }
