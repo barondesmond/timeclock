@@ -62,6 +62,8 @@ async fetchEmployeeFromApi (EmpName, Email) {
    else
 	{
 	  Alert.alert('Employee Not Authorized ' + responsejson.auth);
+	this.props.navigation.state.params.onGoBack();
+	this.props.navigation.goBack();
 	   return false;
     }
  
@@ -88,6 +90,7 @@ async saveKey(EmpName, Email, EmpNo) {
 	console.log(EmpName);
 	console.log(Email);
 	console.log(EmpNo);
+	this.props.navigation.state.params.onGoBack();
 	this.props.navigation.goBack();
 
 
