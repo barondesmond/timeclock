@@ -9,7 +9,7 @@
     "platforms": [
       "ios"
     ],
-    "version": "1.0.7",
+    "version": "1.0.8",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -33,6 +33,8 @@
       "bundleIdentifier": "com.plisolutions.timeclock",
       "supportsTablet": true,
       "infoPlist": {
+	"ITSAppUsesNonExemptEncryption" : true,
+	"ITSEncryptionExportComplianceCode" : "1aa92c4d-6194-4d7d-b70a-16b48256b87",
         "NSLocationAlwaysUsageDescription" : "needs gps data.", 
 	"NSCameraUsageDescription": "This app uses the camera to authenticate users and upload receipts",
 	"NSFaceIDUsageDescription": "Authenticate User for App",
