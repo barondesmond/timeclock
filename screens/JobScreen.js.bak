@@ -40,6 +40,7 @@ constructor(props){
         Name: '',
 	    LocName: 'Select Job',
 	    JobNotes: null,
+		JobLocation: null,
 		addJobNote: '',
 	    EmpName: null,
 		Email: null,
@@ -289,8 +290,8 @@ error(err) {
 		if (this.state.auth.EmpActive != '1')
 		{
 			this.setState({checkinStatus: 'Start', active: !this.state.active});
-			//this.updateEventStatus();
-			//this.updateJobStatus();
+			this.props.navigation.navigate('Home');
+			Alert.alert('Job Work Done');
 			return false;
 		}
 	}
@@ -298,8 +299,8 @@ error(err) {
 	 {
 		if (this.state.checkinStatus == 'Start' && this.state.event== 'Working' && (this.state.jobdistance == null || this.state.jobdistance > 2))
 		{
-			Alert.alert('Not within range of ' + this.state.LocName + ' or gps not valid ' + this.state.jobdistance); 
-			this.props.navigation.navigate('JobLocation', {onGoBack: () => this.checkStatus(true), LocName: this.state.LocName});
+			Alert.alert('Not within range of ' + this.state.auth.location + ' or gps not valid ' + this.state.jobdistance); 
+			this.props.navigation.navigate('JobLocation', {onGoBack: () => this.checkStatus(true), LocName: this.state.JobLocation});
 			return false;
 		}
 	 }
@@ -344,8 +345,8 @@ resetEventStatus = () => {
  updateJob = (i) => {
 		//console.log(this.state.jobs);
 		console.log(this.state.jobs[i]);
-		this.setState({ job: this.state.jobs[i].Name, jobstatus: !this.state.jobstatus, Name: this.state.jobs[i].Name, LocName: this.state.jobs[i].LocName, JobNotes: this.state.jobs[i].JobNotes, jobdistance: this.state.jobs[i].distance, joblatitude: this.state.jobs[i].latitude, joblongitude: this.state.jobs[i].longitude, isJobVisible: false })
-	    console.log(this.state);
+		this.setState({ job: this.state.jobs[i].Name, jobstatus: !this.state.jobstatus, Name: this.state.jobs[i].Name, LocName: this.state.jobs[i].LocName, JobNotes: this.state.jobs[i].JobNotes, JobLocation: this.state.jobs[i].location, jobdistance: this.state.jobs[i].distance, joblatitude: this.state.jobs[i].latitude, joblongitude: this.state.jobs[i].longitude, isJobVisible: false })
+	    //console.log(this.state);
    }
 
 
