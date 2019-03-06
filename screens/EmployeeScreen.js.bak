@@ -260,7 +260,6 @@ error(err) {
 			}
 	
 	}
-	Alert.alert('State Error ' + this.state.checkinStatus + ' ' . this.state.addEmployeeNote);
 
 	//console.log(this.state);
 

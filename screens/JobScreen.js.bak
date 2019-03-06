@@ -299,7 +299,7 @@ error(err) {
 	 {
 		if (this.state.checkinStatus == 'Start' && this.state.event== 'Working' && (this.state.jobdistance == null || this.state.jobdistance > 2))
 		{
-			Alert.alert('Not within range of ' + this.state.auth.location + ' or gps not valid ' + this.state.jobdistance); 
+			Alert.alert('Not within range of ' + this.state.JobLocation + ' or gps not valid ' + this.state.jobdistance); 
 			this.props.navigation.navigate('JobLocation', {onGoBack: () => this.checkStatus(true), LocName: this.state.JobLocation});
 			return false;
 		}

@@ -33,7 +33,6 @@
       "bundleIdentifier": "com.plisolutions.timeclock",
       "supportsTablet": true,
       "infoPlist": {
-	"ITSAppUsesNonExemptEncryption" : true,
         "NSLocationAlwaysUsageDescription" : "needs gps data.", 
 	"NSCameraUsageDescription": "This app uses the camera to authenticate users and upload receipts",
 	"NSFaceIDUsageDescription": "Authenticate User for App",

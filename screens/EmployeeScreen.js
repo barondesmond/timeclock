@@ -260,6 +260,7 @@ error(err) {
 			}
 	
 	}
+	Alert.alert('Error ' + this.state.checkinStatus + ' ' + this.state.event + ' ' + this.state.auth.EmpActive);
 
 	//console.log(this.state);
 

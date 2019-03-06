@@ -295,6 +295,7 @@ error(err) {
 		if (this.state.auth.EmpActive == '1')
 		{
 			this.setState({checkinStatus: 'Stop', active: !this.state.active});
+			return false;
 		}
 	}
 	else if (this.state.checkinStatus == 'Stop' && !this.state.dispatchstatus && !this.state.eventstatus) {
@@ -304,6 +305,7 @@ error(err) {
 			this.setState({checkinStatus: 'Start', active: !this.state.active});
 			this.props.navigation.navigate('Home');
 			Alert.alert('Dispatch Work Done');
+			return false;
 		}
 	}
 	else
@@ -320,7 +322,7 @@ error(err) {
 		 Alert.alert(this.state.DispatcName + ' dispatch status state invalid');
 		 return false;
 	 }
-
+	Alert.alert('Error ' + this.state.checkinStatus + ' ' + this.state.event + ' ' + this.state.auth.EmpActive);
 	//console.log(this.state);
 
 }

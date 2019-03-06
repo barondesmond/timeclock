@@ -80,7 +80,7 @@ constructor(props){
 async fetchJobsFromApi() {
 
 	 
-	await fetch(URL + `jobs_json.php?latitude=${this.state.latitude}&longitude=${this.state.longitude}&EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&dev=${__DEV__}`)
+	await fetch(URL + `jobs_json.php?latitude=${this.state.latitude}&longitude=${this.state.longitude}&EmpNo=${this.state.EmpNo}&ServiceMan=${this.state.EmpNo}&installationId=${Constants.installationId}&dev=${__DEV__}`)
       .then((response) => response.json())
       .then((responseJson) => {
 
