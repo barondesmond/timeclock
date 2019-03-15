@@ -322,7 +322,7 @@ error(err) {
 		 Alert.alert(this.state.DispatcName + ' dispatch status state invalid');
 		 return false;
 	 }
-	Alert.alert('Error State ' + this.state.checkinStatus + ' ' + this.state.eventstatus + ' ' . this.state.dispatchstatus);
+	Alert.alert('Error ' + this.state.checkinStatus + ' ' + this.state.event + ' ' + this.state.auth.EmpActive);
 	//console.log(this.state);
 
 }
