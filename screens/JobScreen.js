@@ -38,6 +38,7 @@ constructor(props){
     this.state = {
 
         Name: '',
+		JobID: null,
 	    LocName: 'Select Job',
 	    JobNotes: null,
 		JobLocation: null,
@@ -151,7 +152,7 @@ async authEmpInstApi() {
 	  if (this.state.auth.EmpActive == 1 && this.state.auth.Screen == 'Job')
 	  {
 		  console.log('logged in');
-		  this.setState({Name: this.state.auth.Name, LocName: this.state.auth.LocName, JobNotes: this.state.auth.JobNotes, event : this.state.auth.event, eventstatus: false, jobstatus: false, checkinStatus: 'Stop', active: false, isJobVisible: false}) 
+		  this.setState({Name: this.state.auth.Name, JobID: this.state.auth.JobID, LocName: this.state.auth.LocName, JobNotes: this.state.auth.JobNotes, event : this.state.auth.event, eventstatus: false, jobstatus: false, checkinStatus: 'Stop', active: false, isJobVisible: false}) 
 	  }
       if (this.state.auth.EmpActive == 1 && this.state.auth.Screen != 'Job')
 	 {
@@ -166,7 +167,7 @@ async authEventLogApi() {
 	
 
 	Screen = await AsyncStorage.getItem('Screen');
-	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&event=${this.state.event}&Name=${this.state.Name}&addJobNote=${this.state.addJobNote}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}&dev=${__DEV__}`;
+	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&event=${this.state.event}&Name=${this.state.Name}&JobID=${this.state.JobID}&addJobNote=${this.state.addJobNote}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}&dev=${__DEV__}`;
 	  await fetch(authurl)
       .then((response2) => response2.json())
       .then((responseJson2) => {
@@ -345,7 +346,7 @@ resetEventStatus = () => {
  updateJob = (i) => {
 		//console.log(this.state.jobs);
 		console.log(this.state.jobs[i]);
-		this.setState({ job: this.state.jobs[i].Name, jobstatus: !this.state.jobstatus, Name: this.state.jobs[i].Name, LocName: this.state.jobs[i].LocName, JobNotes: this.state.jobs[i].JobNotes, JobLocation: this.state.jobs[i].location, jobdistance: this.state.jobs[i].distance, joblatitude: this.state.jobs[i].latitude, joblongitude: this.state.jobs[i].longitude, isJobVisible: false })
+		this.setState({ job: this.state.jobs[i].Name, jobstatus: !this.state.jobstatus, Name: this.state.jobs[i].Name, JobID: this.state.jobs[i].JobID, LocName: this.state.jobs[i].LocName, JobNotes: this.state.jobs[i].JobNotes, JobLocation: this.state.jobs[i].location, jobdistance: this.state.jobs[i].distance, joblatitude: this.state.jobs[i].latitude, joblongitude: this.state.jobs[i].longitude, isJobVisible: false })
 	    //console.log(this.state);
    }
 
