@@ -65,7 +65,7 @@ constructor(props){
 		dispatchdistance: null,
 		Counter: null,
 		JobID: null,
-
+		gps_override: false;
         isDispatchVisible: false,
 		isEventVisible: false,
 		isNotesVisible: false,
@@ -316,7 +316,7 @@ error(err) {
 		if (this.state.checkinStatus == 'Start' && this.state.event== 'Working' && (this.state.dispatchdistance == null || this.state.dispatchdistance > 2))
 		{
 			Alert.alert('Not within range of ' + this.state.DispatchLocation + ' or gps not valid ' + this.state.dispatchdistance); 
-			this.props.navigation.navigate('JobLocation', {onGoBack: () => this.checkStatus(true), LocName: this.state.DispatchLocation});
+			this.props.navigation.navigate('JobLocation', {onGoBack: () => this.checkStatus(true), LocName: this.state.DispatchLocation, gps_override: true});
 			return false;
 		}
 	 }
@@ -364,7 +364,7 @@ resetEventStatus = () => {
  updateDispatch = (i) => {
 
 		console.log(this.state.dispatchs[i]);
-		this.setState({ Dispatch: this.state.dispatchs[i].Dispatch, dispatchstatus: !this.state.dispatchstatus,  DispatchName: this.state.dispatchs[i].DispatchName, DispatchLocation: this.state.dispatchs[i].location, DispatchNotes: this.state.dispatchs[i].DispatchNotes, Add1: this.state.dispatchs[i].Add1, Add2: this.state.dispatchs[i].Add2, City: this.state.dispatchs[i].City, State: this.state.dispatchs[i].State, Zip: this.state.dispatchs[i].Zip, Phone1: this.state.dispatchs[i].Phone1, dispatchdistance: this.state.dispatchs[i].distance, dispatchlatitude: this.state.dispatchs[i].latitude, dispatchlongitude: this.state.dispatchs[i].longitude, isDispatchVisible: false })
+		this.setState({ Dispatch: this.state.dispatchs[i].Dispatch, Counter: this.state.dispatchs[i].Counter, dispatchstatus: !this.state.dispatchstatus,  DispatchName: this.state.dispatchs[i].DispatchName, DispatchLocation: this.state.dispatchs[i].location, DispatchNotes: this.state.dispatchs[i].DispatchNotes, Add1: this.state.dispatchs[i].Add1, Add2: this.state.dispatchs[i].Add2, City: this.state.dispatchs[i].City, State: this.state.dispatchs[i].State, Zip: this.state.dispatchs[i].Zip, Phone1: this.state.dispatchs[i].Phone1, dispatchdistance: this.state.dispatchs[i].distance, dispatchlatitude: this.state.dispatchs[i].latitude, dispatchlongitude: this.state.dispatchs[i].longitude, isDispatchVisible: false })
 	    console.log(this.state);
    }
 
