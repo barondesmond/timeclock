@@ -15,10 +15,12 @@ import {
   TextInput,
   AsyncStorage,
   Alert,
+  Geolocation,
+
 
 } from 'react-native';
 
-import { Constants, ImagePicker, Permissions } from 'expo';
+import { Constants, ImagePicker, Permissions, Location } from 'expo';
 
 import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, URL, STORAGE_KEY} from '../constants/common';
 
@@ -33,7 +35,11 @@ export default class CameraScreen extends Component {
     uploading: false,
     violation: '',
     EmpNo: null,
-	pickerResult: null
+	pickerResult: null,
+	latitude: null,
+	longitude: null,
+	locationstatus: false,
+	LocName: '',
   };
 
 
@@ -56,8 +62,7 @@ export default class CameraScreen extends Component {
 
 
 	
-        <Button onPress={this._takePhoto} title="Scan a Document" />
-		<Button onPress={this._pickImage} title="Pick a Document" />
+        <Button onPress={this._takePhoto} title="Job Location Picture" />
 	
         {this._maybeRenderImage()}
 
@@ -70,6 +75,15 @@ export default class CameraScreen extends Component {
 
   }
 
+_getLocationAsync = async () => {
+
+	let { status } = await Permissions.askAsync(Permissions.LOCATION);
+	if (status !== 'granted') 
+	{
+	   this.setState({locationstatus: status});
+	}
+
+}
 
 
 
@@ -119,6 +133,19 @@ export default class CameraScreen extends Component {
 
         style={styles.maybeRenderContainer}>
 
+			<View>
+			<Text style={styles.buttonContainer}>
+			Please enter name of location
+			</Text>
+			<Text style={styles.buttonContainer}>
+	  {this.state.LocName} {this.state.latitude} {this.state.longitude}
+		</Text>
+		    <TextInput placeholder="Site Picture" 
+        style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+                  onChangeText={data => this.setState({ violation: data })}
+      />
+		  </View>
+
         <View
 
           style={styles.maybeRenderImageContainer}>
@@ -127,17 +154,9 @@ export default class CameraScreen extends Component {
 
         </View>
 
-		<View>
-			<Text style={styles.buttonContainer}>
-			Please enter Amount of Receipt
-			</Text>
-		    <TextInput placeholder="Amount" 
-        style={{height: 40, borderColor: 'gray', borderWidth: 1}}
-                  onChangeText={data => this.setState({ violation: data })}
-      />
-		  </View>
+	
 
-       <Button title="Upload Document"
+       <Button title="Upload Site Picture "
 
           onPress={this._copyToClipboard}
 
@@ -168,15 +187,29 @@ export default class CameraScreen extends Component {
 
   _copyToClipboard = async () => {
 	  
-		uploadImageAsync(this.state.image, this.state.EmpNo, this.state.violation);
+		uploadImageAsync(this.state.image, this.state.EmpNo, this.state.violation, this.state.latitude, this.state.longitude, this.state.LocName);
 		this.setState({image: null, violation: ''});
-		Alert.alert(`Upload Complete ${this.state.EmpNo}  ${this.state.violation}`);
+		Alert.alert(`Upload Complete ${this.state.EmpNo}  ${this.state.violation} ${this.state.LocName} ${this.state.latitude} ${this.state.longitude}`);
+		this.props.navigation.state.params.onGoBack();
+		this.props.navigation.goBack();
 
   };
 
 
 async componentDidMount () {
 
+
+	  this._getLocationAsync();
+	  if (!this.state.locationstatus)
+	  {
+		 let location = await Location.getCurrentPositionAsync({});
+		 console.log(location);
+		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
+	  }
+	if (this.state.LocName == '')
+	{
+		this.setState({LocName: this.props.navigation.state.params.LocName});
+	}
 
 	  const EmpNo = await AsyncStorage.getItem('EmpNo');
 
@@ -186,6 +219,7 @@ async componentDidMount () {
 
 		  this.props.navigation.navigate('Alternative');
 	  }
+
 
 }
 
@@ -279,7 +313,7 @@ async componentDidMount () {
 
       if (!pickerResult.cancelled) {
 
-        uploadResponse = await uploadImageAsync(pickerResult.uri, this.state.EmpNo, this.state.violation);
+        uploadResponse = await uploadImageAsync(pickerResult.uri, this.state.EmpNo, this.state.violation, this.state.latitude, this.state.longitude, this.state.LocName);
 
         uploadResult = await uploadResponse.json();
 
@@ -319,7 +353,7 @@ async componentDidMount () {
 
 
 
-async function uploadImageAsync(uri, EmpNo, violation) {
+async function uploadImageAsync(uri, EmpNo, violation, latitude, longitude, LocName) {
 
   let apiUrl = URL + `upload/index.php`;
 
@@ -337,7 +371,7 @@ async function uploadImageAsync(uri, EmpNo, violation) {
 
     uri,
 
-    name: `${EmpNo}.${violation}.${fileType}`,
+    name: `${EmpNo}.${violation}.${LocName}.${latitude}.${longitude}.${fileType}`,
 
     type: `multipart/form-data`,
 

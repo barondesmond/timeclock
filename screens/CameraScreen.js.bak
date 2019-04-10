@@ -51,6 +51,7 @@ export default class CameraScreen extends Component {
     return (
 
       <View style={styles.container}>
+	<View style={styles.welcomeContainer}>
 	<Text style={[styles.Red]}> This is a policy violation.  Biometric approval recommended for login.
 		
 		 </Text>
@@ -67,6 +68,7 @@ export default class CameraScreen extends Component {
         {this._maybeRenderUploadingOverlay()}
 
       </View>
+    </View>
 
     );
 
@@ -121,17 +123,6 @@ export default class CameraScreen extends Component {
 
         style={styles.maybeRenderContainer}>
 
-        <View
-
-          style={styles.maybeRenderImageContainer}>
-		  
-          <Image source={{ uri: image }} style={styles.maybeRenderImage} />
-
-        </View>
-
-
-
-     
 
 			<Text style={styles.buttonContainer}>
 			Please enter reason for violation
@@ -146,6 +137,19 @@ export default class CameraScreen extends Component {
 
           style={styles.maybeRenderImageText} />
       </View>
+
+        <View
+
+          style={styles.maybeRenderImageContainer}>
+		  
+          <Image source={{ uri: image }} style={styles.maybeRenderImage} />
+
+        </View>
+
+
+
+     
+
 
     );
 

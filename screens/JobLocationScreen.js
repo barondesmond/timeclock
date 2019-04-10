@@ -133,15 +133,7 @@ _getLocationAsync = async () => {
 
         style={styles.maybeRenderContainer}>
 
-        <View
-
-          style={styles.maybeRenderImageContainer}>
-		  
-          <Image source={{ uri: image }} style={styles.maybeRenderImage} />
-
-        </View>
-
-		<View>
+			<View>
 			<Text style={styles.buttonContainer}>
 			Please enter name of location
 			</Text>
@@ -153,6 +145,16 @@ _getLocationAsync = async () => {
                   onChangeText={data => this.setState({ violation: data })}
       />
 		  </View>
+
+        <View
+
+          style={styles.maybeRenderImageContainer}>
+		  
+          <Image source={{ uri: image }} style={styles.maybeRenderImage} />
+
+        </View>
+
+	
 
        <Button title="Upload Job Location"
 

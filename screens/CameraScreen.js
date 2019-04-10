@@ -123,18 +123,7 @@ export default class CameraScreen extends Component {
 
         style={styles.maybeRenderContainer}>
 
-        <View
-
-          style={styles.maybeRenderImageContainer}>
-		  
-          <Image source={{ uri: image }} style={styles.maybeRenderImage} />
-
-        </View>
-
-
-
-     
-
+		<View>
 			<Text style={styles.buttonContainer}>
 			Please enter reason for violation
 			</Text>
@@ -148,6 +137,19 @@ export default class CameraScreen extends Component {
 
           style={styles.maybeRenderImageText} />
       </View>
+
+        <View
+
+          style={styles.maybeRenderImageContainer}>
+		  
+          <Image source={{ uri: image }} style={styles.maybeRenderImage} />
+
+        </View>
+
+</View>
+
+     
+
 
     );
 

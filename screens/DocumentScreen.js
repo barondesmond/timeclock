@@ -118,15 +118,6 @@ export default class CameraScreen extends Component {
       <View
 
         style={styles.maybeRenderContainer}>
-
-        <View
-
-          style={styles.maybeRenderImageContainer}>
-		  
-          <Image source={{ uri: image }} style={styles.maybeRenderImage} />
-
-        </View>
-
 		<View>
 			<Text style={styles.buttonContainer}>
 			Please enter Amount of Receipt
@@ -136,6 +127,16 @@ export default class CameraScreen extends Component {
                   onChangeText={data => this.setState({ violation: data })}
       />
 		  </View>
+
+        <View
+
+          style={styles.maybeRenderImageContainer}>
+		  
+          <Image source={{ uri: image }} style={styles.maybeRenderImage} />
+
+        </View>
+
+
 
        <Button title="Upload Document"
 

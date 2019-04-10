@@ -128,8 +128,8 @@ export default class CustomerAcceptScreen extends Component {
 	{
 		await AsyncStorage.setItem('customer', this.state.violation);
 		await AsyncStorage.setItem('customerimage', this.state.customerimage);
-
-		await this.props.navigation.goBack();
+		this.props.navigation.state.params.onGoBack();
+		this.props.navigation.goBack();
 	}
   };
 

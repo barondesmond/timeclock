@@ -94,10 +94,7 @@ export default class CustomerAcceptScreen extends Component {
     return (
       <View
         style={styles.maybeRenderContainer}>
-        <View
-          style={styles.maybeRenderImageContainer}>
-          <Image source={{ uri: customerimage }} style={styles.maybeRenderImage} />
-        </View>
+   
 			<Text style={styles.buttonContainer}>
 			Customer Name
 			</Text>
@@ -105,6 +102,10 @@ export default class CustomerAcceptScreen extends Component {
         style={{height: 40, borderColor: 'gray', borderWidth: 1}}
                   onChangeText={data => this.setState({ violation: data })}
       />
+     <View
+          style={styles.maybeRenderImageContainer}>
+          <Image source={{ uri: customerimage }} style={styles.maybeRenderImage} />
+        </View>
    <Button title="Continue"
           onPress={this._copyToClipboard}
           style={styles.maybeRenderImageText} />

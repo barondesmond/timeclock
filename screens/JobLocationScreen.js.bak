@@ -187,7 +187,7 @@ _getLocationAsync = async () => {
 	  
 		uploadImageAsync(this.state.image, this.state.EmpNo, this.state.violation, this.state.latitude, this.state.longitude, this.state.LocName);
 		this.setState({image: null, violation: ''});
-		Alert.alert(`Upload Complete ${this.state.EmpNo}  ${this.state.violation}`);
+		Alert.alert(`Upload Complete ${this.state.EmpNo}  ${this.state.violation} ${this.state.LocName} ${this.state.latitude} ${this.state.longitude}`);
 		this.props.navigation.state.params.onGoBack();
 		this.props.navigation.goBack();
 
