@@ -7,9 +7,9 @@
     "sdkVersion": "32.0.0",
   
     "platforms": [
-      "ios"
+      "ios", "android"
     ],
-    "version": "1.1.0",
+    "version": "1.1.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -23,7 +23,6 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-
   "notification": {
     "icon": "./assets/images/icon.png",
     "color": "#000000",
@@ -41,7 +40,10 @@
           "NSAllowsArbitraryLoadsForMedia": true, 
           "NSAllowsArbitraryLoadsInWebContent": true, 
         }
-      }
+      },
+    "android": {
+      "package": "com.plisolutions.timeclock"
+    }
    }
  }
  }
