@@ -244,7 +244,7 @@ gps_update = async () => {
 	  }
 
 
-componentDidMount = async () {
+componentDidMount = async () => {
 
       this.gps_update();
 	 
