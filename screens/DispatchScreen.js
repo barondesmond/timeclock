@@ -247,6 +247,21 @@ async gps_update () {
 	  }
 }
 
+function Interval(fn, interval) {
+  let timer
+
+  this.start = () => {
+    if (!timer) {        
+      timer = setInterval(() => { fn() }, interval)
+    }
+  }
+
+  this.stop = () => {
+    clearInterval(timer)
+    timer = void 0
+  }
+}
+
 async componentDidMount ()  {
 
 	 
@@ -266,8 +281,8 @@ async componentDidMount ()  {
 	  const image = await AsyncStorage.getItem('image');
 	  this.setState({violation: violation, image: image});
 	
-	  var timerID = setInterval(() => { this.gps_update() },500);
-  
+	  let gps_upodate = new Interval(gps_update, 5000)
+		gps_update.start()
 }
 
 error(err) {
@@ -277,7 +292,7 @@ error(err) {
  componentWillUnmount() {
 
     navigator.geolocation.clearWatch(this.watchId);
-    clearInterval(timerID);
+    gps_update.stop();
   }
 
  async checkStatus(override) {
