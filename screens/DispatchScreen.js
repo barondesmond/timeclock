@@ -267,7 +267,7 @@ async componentDidMount ()  {
 	  this.setState({violation: violation, image: image});
       await this.gps_update();
 	
-	  this.setInterval(this.gps_update(), 500);
+	  this.setInterval(this.gps_update, 500);
   
 }
 
