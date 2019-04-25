@@ -233,8 +233,7 @@ _getLocationAsync = async () => {
 
 }
 
-
-async componentDidMount () {
+async gps_update () {
 
 	  this._getLocationAsync();
 	  if (!this.state.locationstatus)
@@ -243,6 +242,11 @@ async componentDidMount () {
 		 console.log(location);
 		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
 	  }
+
+
+async componentDidMount () {
+
+      this.gps_update();
 	 
 	
 	  const EmpName = await AsyncStorage.getItem('EmpName');
