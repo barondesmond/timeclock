@@ -233,7 +233,7 @@ _getLocationAsync = async () => {
 
 }
 
-gps_update = async () => {
+async gps_update () {
 
 	  this._getLocationAsync();
 	  if (!this.state.locationstatus)
@@ -242,9 +242,9 @@ gps_update = async () => {
 		 console.log(location);
 		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
 	  }
+}
 
-
-componentDidMount = async () => {
+async componentDidMount ()  {
 
       this.gps_update();
 	 

@@ -241,6 +241,7 @@ async gps_update () {
 		 let location = await Location.getCurrentPositionAsync({});
 		 console.log(location);
 		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
+		 this.authEmpInstApi();
 	  }
 }
 
