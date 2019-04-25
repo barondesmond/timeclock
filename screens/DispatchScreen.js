@@ -233,7 +233,7 @@ _getLocationAsync = async () => {
 
 }
 
-async gps_update () {
+gps_update = async () => {
 
 	  this._getLocationAsync();
 	  await this.authEmpInstApi();
