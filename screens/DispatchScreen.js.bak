@@ -247,7 +247,7 @@ async gps_update () {
 	  }
 }
 
-function Interval(fn, interval) {
+async Interval(fn, interval) {
   let timer
 
   this.start = () => {
