@@ -233,7 +233,7 @@ _getLocationAsync = async () => {
 
 }
 
-gps_update = async () => {
+async gps_update () {
 
 	  this._getLocationAsync();
 	  await this.authEmpInstApi();
@@ -266,7 +266,7 @@ async componentDidMount ()  {
 	  const image = await AsyncStorage.getItem('image');
 	  this.setState({violation: violation, image: image});
 	
-	  this.setInterval(this.gps_update, 500);
+	  this.setInterval({() = this.gps_update()}, 500);
   
 }
 
