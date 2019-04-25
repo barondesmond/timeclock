@@ -266,7 +266,7 @@ async componentDidMount ()  {
 	  const image = await AsyncStorage.getItem('image');
 	  this.setState({violation: violation, image: image});
 	
-	  var timerID = setInterval(gps_update(),500);
+	  var timerID = setInterval(() => { gps_update },500);
   
 }
 
