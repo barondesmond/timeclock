@@ -248,7 +248,6 @@ async gps_update () {
 
 async componentDidMount ()  {
 
-      await this.gps_update();
 	 
 	
 	  const EmpName = await AsyncStorage.getItem('EmpName');
@@ -265,6 +264,7 @@ async componentDidMount ()  {
 	  const violation = await AsyncStorage.getItem('violation');
 	  const image = await AsyncStorage.getItem('image');
 	  this.setState({violation: violation, image: image});
+      await this.gps_update();
 	
 	  if (this.state.auth.authorized == 0)
 	  {

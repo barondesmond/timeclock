@@ -236,7 +236,7 @@ _getLocationAsync = async () => {
 async gps_update () {
 
 	  this._getLocationAsync();
-	  await this.authEmpInst();
+	  await this.authEmpInstApi();
 	  if (!this.state.locationstatus)
 	  {
 		 let location = await Location.getCurrentPositionAsync({});
