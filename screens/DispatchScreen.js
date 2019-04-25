@@ -237,6 +237,7 @@ async gps_update () {
 
 	  this._getLocationAsync();
 	  await this.authEmpInstApi();
+
 	  if (!this.state.locationstatus)
 	  {
 		 let location = await Location.getCurrentPositionAsync({});
@@ -249,7 +250,7 @@ async gps_update () {
 async componentDidMount ()  {
 
 	 
-	
+	  
 	  const EmpName = await AsyncStorage.getItem('EmpName');
 	  this.setState({EmpName: EmpName});
 
@@ -266,21 +267,7 @@ async componentDidMount ()  {
 	  this.setState({violation: violation, image: image});
       await this.gps_update();
 	
-	  if (this.state.auth.authorized == 0)
-	  {
-		  
-	  }
-	  else
-	  {
-		  if (this.state.auth.authorized == 1)
-	      {
-	          await this.fetchDispatchsFromApi();
-		  }
-		  else
-		  {
-			 
-		  }
-	 }
+	  this.setInterval(this.gps_update(), 500);
   
 }
 
