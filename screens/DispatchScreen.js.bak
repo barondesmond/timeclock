@@ -236,6 +236,7 @@ _getLocationAsync = async () => {
 async gps_update () {
 
 	  this._getLocationAsync();
+	  await this.authEmpInst();
 	  if (!this.state.locationstatus)
 	  {
 		 let location = await Location.getCurrentPositionAsync({});
@@ -247,7 +248,7 @@ async gps_update () {
 
 async componentDidMount ()  {
 
-      this.gps_update();
+      await this.gps_update();
 	 
 	
 	  const EmpName = await AsyncStorage.getItem('EmpName');
