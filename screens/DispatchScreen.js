@@ -236,12 +236,13 @@ _getLocationAsync = async () => {
 async gps_update () {
 
 	  this._getLocationAsync();
+	  await this.authEmpInst();
 	  if (!this.state.locationstatus)
 	  {
 		 let location = await Location.getCurrentPositionAsync({});
 		 console.log(location);
 		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
-		 this.authEmpInstApi();
+		 
 	  }
 }
 
@@ -265,20 +266,19 @@ async componentDidMount ()  {
 	  const image = await AsyncStorage.getItem('image');
 	  this.setState({violation: violation, image: image});
 	
-	  const auth = await this.authEmpInstApi();
-	  if (auth.authorized == 0)
+	  if (this.state.auth.authorized == 0)
 	  {
-		  this.props.navigation.navigate('Alternative');
+		  
 	  }
 	  else
 	  {
-		  if (auth.authorized == 1)
+		  if (this.state.auth.authorized == 1)
 	      {
 	          await this.fetchDispatchsFromApi();
 		  }
 		  else
 		  {
-			  this.props.navigation.navigate('Alternative');
+			 
 		  }
 	 }
   
