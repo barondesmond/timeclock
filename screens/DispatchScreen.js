@@ -162,7 +162,7 @@ async authEmpInstApi() {
 		  this.props.navigation.navigate('Alternative');
 		  console.log('not authorized');
 	  }
-	  elseif (this.state.auth.EmpActive != 1)
+	  else
 	 {
 		 this.fetchDispatchsFromApi();	  
 	 }
@@ -270,6 +270,7 @@ async componentDidMount ()  {
 	  const violation = await AsyncStorage.getItem('violation');
 	  const image = await AsyncStorage.getItem('image');
 	  this.setState({violation: violation, image: image});
+	  this.gps_update
       this.intervalID = setInterval(this.gps_update, 5000);
 
 }

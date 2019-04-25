@@ -162,7 +162,7 @@ async authEmpInstApi() {
 		  this.props.navigation.navigate('Alternative');
 		  console.log('not authorized');
 	  }
-	  elseif (this.state.authEmpActive != 1)
+	  else
 	 {
 		 this.fetchDispatchsFromApi();	  
 	 }
