@@ -426,7 +426,7 @@ renderMaybeWorking = () => {
 	{
 		return (
 		<View style={styles.buttonContainer}>
-			<Text>Distance to Dispatch this.state.dispatchdistance</Text>
+			<Text>Distance to Dispatch {this.state.dispatchdistance}</Text>
 		</View>);
 		
 	}

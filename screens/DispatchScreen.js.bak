@@ -438,7 +438,7 @@ renderMaybeWorking = () => {
    );
 }
 
-DispatchCamera = () => {
+dispatchCamera = () => {
 
 	this.props.navigation.navigate('DispatchCamera', {onGoBack: () => this.setState({addDispatchPicture: true})});
 
@@ -471,7 +471,7 @@ renderCustomerComplete = () => {
 	{
 		return(
 		<View style={styles.buttonContainer}>
-			<Button title="Add Picture" onPress={this.customerComplete}  />
+			<Button title="Add Picture" onPress={this.dispatchCamera}  />
 		</View>	
 		);
 	}
