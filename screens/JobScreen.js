@@ -381,6 +381,22 @@ addJobNote = async () => {
 	
 }
 
+workingStatus = async () => {
+
+
+	this.setState({checkinStatus: 'Start', event: 'Working'}); 
+	//Alert.alert(this.state.checkinStatus + ' ' + this.state.event + ' for a living');
+
+	const auth = await this.authEventLogApi();
+	//Alert.alert(this.state.checkinStatus + ' ' + this.state.event + ' auth ' + auth.authorized);
+	console.log(auth);
+	this.setState({checkinStatus: 'Stop'});
+
+	
+
+}
+
+
 renderMaybeWorking = () => {
 	
 	if (this.isLoading==true)
