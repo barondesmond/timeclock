@@ -73,6 +73,7 @@ constructor(props){
 		isNotesVisible: false,
         isVisibleJobNote: false,
 		isTimeHome: true,
+		override: false,
         gps: __DEV__,
     }
 
@@ -247,15 +248,8 @@ gps_update = async () => {
 
 async componentDidMount () {
 
-	  this._getLocationAsync();
-	  if (!this.state.locationstatus)
-	  {
-		 let location = await Location.getCurrentPositionAsync({});
-		 console.log(location);
-		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
-	  }
-	 
-	
+
+	 	
 	  const EmpName = await AsyncStorage.getItem('EmpName');
 	  this.setState({EmpName: EmpName});
 
@@ -264,6 +258,7 @@ async componentDidMount () {
 
 	  const EmpNo = await AsyncStorage.getItem('EmpNo');
 	  this.setState({EmpNo: EmpNo});
+	  await this.fetchJobsFromApi();
 
 	  const Bio = await AsyncStorage.getItem('Bio');
 	  this.setState({Bio: Bio});
@@ -384,6 +379,34 @@ addJobNote = async () => {
 	console.log(post);
 	this.setState({checkinStatus: 'Stop', JobNotes: post.JobNotes, isVisibleJobNote: false});
 	
+}
+
+renderMaybeWorking = () => {
+	
+	if (this.isLoading==true)
+	{
+		return false;
+	}
+
+	if (this.state.event != 'Traveling' || this.state.checkinStatus != 'Stop')
+	{
+		return false;
+	}
+
+	if (this.state.jobdistance != null &&  this.state.jobdistance > 2  && this.state.override == false)
+	{
+		return (
+		<View style={styles.buttonContainer}>
+			<Text>Distance to Job {this.state.jobdistance}</Text>
+		</View>);
+		
+	}
+
+	return(
+		<View style={styles.buttonContainer}>
+<Button title="Switch Status to Working" onPress={this.workingStatus}  />
+		</View>	
+   );
 }
 
 renderWorkingJobNotes = () => {
@@ -509,9 +532,8 @@ renderWorkingJobNotes = () => {
                Status {this.state.checkinStatus} {this.state.event} at Job# {this.state.Name}
 	          </Text>
 			 {this.renderWorkingJobNotes()}
-
+	 {this.renderMaybeWorking()}
             </View>
-			{this.renderGPS()}     
 
 	
 	</View>
