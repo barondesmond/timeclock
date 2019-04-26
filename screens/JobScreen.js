@@ -149,6 +149,10 @@ async authEmpInstApi() {
 		  this.props.navigation.navigate('Alternative');
 		  console.log('not authorized');
 	  }
+	  else
+	{
+		  		  	  await this.fetchJobsFromApi();
+	}
 	  if (this.state.auth.EmpActive == 1 && this.state.auth.Screen == 'Job')
 	  {
 		  console.log('logged in');
@@ -193,7 +197,6 @@ async authEventLogApi() {
 	  }
 	  else
 	{
-		  	  await this.fetchJobsFromApi();
 	}
 	  if (this.state.auth.EmpActive == 1)
 	  {
