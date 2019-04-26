@@ -128,7 +128,7 @@ return (
 async authEmpInstApi() {
 
  
-	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&dev=${__DEV__}`)
+	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}`)
       .then((response2) => response2.json())
       .then((responseJson2) => {
 
@@ -157,7 +157,7 @@ async authEmpInstApi() {
 	  if (this.state.auth.EmpActive == 1 && this.state.auth.Screen == 'Job')
 	  {
 		  console.log('logged in');
-		  this.setState({Name: this.state.auth.Name, JobID: this.state.auth.JobID, LocName: this.state.auth.LocName, JobNotes: this.state.auth.JobNotes, event : this.state.auth.event, eventstatus: false, jobstatus: false, checkinStatus: 'Stop', active: false, isJobVisible: false}) 
+		  this.setState({Name: this.state.auth.Name, JobID: this.state.auth.JobID, LocName: this.state.auth.LocName, JobNotes: this.state.auth.JobNotes, jobdistance: this.state.auth.distance, joblatitude: this.state.auth.latitude, joblongitude: this.state.auth.longitude:, event : this.state.auth.event, eventstatus: false, jobstatus: false, checkinStatus: 'Stop', active: false, isJobVisible: false}) 
 	  }
       if (this.state.auth.EmpActive == 1 && this.state.auth.Screen != 'Job')
 	 {
