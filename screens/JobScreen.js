@@ -224,7 +224,19 @@ _getLocationAsync = async () => {
 
 }
 
+gps_update = async () => {
 
+	  this._getLocationAsync();
+	  await this.authEmpInstApi();
+
+	  if (!this.state.locationstatus)
+	  {
+		 let location = await Location.getCurrentPositionAsync({});
+		 console.log(location);
+		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
+		 
+	  }
+}
 
 async componentDidMount () {
 
@@ -254,6 +266,8 @@ async componentDidMount () {
 	
 	  await this.authEmpInstApi();
 	  await this.fetchJobsFromApi();
+      this.intervalID = setInterval(this.gps_update, 5000);
+
 	
 
   
