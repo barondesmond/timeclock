@@ -157,7 +157,7 @@ async authEmpInstApi() {
 	  if (this.state.auth.EmpActive == 1 && this.state.auth.Screen == 'Job')
 	  {
 		  console.log('logged in');
-		  this.setState({Name: this.state.auth.Name, JobID: this.state.auth.JobID, LocName: this.state.auth.LocName, JobNotes: this.state.auth.JobNotes, jobdistance: this.state.auth.distance, joblatitude: this.state.auth.latitude, joblongitude: this.state.auth.longitude:, event : this.state.auth.event, eventstatus: false, jobstatus: false, checkinStatus: 'Stop', active: false, isJobVisible: false}) 
+		  this.setState({Name: this.state.auth.Name, JobID: this.state.auth.JobID, LocName: this.state.auth.LocName, JobNotes: this.state.auth.JobNotes, jobdistance: this.state.auth.distance, joblatitude: this.state.auth.latitude, joblongitude: this.state.auth.longitude, event : this.state.auth.event, eventstatus: false, jobstatus: false, checkinStatus: 'Stop', active: false, isJobVisible: false}) 
 	  }
       if (this.state.auth.EmpActive == 1 && this.state.auth.Screen != 'Job')
 	 {
