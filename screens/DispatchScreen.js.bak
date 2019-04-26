@@ -112,7 +112,7 @@ async fetchDispatchsFromApi() {
 	   for (let i=0; i < this.state.dispatchs.length ; i++) {
 	      pickers.push(<Button key={this.state.dispatchs[i].Dispatch} title = {this.state.dispatchs[i].DispatchName} value={i} onPress={()=>this.updateDispatch(i)} />);
        }
-	   pickers.push(<Button key="close" title="Close Dispatch" onPress={()=>this.setState({isDispatchVisible: false})} />);
+	   pickers.push(<Button key="close" title="Back" onPress={()=>this.setState({isDispatchVisible: false})} />);
 		this.setState({pickers: pickers});
 
 	 }
@@ -546,7 +546,7 @@ renderWorkingDispatchNotes = () => {
 
           style={styles.buttonContainer} value="Post" />
 
-		   <Button key="Close" title="Close Note"
+		   <Button key="Close" title="Back"
 
           onPress={() => this.setState({isVisibleDispatchNote: false})} value="Close"
 
@@ -592,7 +592,7 @@ renderWorkingDispatchNotes = () => {
 				<Text style={styles.noteText}>
 			      {this.state.DispatchNotes}
                 </Text>
-                <Button title="Close Notes" onPress={()=>this.setState({isNotesVisible: false})} />
+                <Button title="Back" onPress={()=>this.setState({isNotesVisible: false})} />
 				</ScrollView>
 				
                </Modal>
@@ -621,7 +621,7 @@ renderWorkingDispatchNotes = () => {
 
 	           <Button title="Traveling" onPress={()=>this.updateEvent('Traveling')} />
 		           <Button title="Working" onPress={()=>this.updateEvent('Working')} />
-				   <Button title="Close Event" onPress={()=>this.setState({isEventVisible: false})} />
+				   <Button title="Back" onPress={()=>this.setState({isEventVisible: false})} />
 				</View>
 			   </ScrollView>
       </Modal>

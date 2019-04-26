@@ -280,8 +280,7 @@ error(err) {
 
  componentWillUnmount() {
 
-    navigator.geolocation.clearWatch(this.watchId);
-    clearInterval();
+    clearInterval(intervalID);
   }
 
  async checkStatus(override) {

@@ -280,7 +280,7 @@ error(err) {
 
  componentWillUnmount() {
 
-    clearInterval(intervalID);
+    clearInterval(this.intervalID);
   }
 
  async checkStatus(override) {
