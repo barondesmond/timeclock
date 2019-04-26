@@ -100,7 +100,7 @@ async fetchJobsFromApi() {
 	 for (let i=0; i < this.state.jobs.length ; i++) {
 	    pickers.push(<Button key={this.state.jobs[i].Name} title = {this.state.jobs[i].LocName} value={i} onPress={()=>this.updateJob(i)} />);
      }
-	 pickers.push(<Button key="close" title="Close Jobs" onPress={()=>this.setState({isJobVisible: false})} />);
+	 pickers.push(<Button key="close" title="Back" onPress={()=>this.setState({isJobVisible: false})} />);
 	//console.log(pickers);
 	this.setState({pickers: pickers});
 	
@@ -191,6 +191,10 @@ async authEventLogApi() {
 		  console.log('not authorized');
 		  return false;
 	  }
+	  else
+	{
+		  	  await this.fetchJobsFromApi();
+	}
 	  if (this.state.auth.EmpActive == 1)
 	  {
 		  if (this.state.auth.Screen == 'Job')
@@ -263,9 +267,8 @@ async componentDidMount () {
 	  const violation = await AsyncStorage.getItem('violation');
 	  const image = await AsyncStorage.getItem('image');
 	  this.setState({violation: violation, image: image});
-	
-	  await this.authEmpInstApi();
-	  await this.fetchJobsFromApi();
+
+	  this.gps_update;
       this.intervalID = setInterval(this.gps_update, 5000);
 
 	
