@@ -312,7 +312,7 @@ error(err) {
 		if (this.state.checkinStatus == 'Start' && this.state.event== 'Working' && (this.state.dispatchdistance == null || this.state.dispatchdistance > 2))
 		{
 			Alert.alert('Not within range of ' + this.state.DispatchLocation + ' or gps not valid ' + this.state.dispatchdistance); 
-			this.props.navigation.navigate('JobLocation', {onGoBack: () => this.checkStatus(true), LocName: this.state.JobLocation}});
+			this.props.navigation.navigate('JobLocation', {onGoBack: () => this.checkStatus(true), LocName: this.state.DispatchLocation}});
 			return false;
 		}
 	 }
