@@ -214,7 +214,7 @@ async componentDidMount () {
 	  const EmpNo = await AsyncStorage.getItem('EmpNo');
 
 	  this.setState({EmpNo: EmpNo});
-	  if (!this.state.EmpNo)
+	  if (!this.state.EmpNo || this.state.EmpNo == null)
 	  {
 
 		  this.props.navigation.navigate('Alternative');
