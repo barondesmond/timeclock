@@ -110,7 +110,8 @@ async fetchDispatchsFromApi() {
 	 else
 	 {
 	   for (let i=0; i < this.state.dispatchs.length ; i++) {
-	      pickers.push(<Button key={this.state.dispatchs[i].Dispatch} title = {this.state.dispatchs[i].DispatchName} value={i} onPress={()=>this.updateDispatch(i)} />);
+		   let title = this.state.dispatchs[i].Dispatch + ' ' + this.state.dispatchs[i].DispatchName;
+	      pickers.push(<Button key={this.state.dispatchs[i].Dispatch} title = {title} value={i} onPress={()=>this.updateDispatch(i)} />);
        }
 	   pickers.push(<Button key="close" title="Back" onPress={()=>this.setState({isDispatchVisible: false})} />);
 		this.setState({pickers: pickers});
@@ -139,7 +140,8 @@ return (
 
 async authEmpInstApi() {
 
- 
+    this.setState({isLoading: true});
+
 	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}`)
       .then((response2) => response2.json())
       .then((responseJson2) => {
@@ -183,6 +185,7 @@ async authEmpInstApi() {
 async authEventLogApi() {
 
 	
+    this.setState({isLoading: true});
 
 	Screen = await AsyncStorage.getItem('Screen');
 	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&event=${this.state.event}&Dispatch=${this.state.Dispatch}&Counter=${this.state.Counter}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}&addDispatchNote=${this.state.addDispatchNote}&dev=${__DEV__}`;
@@ -250,12 +253,8 @@ gps_update = async () => {
 		 
 	  }
 }
-
-
-async componentDidMount ()  {
-
-	 
-	  
+async componentWillMount () {
+	
 	  const EmpName = await AsyncStorage.getItem('EmpName');
 	  this.setState({EmpName: EmpName});
 
@@ -270,8 +269,26 @@ async componentDidMount ()  {
 	  const violation = await AsyncStorage.getItem('violation');
 	  const image = await AsyncStorage.getItem('image');
 	  this.setState({violation: violation, image: image});
-	  this.gps_update
-      this.intervalID = setInterval(this.gps_update, 50000);
+	  this._getLocationAsync();
+	  await this.authEmpInstApi();
+
+	  if (!this.state.locationstatus)
+	  {
+		 let location = await Location.getCurrentPositionAsync({});
+		 console.log(location);
+		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
+		 
+	  }
+
+
+
+
+}
+
+
+async componentDidMount ()  {
+
+      this.intervalID = setInterval(this.gps_update, 5000);
 
 }
 
@@ -366,10 +383,7 @@ resetEventStatus = () => {
 
 renderAddress = () => {
 
-	if (this.state.isLoading == true)
-	{
-		return false;
-	}
+
 	if (this.state.Add1 == '')
 	{
 		return false;
@@ -407,16 +421,16 @@ workingStatus = async () => {
 
 renderMaybeWorking = () => {
 	
-	if (this.isLoading==true)
+
+
+	if (this.state.event != 'Traveling')
 	{
 		return false;
 	}
-
-	if (this.state.event != 'Traveling' || this.state.checkinStatus != 'Stop')
+	if (this.state.checkinStatus != 'Stop')
 	{
 		return false;
 	}
-
 	if (this.state.dispatchdistance != null &&  this.state.dispatchdistance > 2  && this.state.override == false)
 	{
 		return (
@@ -449,10 +463,7 @@ customerComplete = () => {
 renderCustomerComplete = () => {
 
 	console.log(this.state.isLoading);
-	if (this.state.isLoading==true)
-	{
-		return false;
-	}
+
 	console.log(this.state.event);
 	console.log(this.state.checkinStatus);
 
@@ -558,15 +569,13 @@ renderWorkingDispatchNotes = () => {
         </View>
    )
 }
+renderDispatchModal = ()  => {
 
- render() {
-
-
-	
+    if (this.state.dispatchs == null)
+    {
+		return false;
+    }
 	return (
-
-	<View style={styles.container}>
-    <View style={styles.welcomeContainer}>
 			<View style={styles.buttonContainer}>
    
 	            <Modal animationType = {"slide"} transparent = {false}
@@ -582,6 +591,26 @@ renderWorkingDispatchNotes = () => {
 			   this.state.dispatchstatus? <Button title={this.state.DispatchName} onPress = {() => this.setState({isDispatchVisible: true})} /> : <Button style={styles.buttonContainer} title={this.state.DispatchName}  onPress={this.resetDispatchStatus} /> 
 			   }
          </View>
+	  );
+}
+ render() {
+
+	if (this.state.latitude == null)
+	{
+		return ( 
+	<View style={styles.container}>
+    <View style={styles.welcomeContainer}>
+			<Text style={styles.noteText}> Loading... </Text>
+    </View>
+	</View>
+			);
+	}
+	
+	return (
+
+	<View style={styles.container}>
+    <View style={styles.welcomeContainer}>
+	 {this.renderDispatchModal()}
 	 {this.renderAddress()}
             <Modal animationType = {"slide"} transparent = {true}
                    visible = {this.state.isNotesVisible}
@@ -631,9 +660,7 @@ renderWorkingDispatchNotes = () => {
 
       	   
 			<View style={styles.buttonContainer}>
-		      <Text style={styles.getStartedText}>
-               Status {this.state.checkinStatus} {this.state.event} at Dispatch# {this.state.Dispatch}
-	          </Text>
+
 	 {this.renderMaybeWorking()}
 	 {this.renderCustomerComplete()}
 	 {this.renderWorkingDispatchNotes()}
