@@ -10,7 +10,7 @@
   import DocumentScreen from '../screens/DocumentScreen';
   import JobLocationScreen from '../screens/JobLocationScreen';
   import DispatchCameraScreen from '../screens/DispatchCameraScreen';
-
+  import PictureScreen from '../screens/PictureScreen';
 
   import { createAppContainer } from 'react-navigation';
 
@@ -24,6 +24,8 @@
 	Employee: {screen: EmployeeScreen},
 	CustomerAccept: {screen: CustomerAcceptScreen},
 	Document: {screen: DocumentScreen},
+	Picture: {screen: PictureScreen},
+
 	JobLocation: {screen: JobLocationScreen},
 	DispatchCamera: {screen: DispatchCameraScreen}
 	});

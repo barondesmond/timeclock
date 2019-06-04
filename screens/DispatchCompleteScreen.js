@@ -256,14 +256,12 @@ async componentDidMount () {
 
 	  const Bio = await AsyncStorage.getItem('Bio');
 	  this.setState({Bio: Bio});
-	  const violation = await AsyncStorage.getItem('violation');
-	  const image = await AsyncStorage.getItem('image');
-	  const customer = await AsyncStorage.getItem('customer');
-	  const customerimage = await AsyncStorage.getItem('customerimage');
-	  this.setState({violation: violation, image: image});
+	  const customer = await AsyncStorage.getItem('violation');
+	  const customerimage = await AsyncStorage.getItem('image');
+
 	  if (this.customer && this.customerimage)
 	  {
-		  this.setState({customer: customer, customerimage: customerimage});
+		  this.setState({customer: customer, customerimage: customerimage, violation: customer, image: customerimage});
 	  }
 	  const auth = await this.authEmpInstApi();
 	  if (auth.authorized == 0)
@@ -299,16 +297,17 @@ error(err) {
 checkStatus =  async () => {
 	
 	 console.log(this.state.checkinStatus);
-	 const customer = await AsyncStorage.getItem('customer');
-	 const customerimage = await AsyncStorage.getItem('customerimage');
+	 const customer = await AsyncStorage.getItem('violation');
+	 const customerimage = await AsyncStorage.getItem('image');
 	 console.log(customer);
 	 if (this.state.checkinStatus == 'Stop' && !this.state.dispatchstatus && !this.state.eventstatus && customer != ''  && customerimage != '') {
+		this.setState({customer: customer, customerimage: customerimage});
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive != '1')
 		{
 			this.setState({checkinStatus: 'Start', active: !this.state.active, customer:false, customerimage:null});
-			await AsyncStorage.removeItem('customer');
-			await AsyncStorage.removeItem('customerimage');
+			await AsyncStorage.removeItem('violation');
+			await AsyncStorage.removeItem('image');
 			Alert.alert('Dispatch Complete');
 			this.props.navigation.navigate('Home');
 		}
@@ -358,8 +357,8 @@ customerComplete = () => {
 	}
 	else
 	{
-		this.props.navigation.navigate('CustomerAccept', {
-      onGoBack: () => this.checkStatus()});
+		this.props.navigation.navigate('Picture', {
+      onGoBack: () => this.checkStatus(), LocName: this.state.DispatchName, address: 'customerComplete', reference: this.state.Dispatch});
 	}
 }
 

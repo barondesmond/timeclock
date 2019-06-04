@@ -235,8 +235,8 @@ renderPortal = (newscreen) => {
 
 return(
 <View>
-        <View style={styles.getPortalText}>
-            <Text style={styles.getPortalText}>
+        <View style={styles.getPortalContainer}>
+            <Text style={styles.getStartedText}>
 	{newscreen} Portal
             </Text>
           </View>
@@ -245,10 +245,7 @@ return(
 			  <View style={styles.contentContainer}>
           <View style={styles.buttonContainer}>
 
-			  <Button title={portal}
-                   onPress={() => this.primaryLogin(newscreen)}
-   
-          />
+			  <Button title={portal} onPress={() => this.primaryLogin(newscreen)} />
 			  </View>
           </View>
 
@@ -278,6 +275,7 @@ return (	  <View style={styles.welcomeContainer}>
 
 render() 
   {
+
     return (
       <View style={styles.container}>
           <View style={styles.welcomeContainer}>

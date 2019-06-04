@@ -12,6 +12,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ScrollView,
   TextInput,
   AsyncStorage,
   Alert,
@@ -30,304 +31,189 @@ export default class CameraScreen extends Component {
   state = {
 
     image: null,
+	pictures: null,
     uploading: false,
     violation: '',
     EmpNo: null,
-	pickerResult: null
+	pickerResult: null,
+	loadingPictures: true,
   };
 
 
-  render() {
-
-    let {
-
-      image
-
-    } = this.state;
-
-
-
-    return (
-
-      <View style={styles.container}>
-	<View style={styles.welcomeContainer}>
-
-        <StatusBar barStyle="default" />
-
-
-	
-        <Button onPress={this._takePhoto} title="Scan a Document" />
-		<Button onPress={this._pickImage} title="Pick a Document" />
-	
-        {this._maybeRenderImage()}
-
-        {this._maybeRenderUploadingOverlay()}
-
-      </View>
-    </View>
-
-    );
-
-  }
-
-
-
-
-
-  _maybeRenderUploadingOverlay = () => {
-
-    if (this.state.uploading) {
-
-      return (
-
-        <View
-
-          style={[StyleSheet.absoluteFill, styles.maybeRenderUploading]}>
-
-          <ActivityIndicator color="#fff" size="large" />
-
-        </View>
-
-      );
-
+async setItem(key, value) {
+    try {
+        return await AsyncStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+         console.error('AsyncStorage#setItem error: ' + error.message);
     }
+}
 
-  };
+async getItem(key) {
+    return await AsyncStorage.getItem(key)
+        .then((result) => {
+            if (result) {
+                try {
+                    result = JSON.parse(result);
+                } catch (e) {
+                     console.error('AsyncStorage#getItem error deserializing JSON for key: ' + key, e.message);
+                }
+            }
+            return result;
+        });
+}
+
+async removeItem(key) {
+    return await AsyncStorage.removeItem(key);
+}
+
+async loadPictures () {
+
+
+		pictures = await this.getItem('pictures');
+		this.setState({pictures: pictures});
+	
+		this.setState({loadingPictures: false});
+
+return true;
+}
 
 
 
-  _maybeRenderImage = () => {
-
-    let {
-
-      image
-
-    } = this.state;
 
 
 
-    if (!image) {
+async componentWillMount () {
 
-      return;
+	if (!this.state.pictures && this.state.loadingPictures == true)
+	{
+        this.loadPictures();
+		
+	}
 
-    }
+
+}
 
 
-    return (
 
-      <View
+renderPictures() {
 
-        style={styles.maybeRenderContainer}>
-		<View>
-			<Text style={styles.buttonContainer}>
-			Please enter Amount of Receipt
-			</Text>
-		    <TextInput placeholder="Amount" 
-        style={{height: 40, borderColor: 'gray', borderWidth: 1}}
-                  onChangeText={data => this.setState({ violation: data })}
-      />
-		  </View>
+if (!this.state.pictures || this.state.pictures.length <= 0)
+{
+	return false;
+}
 
-        <View
+     return (<View>
+    {this.state.pictures.map((row) => (
+        <Image key={row.key} source={{ uri: row.image}} style={styles.maybeRenderImage} />
+    ))}
+    </View>);
+}
+
+renderPicture() {
+	if (!this.state.image)
+	{
+		return false;
+	}
+
+return (     <View
 
           style={styles.maybeRenderImageContainer}>
 		  
           <Image source={{ uri: image }} style={styles.maybeRenderImage} />
 
         </View>
+			);
+
+}
+
+ renderList = () => {
+
+	 if (this.state.loadingPictures == true)
+	 {
+
+		 return false;
+	 }
+	 if (!this.state.pictures || this.state.pictures.length <= 0)
+	 {
+		 return false;
+	 }
+	return (this.state.pictures.map((row)=>(<Image key={row.key} source={{ uri: row.image }} style={styles.maybeRenderImage} /> ) ));
+  }
+
+renderUpload = () => {
+
+if (this.state.pictures && this.state.pictures.length > 0)
+{
+return (<View><Button onPress={this.uploadImages} title="Upload a Document" /></View>);
+
+}
+
+}
+
+  render() {
 
 
 
-       <Button title="Upload Document"
+    return (
 
-          onPress={this._copyToClipboard}
+      <ScrollView style={styles.container}>
+	<View style={styles.welcomeContainer}>
 
-          style={styles.maybeRenderImageText} />
+        <StatusBar barStyle="default" />
+
+	
+        <Button onPress={this._takePhoto} title="Scan a Document" />
+	  {this.renderUpload()}
+	  {this.renderList()}
       </View>
+    </ScrollView>
 
     );
 
-  };
+  }
 
+uploadImages = async () => {
 
+   Alert.alert('Uploadig Pictures ' + this.state.pictures.length);
+   let max = this.state.pictures.length;
+   for(let i = 1; i <= max; i++) {
+  
+   row = this.state.pictures.pop();
+   await this.setItem('pictures', this.state.pictures);
+   this.setState({pictures: this.state.pictures});
+   await uploadImageAsync(row);
 
-  _share = () => {
-
-    Share.share({
-
-      message: this.state.image,
-
-      title: 'Check out this photo',
-
-      url: this.state.image,
-
-    });
-
-  };
-
-
-
-  _copyToClipboard = async () => {
-	  
-		uploadImageAsync(this.state.image, this.state.EmpNo, this.state.violation);
-		this.setState({image: null, violation: ''});
-		Alert.alert(`Upload Complete ${this.state.EmpNo}  ${this.state.violation}`);
-
-  };
-
-
-async componentDidMount () {
-
-
-	  const EmpNo = await AsyncStorage.getItem('EmpNo');
-
-	  this.setState({EmpNo: EmpNo});
-	  if (!this.state.EmpNo)
-	  {
-
-		  this.props.navigation.navigate('Alternative');
-	  }
+   }
+   Alert.alert('Images Uploaded ');
 
 }
 
-  _takePhoto = async () => {
 
-    const {
+_takePhoto = () => {
 
-      status: cameraPerm
+     this.props.navigation.navigate('Picture', {onGoBack: () => this.loadPictures(), LocName: 'receipt' , address: 'wherever' , reference: 'takeitaway', Screen: 'Document'});
 
-    } = await Permissions.askAsync(Permissions.CAMERA);
 
+return false;
 
+}
 
-    const {
+ 
 
-      status: cameraRollPerm
 
-    } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-
-
-
-    // only if user allows permission to camera AND camera roll
-
-    if (cameraPerm === 'granted' && cameraRollPerm === 'granted') {
-
-      let pickerResult = await ImagePicker.launchCameraAsync({
-
-        allowsEditing: true,
-
-        aspect: [4, 3],
-
-      });
-
-
-		this.setState({image: pickerResult.uri});
-      //this._handleImagePicked(pickerResult);
-
-    }
-
-  };
-
-
-
-  _pickImage = async () => {
-
-    const {
-
-      status: cameraRollPerm
-
-    } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-
-
-
-    // only if user allows permission to camera roll
-
-    if (cameraRollPerm === 'granted') {
-
-      let pickerResult = await ImagePicker.launchImageLibraryAsync({
-
-        allowsEditing: true,
-
-        aspect: [4, 3],
-
-      });
-
-
-		this.setState({image: pickerResult.uri});
-      //this._handleImagePicked(pickerResult);
-
-    }
-
-  };
-
-
-
-  _handleImagePicked = async pickerResult => {
-
-    let uploadResponse, uploadResult;
-
-
-
-    try {
-
-      this.setState({
-
-        uploading: true
-
-      });
-
-
-
-      if (!pickerResult.cancelled) {
-
-        uploadResponse = await uploadImageAsync(pickerResult.uri, this.state.EmpNo, this.state.violation);
-
-        uploadResult = await uploadResponse.json();
-
-
-
-        this.setState({
-
-          image: uploadResult.location
-
-        });
-
-      }
-
-    } catch (e) {
-
-      console.log({ uploadResponse });
-
-      console.log({ uploadResult });
-
-      console.log({ e });
-
-      alert('Upload failed, sorry :(');
-
-    } finally {
-
-      this.setState({
-
-        uploading: false
-
-      });
-
-    }
-
-  };
 
 }
 
 
 
-async function uploadImageAsync(uri, EmpNo, violation) {
+async function uploadImageAsync(row) {
 
   let apiUrl = URL + `upload/index.php`;
 
 
 
 
-  let uriParts = uri.split('.');
+  let uriParts = row.image.split('.');
 
   let fileType = uriParts[uriParts.length - 1];
 
@@ -336,9 +222,9 @@ async function uploadImageAsync(uri, EmpNo, violation) {
 
   formData.append('photo', {
 
-    uri,
+    uri: row.image,
 
-    name: `${EmpNo}.${violation}.${fileType}`,
+    name: `${row.key}.${row.EmpNo}.${row.Screen}.${row.reference}.${row.LocName}.${row.violation}.${row.latitude}.${row.longitude}.${fileType}`,
 
     type: `multipart/form-data`,
 
@@ -365,5 +251,20 @@ console.log(opt);
   return fetch(apiUrl, opt);
 
 }
+
+
+   
+ 
+
+
+
+ 
+
+
+ 
+
+
+
+
 
 

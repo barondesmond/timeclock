@@ -333,6 +333,16 @@ renderEmployeeNotes = () => {
  render() {
 
 
+	if (this.state.isLoading || this.state.latitude == null)
+	{
+				return ( 
+	<View style={styles.container}>
+    <View style={styles.welcomeContainer}>
+			<Text style={styles.noteText}> Loading... </Text>
+    </View>
+	</View>
+			);
+	}
 	
 	return (
 

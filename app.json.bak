@@ -9,7 +9,7 @@
     "platforms": [
       "ios", "android"
     ],
-    "version": "1.1.1",
+    "version": "1.1.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -40,10 +40,10 @@
           "NSAllowsArbitraryLoadsForMedia": true, 
           "NSAllowsArbitraryLoadsInWebContent": true, 
         }
-      },
+      }
+   },
     "android": {
       "package": "com.plisolutions.timeclock"
     }
-   }
  }
  }

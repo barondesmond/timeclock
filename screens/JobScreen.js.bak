@@ -57,6 +57,11 @@ constructor(props){
 		eventstatus: true,
         jobs: null,
         job: null,
+		Add1: '',
+		Add2: '',
+		City: '',
+		State: '',
+		Zip: '',
 		jobstatus: true,
         pickers: null,
         auth: null,
@@ -74,6 +79,8 @@ constructor(props){
         isVisibleJobNote: false,
 		isTimeHome: true,
 		override: false,
+		pictures: null,
+		notes: '',
         gps: __DEV__,
     }
 
@@ -157,7 +164,7 @@ async authEmpInstApi() {
 	  if (this.state.auth.EmpActive == 1 && this.state.auth.Screen == 'Job')
 	  {
 		  console.log('logged in');
-		  this.setState({Name: this.state.auth.Name, JobID: this.state.auth.JobID, LocName: this.state.auth.LocName, JobNotes: this.state.auth.JobNotes, jobdistance: this.state.auth.distance, joblatitude: this.state.auth.latitude, joblongitude: this.state.auth.longitude:, event : this.state.auth.event, eventstatus: false, jobstatus: false, checkinStatus: 'Stop', active: false, isJobVisible: false}) 
+		  this.setState({Name: this.state.auth.Name, JobID: this.state.auth.JobID, LocName: this.state.auth.LocName, JobNotes: this.state.auth.JobNotes, Add1: this.state.auth.Add1, Add2: this.state.auth.Add2, City: this.state.auth.City, State: this.state.auth.State, Zip: this.state.auth.Zip, jobdistance: this.state.auth.distance, joblatitude: this.state.auth.latitude, joblongitude: this.state.auth.longitude, event : this.state.auth.event, eventstatus: false, jobstatus: false, checkinStatus: 'Stop', active: false, isJobVisible: false}) 
 	  }
       if (this.state.auth.EmpActive == 1 && this.state.auth.Screen != 'Job')
 	 {
@@ -246,6 +253,31 @@ gps_update = async () => {
 	  }
 }
 
+async setItem(key, value) {
+    try {
+        return await AsyncStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+         console.error('AsyncStorage#setItem error: ' + error.message);
+    }
+}
+
+async getItem(key) {
+    return await AsyncStorage.getItem(key)
+        .then((result) => {
+            if (result) {
+                try {
+                    result = JSON.parse(result);
+                } catch (e) {
+                     console.error('AsyncStorage#getItem error deserializing JSON for key: ' + key, e.message);
+                }
+            }
+            return result;
+        });
+}
+async removeItem(key) {
+    return await AsyncStorage.removeItem(key);
+}
+
 async componentDidMount () {
 
 
@@ -264,9 +296,24 @@ async componentDidMount () {
 	  this.setState({Bio: Bio});
 	  const violation = await AsyncStorage.getItem('violation');
 	  const image = await AsyncStorage.getItem('image');
-	  this.setState({violation: violation, image: image});
+	  const notes = await AsyncStorage.getItem('notes');
+	  const noteadded = await AsyncStorage.getItem('noteadded');
+	  this.loadPictures();
 
-	  this.gps_update;
+	  this.setState({violation: violation, image: image, notes: notes, noteadded: noteadded});
+
+
+
+	  this._getLocationAsync();
+	  await this.authEmpInstApi();
+
+	  if (!this.state.locationstatus)
+	  {
+		 let location = await Location.getCurrentPositionAsync({});
+		 console.log(location);
+		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
+		 
+	  }
       this.intervalID = setInterval(this.gps_update, 5000);
 
 	
@@ -296,14 +343,29 @@ error(err) {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive == '1')
 		{
+			if (this.state.event=='Working')
+			{
+			    clearInterval(this.intervalID);
+			}
 			this.setState({checkinStatus: 'Stop', active: !this.state.active});
 			return false;
 		}
 	}
 	else if (this.state.checkinStatus == 'Stop' && !this.state.jobstatus && !this.state.eventstatus) {
+		if (this.state.notes)
+		{
+			this.setState({addDispatchNote: this.state.notes});
+			await this.addJobNote();
+		}
+
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive != '1')
 		{
+	
+			if (this.state.pictures && this.state.pictures.length != 0)
+			{
+				await this.uploadImages();
+			}
 			this.setState({checkinStatus: 'Start', active: !this.state.active});
 			this.props.navigation.navigate('Home');
 			Alert.alert('Job Work Done');
@@ -315,7 +377,8 @@ error(err) {
 		if (this.state.checkinStatus == 'Start' && this.state.event== 'Working' && (this.state.jobdistance == null || this.state.jobdistance > 2))
 		{
 			Alert.alert('Not within range of ' + this.state.JobLocation + ' or gps not valid ' + this.state.jobdistance); 
-			this.props.navigation.navigate('JobLocation', {onGoBack: () => this.checkStatus(true), LocName: this.state.JobLocation});
+		    clearInterval(this.intervalID);
+			this.props.navigation.navigate('Picture', {onGoBack: () => this.checkStatus(true), LocName: this.state.LocName, address: this.state.JobLocation, reference: this.state.JobID});
 			return false;
 		}
 	 }
@@ -360,7 +423,7 @@ resetEventStatus = () => {
  updateJob = (i) => {
 		//console.log(this.state.jobs);
 		console.log(this.state.jobs[i]);
-		this.setState({ job: this.state.jobs[i].Name, jobstatus: !this.state.jobstatus, Name: this.state.jobs[i].Name, JobID: this.state.jobs[i].JobID, LocName: this.state.jobs[i].LocName, JobNotes: this.state.jobs[i].JobNotes, JobLocation: this.state.jobs[i].location, jobdistance: this.state.jobs[i].distance, joblatitude: this.state.jobs[i].latitude, joblongitude: this.state.jobs[i].longitude, isJobVisible: false })
+		this.setState({ job: this.state.jobs[i].Name, jobstatus: !this.state.jobstatus, Name: this.state.jobs[i].Name, JobID: this.state.jobs[i].JobID, LocName: this.state.jobs[i].LocName, Add1: this.state.jobs[i].Add1, Add2: this.state.jobs[i].Add2, City: this.state.jobs[i].City, State: this.state.jobs[i].State, Zip: this.state.jobs[i].Zip, JobNotes: this.state.jobs[i].JobNotes, JobLocation: this.state.jobs[i].location, jobdistance: this.state.jobs[i].distance, joblatitude: this.state.jobs[i].latitude, joblongitude: this.state.jobs[i].longitude, isJobVisible: false })
 	    //console.log(this.state);
    }
 
@@ -375,9 +438,42 @@ addJobNote = async () => {
 	}
 	this.setState({checkinStatus: 'addNote', isTimeHome:false});
 	const post = await this.authEventLogApi();
+	await AsyncStorage.removeItem('notes');
 	console.log(post);
 	this.setState({checkinStatus: 'Stop', JobNotes: post.JobNotes, isVisibleJobNote: false});
 	
+}
+
+uploadImages = async ()  => {
+
+	if (!this.state.pictures || this.state.pictures.length == 0)
+	{
+		return false;
+	}
+   Alert.alert('Uploadig Pictures ' + this.state.pictures.length);
+   let max = this.state.pictures.length;
+   for(let i = 1; i <= max; i++) {
+  
+   row = this.state.pictures.pop();
+   await this.setItem('pictures', this.state.pictures);
+   this.setState({pictures: this.state.pictures});
+   await uploadImageAsync(row);
+
+   }
+   Alert.alert('Images Uploaded ');
+
+}
+
+async loadPictures () {
+
+		pictures = await this.getItem('pictures');
+
+		if (pictures && pictures.length > 0)
+		{
+			this.setState({pictures: pictures});
+		}
+
+return true;
 }
 
 workingStatus = async () => {
@@ -395,6 +491,28 @@ workingStatus = async () => {
 
 }
 
+renderAddress = () => {
+
+
+	if (this.state.Add1 == '')
+	{
+		return false;
+	}
+	return(
+		      <View style={styles.buttonContainer}>
+			<Text style={styles.getStartedText}>
+					Address: {this.state.Add1} {this.state.Add2}
+            </Text>
+			<Text style={styles.getStartedText}>
+				  {this.state.City}, {this.state.State} {this.state.Zip}
+            </Text>
+			<Text style={styles.getStartedText}>
+	             Phone: {this.state.Phone1}         
+			</Text>
+		</View>
+	
+		)
+}
 
 renderMaybeWorking = () => {
 	
@@ -424,6 +542,30 @@ renderMaybeWorking = () => {
    );
 }
 
+addToNote = async () => {
+
+//console.log(this.state.addDispatchNote);
+let thisnote = await AsyncStorage.getItem('notes');
+
+if (thisnote)
+{
+	thisnote = thisnote.concat(' ', this.state.addJobNote);
+}
+else
+{
+	thisnote = this.state.addJobNote;
+}
+
+
+if (thisnote)
+{
+	this.setState({addDispatchNote: '', notes: thisnote, isVisibleJobNote: false, isNotesVisible: false});
+	await AsyncStorage.setItem('notes', thisnote);
+	await AsyncStorage.setItem('noteadded', 'addJobNote');
+}
+
+}
+
 renderWorkingJobNotes = () => {
 	if (this.isLoading==true)
 	{
@@ -443,27 +585,26 @@ renderWorkingJobNotes = () => {
                    visible = {this.state.isVisibleJobNote}
                    onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
   		        <ScrollView style={styles.buttonContainer}>
-   
+				<View style={styles.noteboxContainer}>
+
+   		  		                  <Button title="Add To Notes" onPress={()=>this.addToNote()} />
+                <Button title="Back" onPress={()=>this.setState({isVisibleJobNote: false})} />
+				</View>
 			      	    <TextInput placeholder="Note" multiline={true}     numberOfLines={4}
         style={styles.noteContainer}
                   onChangeText={data => this.setState({ addJobNote: data })}
       />
-		   <Button key="Post" title="Post Note"
-
-          onPress={this.addJobNote}
-
-          style={styles.buttonContainer} value="Post" />
-
-		   <Button key="Close" title="Close Note"
-
-          onPress={() => this.setState({isVisibleJobNote: false, isTimeHome:true})} value="Close"
-
-          style={styles.buttonContainer} />
+					<Text style={styles.getStartedText}>
+	  
+{this.state.JobNotes}
+	{this.state.notes}
+	</Text>
 			
                </ScrollView>
                </Modal>
 		<View style={styles.buttonContainer}>
 			<Button key="Open" title="Add Note" onPress={() => this.setState({isVisibleJobNote: true, isTimeHome:false})} value="Open" />
+
 			</View>
 		  </View>
    )
@@ -474,7 +615,16 @@ renderWorkingJobNotes = () => {
 
  render() {
 
-
+	if (this.state.latitude == null)
+	{
+		return ( 
+	<View style={styles.container}>
+    <View style={styles.welcomeContainer}>
+			<Text style={styles.noteText}> Loading... </Text>
+    </View>
+	</View>
+			);
+	}
 	
 	return (
 
@@ -496,21 +646,11 @@ renderWorkingJobNotes = () => {
 			   this.state.jobstatus? <Button title={this.state.LocName} onPress = {() => this.setState({isJobVisible: true})} /> : <Button style={styles.buttonContainer} title={this.state.LocName}  onPress={this.resetJobStatus} /> 
 			   }
          </View>
+	 {this.renderAddress()}
 
-            <Modal animationType = {"slide"} transparent = {true}
-                   visible = {this.state.isNotesVisible}
-                   onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
-   
-  		        <ScrollView style={styles.buttonContainer}>
-				<Text style={styles.noteText}>
-			      {this.state.JobNotes}
-                </Text>
-                <Button title="Close Notes" onPress={()=>this.setState({isNotesVisible: false})} />
-				</ScrollView>
-               </Modal>
 
 			<View style={styles.jobNotesContainer}>
-		      <TouchableHighlight onPress={() => this.setState({isNotesVisible: true})}>
+		      <TouchableHighlight onPress={() => this.setState({isVisibleJobNote: true, isTimeHome:false})}>
 				<Text style={styles.getStartedText}>
 	          Notes {this.state.JobNotes}
 	          </Text>
@@ -555,5 +695,52 @@ renderWorkingJobNotes = () => {
     </View>
     );
  }
+}
+
+ 
+async function uploadImageAsync(row) {
+
+  let apiUrl = URL + `upload/index.php`;
+
+
+
+
+  let uriParts = row.image.split('.');
+
+  let fileType = uriParts[uriParts.length - 1];
+
+
+  let formData = new FormData();
+
+  formData.append('photo', {
+
+    uri: row.image,
+
+    name: `${row.key}.${row.EmpNo}.${row.Screen}.${row.reference}.${row.LocName}.${row.violation}.${row.latitude}.${row.longitude}.${fileType}`,
+
+    type: `multipart/form-data`,
+
+  });
+
+
+  opt = {
+
+    method: 'POST',
+
+    body: formData,
+
+    headers: new Headers({
+        'Accept': 'application/json',
+		'Content-Type': 'multipart/form-data; boundary=someArbitraryUniqueString'
+
+    }),
+
+  };
+//console.log(apiUrl);
+//console.log(opt);
+
+
+  return fetch(apiUrl, opt);
+
 }
 

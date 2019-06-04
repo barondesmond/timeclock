@@ -123,7 +123,7 @@ export default class CameraScreen extends Component {
 
         style={styles.maybeRenderContainer}>
 
-
+		<View>
 			<Text style={styles.buttonContainer}>
 			Please enter reason for violation
 			</Text>
@@ -146,7 +146,7 @@ export default class CameraScreen extends Component {
 
         </View>
 
-
+</View>
 
      
 
@@ -175,10 +175,10 @@ export default class CameraScreen extends Component {
 
   _copyToClipboard = async () => {
 	  
-	if (this.state.violation.length>0)
+    this.setState({violation: await AsyncStorage.getItem('violation')});
+	if (this.state.violation && this.state.violation.length>0)
 	{
-		 await AsyncStorage.setItem('violation', this.state.violation);
-		await AsyncStorage.setItem('image', this.state.image);
+
 		const Screen = await AsyncStorage.getItem('Screen');
 
 		this.props.navigation.navigate(Screen);
@@ -204,179 +204,14 @@ async componentDidMount () {
 
   _takePhoto = async () => {
 
-    const {
+      this.props.navigation.navigate('Picture', {onGoBack: () => this._copyToClipboard(), Screen: {CameraScreen}, LocName: 'CameraScreen' , address: 'violation' , reference: 'violation'});
 
-      status: cameraPerm
-
-    } = await Permissions.askAsync(Permissions.CAMERA);
-
-
-
-    const {
-
-      status: cameraRollPerm
-
-    } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-
-
-
-    // only if user allows permission to camera AND camera roll
-
-    if (cameraPerm === 'granted' && cameraRollPerm === 'granted') {
-
-      let pickerResult = await ImagePicker.launchCameraAsync({
-
-        allowsEditing: true,
-
-        aspect: [4, 3],
-
-      });
-
-
-
-      this._handleImagePicked(pickerResult);
-
-    }
-
-  };
-
-
-
-  _pickImage = async () => {
-
-    const {
-
-      status: cameraRollPerm
-
-    } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-
-
-
-    // only if user allows permission to camera roll
-
-    if (cameraRollPerm === 'granted') {
-
-      let pickerResult = await ImagePicker.launchImageLibraryAsync({
-
-        allowsEditing: true,
-
-        aspect: [4, 3],
-
-      });
-
-
-
-      this._handleImagePicked(pickerResult);
-
-    }
-
-  };
-
-
-
-  _handleImagePicked = async pickerResult => {
-
-    let uploadResponse, uploadResult;
-
-
-
-    try {
-
-      this.setState({
-
-        uploading: true
-
-      });
-
-
-
-      if (!pickerResult.cancelled) {
-
-        uploadResponse = await uploadImageAsync(pickerResult.uri, this.state.EmpNo);
-
-        uploadResult = await uploadResponse.json();
-
-
-
-        this.setState({
-
-          image: uploadResult.location
-
-        });
-
-      }
-
-    } catch (e) {
-
-      console.log({ uploadResponse });
-
-      console.log({ uploadResult });
-
-      console.log({ e });
-
-      alert('Upload failed, sorry :(');
-
-    } finally {
-
-      this.setState({
-
-        uploading: false
-
-      });
-
-    }
 
   };
 
 }
 
-
-
-async function uploadImageAsync(uri, EmpNo) {
-
-  let apiUrl = URL + `upload/index.php`;
-
-
-
-
-  let uriParts = uri.split('.');
-
-  let fileType = uriParts[uriParts.length - 1];
-
-
-  let formData = new FormData();
-
-  formData.append('photo', {
-
-    uri,
-
-    name: `${EmpNo}.${fileType}`,
-
-    type: `multipart/form-data`,
-
-  });
-
-
-  opt = {
-
-    method: 'POST',
-
-    body: formData,
-
-    headers: new Headers({
-        'Accept': 'application/json',
-		'Content-Type': 'multipart/form-data; boundary=someArbitraryUniqueString'
-
-    }),
-
-  };
-console.log(apiUrl);
-console.log(opt);
-
-
-  return fetch(apiUrl, opt);
-
-}
+ 
 
 
 

@@ -32,10 +32,11 @@ export default StyleSheet.create({
 	borderWidth: 2,
 
   },
-   buttonContainer: {
-    margin: 5,
+  noteboxContainer: {
 	backgroundColor: '#DDDDDD',
     alignSelf: 'stretch',
+	flex: 1, 
+	flexDirection: 'row'
 
 	},
 
@@ -43,6 +44,26 @@ export default StyleSheet.create({
     
 	color: '#F44336' 
 
+	},
+    Blue:{
+    
+	color: '#0000ff' 
+
+	},
+
+   buttonContainer: {
+    margin: 5,
+	backgroundColor: '#DDDDDD',
+    alignSelf: 'stretch',
+
+	},
+
+  
+
+	buttonStyle: {
+	fontSize: 16,
+    textAlign: 'center',
+	color: 'blue',
 	},
 
  exampleText: {
@@ -155,10 +176,11 @@ noteText: {
     marginTop: 3,
     marginLeft: -10,
   },
-  getPortalText: {
+  getPortalContainer: {
 	alignItems: 'flex-start',
     textAlign: 'left',
 	margin: 5,
+
   },
 	getStartedContainer: {
     alignItems: 'center',
