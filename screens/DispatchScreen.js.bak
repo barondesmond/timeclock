@@ -564,12 +564,12 @@ renderCustomerComplete = () => {
 	//console.log(this.state.override);
 	if (!this.state.image && !this.state.override && !this.state.pictures)
 	{
-		return (<View style={styles.buttonContainer}><Text>Picture Needed</Text></View>);
+		return (<View style={styles.noteboxContainer}><Text>Picture Needed</Text></View>);
 	}
 	if (this.state.noteAdded == false)
 	{
 			return(
-		<View style={styles.buttonContainer}>
+		<View style={styles.noteboxContainer}>
 			<Text>Note Needed to Complete Dispatch</Text>
 		</View>);
 	}
@@ -577,7 +577,7 @@ renderCustomerComplete = () => {
 	{
 	//console.log('render distance');
 		return(
-		<View style={styles.buttonContainer}>
+		<View style={styles.noteboxContainer}>
 			<Text>Distance {this.state.dispatchdistance}</Text>
 		</View>);
 		

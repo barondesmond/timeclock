@@ -639,7 +639,6 @@ return thisnote;
    await uploadImageAsync(row);
 
    }
-   Alert.alert('Images Uploaded ');
 
 }
 
