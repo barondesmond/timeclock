@@ -33,11 +33,11 @@ export default StyleSheet.create({
 
   },
   noteboxContainer: {
+	marginTop: 10,
 	backgroundColor: '#DDDDDD',
     alignSelf: 'stretch',
 	flex: 1, 
-	flexDirection: 'row'
-
+	flexDirection: 'row',
 	},
 
     Red:{
@@ -55,7 +55,6 @@ export default StyleSheet.create({
     margin: 5,
 	backgroundColor: '#DDDDDD',
     alignSelf: 'stretch',
-
 	},
 
   

@@ -503,11 +503,22 @@ renderMaybeWorking = () => {
 		
 	}
 
+
+}
+
+renderWorking = () => {
+
+	if (this.state.event != 'Working')
+	{
+		return false;
+	}
 	return(
 		<View style={styles.buttonContainer}>
-<Button title="Switch Status to Working" onPress={this.workingStatus}  />
+
+			<Button title="Add Picture" onPress={this.dispatchCamera}  />
 		</View>	
    );
+
 }
 
 async loadPictures () {
@@ -553,11 +564,7 @@ renderCustomerComplete = () => {
 	//console.log(this.state.override);
 	if (this.state.addDispatchPicture == false)
 	{
-		return(
-		<View style={styles.buttonContainer}>
-			<Button title="Add Picture" onPress={this.dispatchCamera}  />
-		</View>	
-		);
+		return (<View style={styles.buttonContainer}><Text>Picture Needed</Text></View>);
 	}
 	if (this.state.noteAdded == false)
 	{
@@ -623,7 +630,6 @@ return thisnote;
 	{
 		return false;
 	}
-   Alert.alert('Uploadig Pictures ' + this.state.pictures.length);
    let max = this.state.pictures.length;
    for(let i = 1; i <= max; i++) {
   
@@ -747,7 +753,8 @@ renderDispatchModal = ()  => {
 				<View style={styles.noteboxContainer}>
 		  		                  <Button title="Add To Notes" onPress={()=>this.addToNote()} />
                 <Button title="Back" onPress={()=>this.setState({isNotesVisible: false})} />
-				</View>
+</View>
+
 				<TextInput  multiline={true}     numberOfLines={4}
         style={styles.noteContainer}
                   onChangeText={data => this.setState({ addDispatchNote: data })}
@@ -759,7 +766,6 @@ renderDispatchModal = ()  => {
 
                 </Text>
 	
-
 				</ScrollView>
 				
                </Modal>
@@ -801,7 +807,9 @@ renderDispatchModal = ()  => {
       	   
 			<View style={styles.buttonContainer}>
 
+	
 	 {this.renderMaybeWorking()}
+	 {this.renderWorking()}
 	 {this.renderCustomerComplete()}
 	 {this.renderWorkingDispatchNotes()}
 
