@@ -562,7 +562,7 @@ renderCustomerComplete = () => {
 	}
 	//console.log(this.state.dispatchdistance);
 	//console.log(this.state.override);
-	if (this.state.addDispatchPicture == false)
+	if (!this.state.image && !this.state.override && !this.state.pictures)
 	{
 		return (<View style={styles.buttonContainer}><Text>Picture Needed</Text></View>);
 	}
@@ -630,7 +630,6 @@ return thisnote;
 	{
 		return false;
 	}
-   Alert.alert('Uploadig Pictures ' + this.state.pictures.length);
    let max = this.state.pictures.length;
    for(let i = 1; i <= max; i++) {
   
