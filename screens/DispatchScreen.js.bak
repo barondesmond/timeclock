@@ -91,9 +91,9 @@ constructor(props){
 async fetchDispatchsFromApi() {
 
  
-	 const netStatus = await NetInfo.getConnectionInfo()  
+	const netStatus = await NetInfo.getConnectionInfo()  
 	console.log(netStatus);
-	if (netStatus.type != 'wifi')
+	if (netStatus.type == 'none')
 	{
 		return false;
 	}
@@ -126,6 +126,7 @@ async fetchDispatchsFromApi() {
        }
 	   pickers.push(<Button key="close" title="Back" onPress={()=>this.setState({isDispatchVisible: false})} />);
 		this.setState({pickers: pickers});
+		await AsyncStorage.setItem('pickers', pickers);
 
 	 }
 	
@@ -150,6 +151,13 @@ return (
 };
 
 async authEmpInstApi() {
+
+	const netStatus = await NetInfo.getConnectionInfo()  
+	console.log(netStatus);
+	if (netStatus.type == 'none')
+	{
+		return false;
+	}
 
     this.setState({isLoading: true});
 
