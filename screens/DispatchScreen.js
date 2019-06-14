@@ -126,6 +126,7 @@ async fetchDispatchsFromApi() {
        }
 	   pickers.push(<Button key="close" title="Back" onPress={()=>this.setState({isDispatchVisible: false})} />);
 		this.setState({pickers: pickers});
+		this.setItem('pickers', pickers);
 	 }
 	
 }
