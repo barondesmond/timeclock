@@ -126,7 +126,6 @@ async fetchDispatchsFromApi() {
        }
 	   pickers.push(<Button key="close" title="Back" onPress={()=>this.setState({isDispatchVisible: false})} />);
 		this.setState({pickers: pickers});
-		this.setItem({pickers: pickers});
 	 }
 	
 }
@@ -299,14 +298,7 @@ async componentWillMount () {
 
 	  this._getLocationAsync();
 	  const auth = await this.authEmpInstApi();
-	  if (!this.state.auth && !this.state.pickers)
-	  {
-		  const pickers = this.getItem('pickers')
-		   if (pickers)
-		  {
-			  this.setState({pickers: pickers});
-		  }
-	  }
+	
 
 	  if (!this.state.locationstatus)
 	  {

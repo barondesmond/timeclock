@@ -299,15 +299,7 @@ async componentWillMount () {
 
 	  this._getLocationAsync();
 	  const auth = await this.authEmpInstApi();
-	  if (!this.state.auth && !this.state.pickers)
-	  {
-		  const pickers = await AsyncStorage.getItem('pickers');
-		  if (pickers)
-		  {
-			  this.setState({pickers: pickers});
-
-		  }
-	  }
+	
 
 	  if (!this.state.locationstatus)
 	  {
