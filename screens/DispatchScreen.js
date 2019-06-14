@@ -17,9 +17,11 @@ import {
   Dimensions,  
   Picker,
   Modal,
-  TextInput
+  TextInput,
+  NetInfo
 } from 'react-native';
 import Expo, { Constants, Location, Permissions } from 'expo';
+
 
 import styles from '../components/styles';
 
@@ -89,6 +91,12 @@ constructor(props){
 async fetchDispatchsFromApi() {
 
  
+	const netStatus = await NetInfo.getConnectionInfo()  
+	console.log(netStatus);
+	if (netStatus.type == 'none')
+	{
+		return false;
+	}
 	await fetch(URL + `dispatchs_json.php?latitude=${this.state.latitude}&longitude=${this.state.longitude}&ServiceMan=${this.state.EmpNo}&EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&dev=${__DEV__}`)
       .then((response) => response.json())
       .then((responseJson) => {
@@ -142,6 +150,13 @@ return (
 };
 
 async authEmpInstApi() {
+
+	const netStatus = await NetInfo.getConnectionInfo()  
+	console.log(netStatus);
+	if (netStatus.type == 'none')
+	{
+		return false;
+	}
 
     this.setState({isLoading: true});
 
