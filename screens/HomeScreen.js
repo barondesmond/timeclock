@@ -11,6 +11,7 @@ import {
   Alert,
   Navigation,
   AsyncStorage,
+  NetInfo,
 } from 'react-native';
 import { WebBrowser, Constants } from 'expo';
 
@@ -142,6 +143,12 @@ export default class HomeScreen extends React.Component {
 async authEmpInstApi() {
 
  
+ 	const netStatus = await NetInfo.getConnectionInfo()  
+	console.log(netStatus);
+	if (netStatus.type == 'none')
+	{
+		return false;
+	}
 	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}`)
       .then((response2) => response2.json())
       .then((responseJson2) => {
