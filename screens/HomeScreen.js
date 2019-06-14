@@ -118,7 +118,7 @@ export default class HomeScreen extends React.Component {
 		    await AsyncStorage.setItem('Bio', this.state.EmpNo);
 			const auth = await this.authEmpInstApi();
 		    const Screen =  await AsyncStorage.getItem('Screen');
-			if (auth.authorized != 1)
+			if (auth && auth.authorized != 1)
 			{
 				this.props.navigation.navigate('Alternative', {onGoBack: () => this.primaryLogin(Screen)});
 			}

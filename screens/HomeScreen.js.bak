@@ -11,6 +11,7 @@ import {
   Alert,
   Navigation,
   AsyncStorage,
+  NetInfo,
 } from 'react-native';
 import { WebBrowser, Constants } from 'expo';
 
