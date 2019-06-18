@@ -88,12 +88,24 @@ constructor(props){
 
 }
 
-async fetchDispatchsFromApi() {
+async fetchDispatchsFromApi(load) {
 
  
 	const netStatus = await NetInfo.getConnectionInfo()  
 	console.log(netStatus);
 	if (netStatus.type == 'none')
+	{
+		Alert.alert('no connection');
+		pickers = await this.getItem('pickers');
+		dispatchs = await AsyncStorage.getItem('dispatchs');
+		if (pickers && dispatchs)
+		{
+			this.setState({pickers: pickers, dispatchs: dispatchs});
+		}
+		Alert.alert(JSON.stringify(pickers));
+		return false;
+	}
+	if (this.state.dispatchs != null && !load)
 	{
 		return false;
 	}
@@ -115,7 +127,7 @@ async fetchDispatchsFromApi() {
 	  let pickers = [];
 	 if (this.state.dispatchs == null)
 	 {
-		 const rm = await AsyncStorage.removeItem('Screen');
+		 await AsyncStorage.removeItem('Screen');
 		 this.props.navigation.navigate('Home');
 	 }
 	 else
@@ -127,6 +139,7 @@ async fetchDispatchsFromApi() {
 	   pickers.push(<Button key="close" title="Back" onPress={()=>this.setState({isDispatchVisible: false})} />);
 		this.setState({pickers: pickers});
 		this.setItem('pickers', pickers);
+		await AsyncStorage.setItem('dispatchs', this.state.dispatchs);
 	 }
 	
 }
@@ -267,9 +280,17 @@ gps_update = async () => {
 	  {
 		 let location = await Location.getCurrentPositionAsync({});
 		 //console.log(location);
+
 		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
 		 
 	  }
+		 if (this.state.dispatchlatitude && this.state.dispatchlongitude && this.state.latitude && this.state.longitude)
+		 {
+			let distance = getDistance(this.state.latitude, this.state.longitude, this.state.dispatchlatitude, this.state.dispatchlongitude);
+			this.setState({dispatchdistance: distance});
+			console.log('distance calculated ' + distance);
+		 }
+
 }
 async componentWillMount () {
 	
@@ -299,7 +320,7 @@ async componentWillMount () {
 
 	  this._getLocationAsync();
 	  const auth = await this.authEmpInstApi();
-	
+	  const dispatchs = await this.fetchDispatchsFromApi(true);
 
 	  if (!this.state.locationstatus)
 	  {
@@ -719,8 +740,9 @@ renderWorkingDispatchNotes = () => {
 }
 renderDispatchModal = ()  => {
 
-    if (this.state.dispatchs == null)
+    if (this.state.dispatchs == null && this.state.pickers == null)
     {
+		Alert.alert('no dispatches for modal');
 		return false;
     }
 	return (
@@ -883,4 +905,22 @@ async function uploadImageAsync(row) {
 
   return fetch(apiUrl, opt);
 
+}
+
+function getDistance(lat1,lon1,lat2,lon2) {
+  var R = 6371; // Radius of the earth in km
+  var dLat = deg2rad(lat2-lat1);  // deg2rad below
+  var dLon = deg2rad(lon2-lon1); 
+  var a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2)
+    ; 
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  var d = R * c; // Distance in km
+  return d;
+}
+
+function deg2rad(deg) {
+  return deg * (Math.PI/180)
 }
