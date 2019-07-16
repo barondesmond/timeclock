@@ -18,10 +18,12 @@ import {
   Picker,
   Modal,
   TextInput,
+  NetInfo
 } from 'react-native';
 import Expo, { Constants, Location, Permissions } from 'expo';
 
 import styles from '../components/styles';
+import * as lib from '../components/lib';
 
 import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, URL, STORAGE_KEY} from '../constants/common';
 

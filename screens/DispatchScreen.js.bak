@@ -704,6 +704,13 @@ return thisnote;
 
 addDispatchNote = async () => {
 
+	const netStatus = await NetInfo.getConnectionInfo()  
+	if (netStatus.type == 'none')
+	{
+		Alert.alert('no connection');
+
+		return false;
+	}
 	console.log('checking for notes');
 	if (this.state.addDispatchNote == '' || this.state.checkinStatus != 'Stop')
 	{

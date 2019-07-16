@@ -18,10 +18,12 @@ import {
   Picker,
   Modal,
   TextInput,
+  NetInfo
 } from 'react-native';
 import Expo, { Constants, Location, Permissions } from 'expo';
 
 import styles from '../components/styles';
+import * as lib from '../components/lib';
 
 import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, URL, STORAGE_KEY} from '../constants/common';
 
@@ -253,30 +255,7 @@ gps_update = async () => {
 	  }
 }
 
-async setItem(key, value) {
-    try {
-        return await AsyncStorage.setItem(key, JSON.stringify(value));
-    } catch (error) {
-         console.error('AsyncStorage#setItem error: ' + error.message);
-    }
-}
 
-async getItem(key) {
-    return await AsyncStorage.getItem(key)
-        .then((result) => {
-            if (result) {
-                try {
-                    result = JSON.parse(result);
-                } catch (e) {
-                     console.error('AsyncStorage#getItem error deserializing JSON for key: ' + key, e.message);
-                }
-            }
-            return result;
-        });
-}
-async removeItem(key) {
-    return await AsyncStorage.removeItem(key);
-}
 
 async componentDidMount () {
 

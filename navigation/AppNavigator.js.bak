@@ -10,8 +10,8 @@
   import DocumentScreen from '../screens/DocumentScreen';
   import JobLocationScreen from '../screens/JobLocationScreen';
   import DispatchCameraScreen from '../screens/DispatchCameraScreen';
-
-
+  import PictureScreen from '../screens/PictureScreen';
+  import SignatureScreen from '../screens/Signaturescren';
   import { createAppContainer } from 'react-navigation';
 
   const AppNavigator = createStackNavigator({
@@ -24,8 +24,10 @@
 	Employee: {screen: EmployeeScreen},
 	CustomerAccept: {screen: CustomerAcceptScreen},
 	Document: {screen: DocumentScreen},
+	Picture: {screen: PictureScreen},
+	Signature: {screen: SignatureScreen},
 	JobLocation: {screen: JobLocationScreen},
-	DispatchCamera: {screen: DispatcHCameraScreen}
+	DispatchCamera: {screen: DispatchCameraScreen}
 	});
 
   const AppContainer = createAppContainer(AppNavigator);

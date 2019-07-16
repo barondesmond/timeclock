@@ -17,11 +17,14 @@ import {
   Dimensions,  
   Picker,
   Modal,
-  TextInput
+  TextInput,
+  NetInfo
 } from 'react-native';
 import Expo, { Constants, Location, Permissions } from 'expo';
 
 import styles from '../components/styles';
+import * as lib from '../components/lib';
+
 
 import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, URL, STORAGE_KEY} from '../constants/common';
 
@@ -305,6 +308,7 @@ checkStatus =  async () => {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive != '1')
 		{
+			await this.uploadImages();
 			this.setState({checkinStatus: 'Start', active: !this.state.active, customer:false, customerimage:null});
 			await AsyncStorage.removeItem('violation');
 			await AsyncStorage.removeItem('image');
@@ -316,6 +320,31 @@ checkStatus =  async () => {
 	}
 
 	//console.log(this.state);
+
+}
+
+ uploadImages = async ()  => {
+
+	const netStatus = await NetInfo.getConnectionInfo()  
+	if (netStatus.type == 'none')
+	{
+		Alert.alert('no connection');
+
+		return false;
+	}
+	if (!this.state.pictures || this.state.pictures.length == 0)
+	{
+		return false;
+	}
+   let max = this.state.pictures.length;
+   for(let i = 1; i <= max; i++) {
+  
+   row = this.state.pictures.pop();
+   await lib.setItem('pictures', this.state.pictures);
+   this.setState({pictures: this.state.pictures});
+   await lib.uploadImageAsync(row);
+
+   }
 
 }
 
@@ -357,7 +386,7 @@ customerComplete = () => {
 	}
 	else
 	{
-		this.props.navigation.navigate('Picture', {
+		this.props.navigation.navigate('Signature', {
       onGoBack: () => this.checkStatus(), LocName: this.state.DispatchName, address: 'customerComplete', reference: this.state.Dispatch});
 	}
 }

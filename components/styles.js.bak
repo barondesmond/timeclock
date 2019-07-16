@@ -33,7 +33,7 @@ export default StyleSheet.create({
 
   },
   noteboxContainer: {
-	margin: 5,
+	marginTop: 10,
 	backgroundColor: '#DDDDDD',
     alignSelf: 'stretch',
 	flex: 1, 

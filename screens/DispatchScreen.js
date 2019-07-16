@@ -94,7 +94,7 @@ async fetchDispatchsFromApi(load) {
  
 	const netStatus = await NetInfo.getConnectionInfo()  
 	console.log(netStatus);
-		dispatched = this.getItem('dispatched')
+		dispatched = lib.getItem('dispatched')
 		if (dispatched)
 		{
 			console.log('dispatched');
@@ -141,7 +141,7 @@ async fetchDispatchsFromApi(load) {
        }
 	   pickers.push(<Button key="close" title="Back" onPress={()=>this.setState({isDispatchVisible: false})} />);
 		this.setState({pickers: pickers});
-		this.setItem('pickers', pickers);
+		lib.setItem('pickers', pickers);
 	 }
 	
 }
@@ -349,30 +349,7 @@ async componentWillMount () {
 
 }
 
-async setItem(key, value) {
-    try {
-        return await AsyncStorage.setItem(key, JSON.stringify(value));
-    } catch (error) {
-         console.error('AsyncStorage#setItem error: ' + error.message);
-    }
-}
 
-async getItem(key) {
-    return await AsyncStorage.getItem(key)
-        .then((result) => {
-            if (result) {
-                try {
-                    result = JSON.parse(result);
-                } catch (e) {
-                     console.error('AsyncStorage#getItem error deserializing JSON for key: ' + key, e.message);
-                }
-            }
-            return result;
-        });
-}
-async removeItem(key) {
-    return await AsyncStorage.removeItem(key);
-}
 
 
 async componentDidMount ()  {
@@ -486,7 +463,7 @@ resetEventStatus = () => {
 
 		//console.log(this.state.dispatchs[i]);
 		this.setState({dispatched: this.state.dispatchs[i], Dispatch: this.state.dispatchs[i].Dispatch, Counter: this.state.dispatchs[i].Counter, dispatchstatus: !this.state.dispatchstatus,  DispatchName: this.state.dispatchs[i].DispatchName, DispatchLocation: this.state.dispatchs[i].location, DispatchNotes: this.state.dispatchs[i].DispatchNotes, Add1: this.state.dispatchs[i].Add1, Add2: this.state.dispatchs[i].Add2, City: this.state.dispatchs[i].City, State: this.state.dispatchs[i].State, Zip: this.state.dispatchs[i].Zip, Phone1: this.state.dispatchs[i].Phone1, dispatchdistance: this.state.dispatchs[i].distance, dispatchlatitude: this.state.dispatchs[i].latitude, dispatchlongitude: this.state.dispatchs[i].longitude, isDispatchVisible: false })
-		this.setItem('dispatched', this.state.dispatchs[i])
+		lib.setItem('dispatched', this.state.dispatchs[i])
 	    //console.log(this.state);
    }
 
@@ -576,7 +553,7 @@ renderWorking = () => {
 
 async loadPictures () {
 
-		pictures = await this.getItem('pictures');
+		pictures = await lib.getItem('pictures');
 
 		if (pictures && pictures.length > 0)
 		{
@@ -694,7 +671,7 @@ return thisnote;
    for(let i = 1; i <= max; i++) {
   
    row = this.state.pictures.pop();
-   await this.setItem('pictures', this.state.pictures);
+   await lib.setItem('pictures', this.state.pictures);
    this.setState({pictures: this.state.pictures});
    await lib.uploadImageAsync(row);
 

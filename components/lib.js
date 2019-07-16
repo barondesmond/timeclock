@@ -1,6 +1,8 @@
 
 import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, URL, STORAGE_KEY} from '../constants/common';
-import { NetInfo } from 'react-native';
+import { NetInfo,   AsyncStorage } from 'react-native';
+
+
 
 export async function uploadImageAsync(row) {
 
@@ -71,5 +73,30 @@ export function getDistance(lat1,lon1,lat2,lon2) {
 }
 
 export function deg2rad(deg) {
-  return deg * (Math.PI/180)
+  return deg * (Math.PI/180);
+}
+
+export async function  setItem(key, value) {
+    try {
+        return await AsyncStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+         console.error('AsyncStorage#setItem error: ' + error.message);
+    }
+}
+
+export async function  getItem(key) {
+    return await AsyncStorage.getItem(key)
+        .then((result) => {
+            if (result) {
+                try {
+                    result = JSON.parse(result);
+                } catch (e) {
+                     console.error('AsyncStorage#getItem error deserializing JSON for key: ' + key, e.message);
+                }
+            }
+            return result;
+        });
+}
+export async function  removeItem(key) {
+    return await AsyncStorage.removeItem(key);
 }
