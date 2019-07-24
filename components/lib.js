@@ -1,8 +1,32 @@
 
 import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, URL, STORAGE_KEY} from '../constants/common';
 import { NetInfo,   AsyncStorage } from 'react-native';
+import axios from 'axios';
 
+export async function postData (url) {
+	const resp =	await axios.get(url);
+	console.log(resp);
 
+	return resp;
+  }
+
+export async function postData2 (url, str) {
+    try {
+      let res = await fetch(`https://postman-echo.com/post`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(str),
+      });
+      res = await res.json();
+      console.log(res)
+      return res;
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
 export async function uploadImageAsync(row) {
 

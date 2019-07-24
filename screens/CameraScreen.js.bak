@@ -15,6 +15,7 @@ import {
   View,
   TextInput,
   AsyncStorage,
+  NetInfo,
 
 
 } from 'react-native';
@@ -22,6 +23,8 @@ import {
 import { Constants, ImagePicker, Permissions } from 'expo';
 
 import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, URL, STORAGE_KEY} from '../constants/common';
+
+import * as lib from '../components/lib';
 
 import styles from '../components/styles';
 
@@ -180,13 +183,57 @@ export default class CameraScreen extends Component {
 	{
 
 		const Screen = await AsyncStorage.getItem('Screen');
+		await this.loadPictures();
+		const upload = await this.uploadImages();
+		if (upload)
+		{
+			this.props.navigation.navigate(Screen);
 
-		this.props.navigation.navigate(Screen);
+		}
+		
 	}
+	else
+	 {
+		Alert.alert('Violation not noted ');
+	 }
 
 
   };
 
+async loadPictures () {
+
+
+		pictures = await lib.getItem('pictures');
+		this.setState({pictures: pictures});
+	
+		this.setState({loadingPictures: false});
+
+return true;
+}
+
+uploadImages = async () => {
+
+	const netStatus = await NetInfo.getConnectionInfo()  
+
+	if (netStatus.type == 'none')
+	{
+		Alert.alert('no connection');
+
+		return false;
+	}
+   Alert.alert('Uploadig Pictures ' + this.state.pictures.length);
+   let max = this.state.pictures.length;
+   for(let i = 1; i <= max; i++) {
+  
+   row = this.state.pictures.pop();
+   await lib.setItem('pictures', this.state.pictures);
+   this.setState({pictures: this.state.pictures});
+   await lib.uploadImageAsync(row);
+
+   }
+   Alert.alert('Images Uploaded ');
+	return true;
+}
 
 async componentDidMount () {
 
@@ -204,7 +251,7 @@ async componentDidMount () {
 
   _takePhoto = async () => {
 
-      this.props.navigation.navigate('Picture', {onGoBack: () => this._copyToClipboard(), Screen: {CameraScreen}, LocName: 'CameraScreen' , address: 'violation' , reference: 'violation'});
+      this.props.navigation.navigate('Picture', {onGoBack: () => this._copyToClipboard(), Screen: 'Camera', LocName: 'CameraScreen' , address: 'violation' , reference: 'violation'});
 
 
   };

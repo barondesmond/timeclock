@@ -16,6 +16,7 @@ import {
 import { Constants } from 'expo';
 
 import styles from  '../components/styles';
+import * as lib from '../components/lib';
 
 import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, URL, STORAGE_KEY} from '../constants/common';
 
@@ -41,27 +42,35 @@ export default class AlternativeScreen extends Component {
 async fetchEmployeeFromApi (EmpName, Email) {
    
   const emp_url = URL + `empauth_json.php?EmpName=${EmpName}&Email=${Email}&installationId=${Constants.installationId}`;
-  console.log(emp_url);
 
-  let response = await fetch(emp_url)
-				.catch((error) => console.warn("fetch error:", error))
-  
-	  console.log(response);
+  await fetch(emp_url) .then((response) => response.json())
+	        .then((responsejson) => {
 
- responsejson = await response.json();
-   this.setState({data: responsejson});
+        this.setState({
+          isLoading: false,
+          data: responsejson,
+        }, function(){
 
-   if (responsejson.authorized == 1)
+        });
+
+      })
+      .catch((error) =>{
+        console.error(error);
+      });
+
+ console.log(this.state.data);
+
+   if (this.state.data.authorized == 1)
    {
-   const EmpNo = responsejson.EmpNo;
-   const Email = responsejson.Email;
-   const EmpName = responsejson.EmpName;
+   const EmpNo = this.state.data.EmpNo;
+   const Email = this.state.data.Email;
+   const EmpName = this.state.data.EmpName;
    this.setState({EmpNo: EmpNo});
    this.saveKey(EmpName, Email, EmpNo);
    }
    else
 	{
-	  Alert.alert('Employee Not Authorized ' + responsejson.auth);
+	  Alert.alert('Employee Not Authorized ' + this.state.data.authorized);
 	this.props.navigation.navigate('Home');
 	   return false;
     }
