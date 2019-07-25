@@ -770,6 +770,36 @@ renderDispatchModal = ()  => {
          </View>
 	  );
 }
+
+renderNoteBox = () => {
+
+
+	if (this.state.checkinStatus == 'Stop')
+	{
+			return (<View>
+				<View style={styles.noteboxContainer}>
+		  		                  <Button title="Add To Notes" onPress={()=>this.addToNote()} />
+                <Button title="Back" onPress={()=>this.setState({isNotesVisible: false})} />
+				</View>
+				<View style={styles.noteContainer}>
+			<TextInput  multiline={true}     numberOfLines={2} 
+                  onChangeText={data => this.setState({ addDispatchNote: data })}
+      />
+		  </View>
+		  </View>
+);
+	}
+	else
+	{
+			return (				<View style={styles.noteboxContainer}>
+                <Button title="Back" onPress={()=>this.setState({isNotesVisible: false})} /> 
+				<Text>No Adding Notes Unless Working</Text>
+			</View>
+			);
+	}
+
+}
+
  render() {
 
 	if (this.state.latitude == null)
@@ -792,17 +822,11 @@ renderDispatchModal = ()  => {
             <Modal animationType = {"slide"} transparent = {true}
                    visible = {this.state.isNotesVisible}
                    onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
-   
   		        <ScrollView style={styles.buttonContainer}>
-				<View style={styles.noteboxContainer}>
-		  		                  <Button title="Add To Notes" onPress={()=>this.addToNote()} />
-                <Button title="Back" onPress={()=>this.setState({isNotesVisible: false})} />
-</View>
 
-				<TextInput  multiline={true}     numberOfLines={4}
-        style={styles.noteContainer}
-                  onChangeText={data => this.setState({ addDispatchNote: data })}
-      />
+   
+	 {this.renderNoteBox()}
+	
 
 				<Text style={styles.noteText}>
 			      {this.state.DispatchNotes}

@@ -434,7 +434,7 @@ uploadImages = async ()  => {
    for(let i = 1; i <= max; i++) {
   
    row = this.state.pictures.pop();
-   await this.setItem('pictures', this.state.pictures);
+   await lib.setItem('pictures', this.state.pictures);
    this.setState({pictures: this.state.pictures});
    await uploadImageAsync(row);
 
@@ -445,7 +445,7 @@ uploadImages = async ()  => {
 
 async loadPictures () {
 
-		pictures = await this.getItem('pictures');
+		pictures = await lib.getItem('pictures');
 
 		if (pictures && pictures.length > 0)
 		{

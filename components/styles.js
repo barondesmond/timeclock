@@ -151,7 +151,9 @@ noteText: {
 	backgroundColor: '#DDDDDD',
     height: 200, 
 	borderColor: 'gray', 
-	borderWidth: 1
+	borderWidth: 1,
+
+
 	},
    jobNotesContainer: {
     height: 100,

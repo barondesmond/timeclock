@@ -18,6 +18,7 @@ import {
   Picker,
   Modal,
   TextInput,
+  NetInfo
 } from 'react-native';
 import Expo, { Constants, Location, Permissions } from 'expo';
 
