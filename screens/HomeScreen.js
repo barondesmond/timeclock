@@ -13,8 +13,8 @@ import {
   AsyncStorage,
   NetInfo,
 } from 'react-native';
-import { WebBrowser, Constants } from 'expo';
-
+import Constants from 'expo-constants'
+import * as LocalAuthentication from 'expo-local-authentication';
 import { MonoText } from '../components/StyledText';
 
 
@@ -67,11 +67,15 @@ export default class HomeScreen extends React.Component {
 
 
   checkDeviceForHardware = async () => {
-    let compatible = await Expo.LocalAuthentication.hasHardwareAsync();
-    this.setState({ compatible });
+    let compatible = await LocalAuthentication.hasHardwareAsync();
     if (!compatible) {
       this.showIncompatibleAlert();
     }
+	else
+	 {
+	    this.setState({ compatible });
+	 }
+
   };
 
  showIncompatibleAlert = () => {
@@ -82,25 +86,33 @@ export default class HomeScreen extends React.Component {
 
 
   checkForBiometrics = async (Screen) => {
-    let biometricRecords = await Expo.LocalAuthentication.isEnrolledAsync();
+    let biometricRecords = await LocalAuthentication.isEnrolledAsync();
     if (!biometricRecords) 
 	{
-		    await AsyncStorage.setItem('Bio', this.state.EmpNo);
-			const auth = await this.authEmpInstApi();
-		    const Screen =  await AsyncStorage.getItem('Screen');
-			if (auth && auth.authorized != 1)
+			if (this.state.EmpNo)
 			{
-				this.props.navigation.navigate('Alternative', {onGoBack: () => this.primaryLogin(Screen)});
+				await AsyncStorage.setItem('Bio', this.state.EmpNo);
+				const auth = await this.authEmpInstApi();
+			    const Screen =  await AsyncStorage.getItem('Screen');
+				if (auth && auth.authorized != 1)
+				{
+					this.props.navigation.navigate('Alternative', {onGoBack: () => this.primaryLogin(Screen)});
+				}
+				else
+				{
+					  this.props.navigation.navigate('Camera',  {onGoBack: () => this.primaryLogin(Screen)});
+				}
 			}
+	
 			else
 			{
-				if (this.state.auth.EmpActive == 1 && this.state.auth.Screen != Screen && Screen != 'Document')
+				if (this.state.auth && this.state.auth.EmpActive == 1 && this.state.auth.Screen != Screen && Screen != 'Document')
 		     {
 					 Alert.alert('You are logged into ' + this.state.auth.Screen + ' Portal');
 		     }
 				else
 				{
-					  this.props.navigation.navigate('Camera');
+					  this.props.navigation.navigate('Camera',  {onGoBack: () => this.primaryLogin(Screen)});
 				}	
 			}
         
@@ -124,7 +136,7 @@ export default class HomeScreen extends React.Component {
   };
 
   scanBiometrics = async () => {
-    let result = await Expo.LocalAuthentication.authenticateAsync('Biometric Scan.');
+    let result = await LocalAuthentication.authenticateAsync('Biometric Scan.');
     if (result.success) {
 
 		if (this.state.EmpNo == null)
@@ -132,6 +144,7 @@ export default class HomeScreen extends React.Component {
         }
 		else
 		{
+	
 		    await AsyncStorage.setItem('Bio', this.state.EmpNo);
 			const auth = await this.authEmpInstApi();
 		    const Screen =  await AsyncStorage.getItem('Screen');
@@ -153,7 +166,7 @@ export default class HomeScreen extends React.Component {
         }
 
     } else {
-	    this.props.navigation.navigate('Camera');
+	    this.props.navigation.navigate('Camera',  {onGoBack: () => this.primaryLogin(Screen)});
 	}
   };
 

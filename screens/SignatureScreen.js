@@ -6,6 +6,7 @@ import React, { Component } from 'react';
 import * as lib from '../components/lib';
 
 import { Image, Button, Platform, AppState, StyleSheet, Text, View, TouchableOpacity, AsyncStorage } from 'react-native';
+import { Constants, ImagePicker, Permissions, Location } from 'expo';
 
 
 
@@ -34,13 +35,23 @@ export default class App extends Component {
   state = {
 
     image: null,
-
     strokeColor: 0,
-
     appState: AppState.currentState,
+    uploading: false,
+    violation: '',
+    EmpNo: null,
+	pickerResult: null,
+	latitude: null,
+	longitude: null,
+	locationstatus: false,
+    reference: null,
+    Screen: null,
+	timestamp: null,
+	LocName: '',
 
   };
 
+ 
 
 
   handleAppStateChangeAsync = nextAppState => {
@@ -61,11 +72,60 @@ export default class App extends Component {
 
   };
 
+_getLocationAsync = async () => {
+
+	let { status } = await Permissions.askAsync(Permissions.LOCATION);
+	if (status !== 'granted') 
+	{
+	   this.setState({locationstatus: status});
+	}
+
+}
 
 
-  componentDidMount() {
+ async componentDidMount() {
 
     AppState.addEventListener('change', this.handleAppStateChangeAsync);
+
+	  this._getLocationAsync();
+	  if (!this.state.locationstatus)
+	  {
+		 let location = await Location.getCurrentPositionAsync({});
+		 console.log(location);
+		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
+	  }
+
+	if (this.props.navigation.state.params)
+	{
+		this.setState({address: this.props.navigation.state.params.address});
+		this.setState({LocName: this.props.navigation.state.params.LocName});
+		this.setState({Screen: this.props.navigation.state.params.Screen});
+		this.setState({reference: this.props.navigation.state.params.reference});
+
+	}
+	  const EmpNo = await AsyncStorage.getItem('EmpNo');
+
+	  this.setState({EmpNo: EmpNo});
+	  if (!this.state.EmpNo || this.state.EmpNo == null)
+	  {
+
+		  this.props.navigation.navigate('Alternative');
+	  }
+	if (!this.state.pictures)
+	{
+		pics = await AsyncStorage.getItem('pictures');
+		if (!pics || pics.length <=0)
+		{
+			await AsyncStorage.removeItem('pictures');
+		}
+		else
+		{
+			pictures = JSON.parse(pics);
+			this.setState({pictures: pictures});
+			console.log(pictures);
+		}
+	}
+
 
   }
 

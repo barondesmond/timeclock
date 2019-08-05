@@ -568,12 +568,21 @@ return true;
 
 dispatchCamera = () => {
 
-	this.props.navigation.navigate('Picture', {onGoBack: () => this.loadPictures() , LocName: this.state.DispatchName, address: 'DispatchCamera', reference: this.state.Dispatch});
+	this.props.navigation.navigate('Picture', {onGoBack: () => this.loadPictures() , Screen: 'DispatchCamera',LocName: this.state.DispatchName, address: 'DispatchCamera', reference: this.state.Dispatch});
 
 }
 
-customerComplete = () => {
+customerComplete = async () => {
 
+			if (this.state.notes)
+			{
+				this.setState({addDispatchNote: this.state.notes});
+				await this.addDispatchNote();
+			}
+		    if (this.state.pictures && this.state.pictures.length != 0)
+			{
+				await this.uploadImages();
+			}
 
 
 	this.props.navigation.navigate('DispatchComplete');
@@ -773,30 +782,67 @@ renderDispatchModal = ()  => {
 
 renderNoteBox = () => {
 
-
 	if (this.state.checkinStatus == 'Stop')
 	{
-			return (<View>
+         return ( 
+						<View style={styles.buttonContainer}>
+ 
+  <Modal animationType = {"slide"} transparent = {true}
+                   visible = {this.state.isNotesVisible}
+                   onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
+  		        <ScrollView style={styles.buttonContainer}>
+
+   
 				<View style={styles.noteboxContainer}>
 		  		                  <Button title="Add To Notes" onPress={()=>this.addToNote()} />
                 <Button title="Back" onPress={()=>this.setState({isNotesVisible: false})} />
 				</View>
-				<View style={styles.noteContainer}>
-			<TextInput  multiline={true}     numberOfLines={2} 
+			<TextInput  multiline={true}     numberOfLines={4} style={styles.noteContainer}
                   onChangeText={data => this.setState({ addDispatchNote: data })}
       />
-		  </View>
-		  </View>
-);
+
+
+				<Text style={styles.noteText}>
+			      {this.state.DispatchNotes}
+		  	 {this.state.notes}
+
+                </Text>
+	
+				</ScrollView>
+				
+               </Modal>
+				   </View>
+	);
 	}
 	else
 	{
-			return (				<View style={styles.noteboxContainer}>
-                <Button title="Back" onPress={()=>this.setState({isNotesVisible: false})} /> 
-				<Text>No Adding Notes Unless Working</Text>
-			</View>
-			);
+		return (
+					<View style={styles.buttonContainer}>
+ 
+  <Modal animationType = {"slide"} transparent = {true}
+                   visible = {this.state.isNotesVisible}
+                   onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
+  		        <ScrollView style={styles.buttonContainer}>
+
+   
+				<View style={styles.noteboxContainer}>
+                <Button title="Back" onPress={()=>this.setState({isNotesVisible: false})} />
+				</View>
+	
+
+				<Text style={styles.noteText}>
+			      {this.state.DispatchNotes}
+		  	 {this.state.notes}
+
+                </Text>
+	
+				</ScrollView>
+				
+               </Modal>
+				   </View>
+	);
 	}
+
 
 }
 
@@ -819,25 +865,8 @@ renderNoteBox = () => {
     <View style={styles.welcomeContainer}>
 	 {this.renderDispatchModal()}
 	 {this.renderAddress()}
-            <Modal animationType = {"slide"} transparent = {true}
-                   visible = {this.state.isNotesVisible}
-                   onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
-  		        <ScrollView style={styles.buttonContainer}>
 
-   
 	 {this.renderNoteBox()}
-	
-
-				<Text style={styles.noteText}>
-			      {this.state.DispatchNotes}
-		  	 {this.state.notes}
-
-                </Text>
-	
-				</ScrollView>
-				
-               </Modal>
-
 			<View style={styles.jobNotesContainer}>
 		      <TouchableHighlight onPress={() => this.setState({isNotesVisible: true})}>
 				<Text style={styles.getStartedText}>

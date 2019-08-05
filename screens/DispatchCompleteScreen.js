@@ -76,6 +76,7 @@ constructor(props){
 		Zip: '',
 		Phone1: '',
 		addDispatchNote: '',
+		notes: null,
 		customer : false,
 		customerimage: null,
 		isVisibleDispatchNote: false,    
@@ -261,6 +262,7 @@ async componentDidMount () {
 	  this.setState({Bio: Bio});
 	  const customer = await AsyncStorage.getItem('violation');
 	  const customerimage = await AsyncStorage.getItem('image');
+	  const notes = await AsyncStorage.getItem('notes');
 
 	  if (this.customer && this.customerimage)
 	  {
@@ -297,6 +299,32 @@ error(err) {
     clearInterval();
   }
 
+addDispatchNote = async () => {
+
+	const netStatus = await NetInfo.getConnectionInfo()  
+	if (netStatus.type == 'none')
+	{
+		Alert.alert('no connection');
+
+		return false;
+	}
+	console.log('checking for notes');
+	if (this.state.addDispatchNote == '' || this.state.checkinStatus != 'Stop')
+	{
+		//console.log(this.state.data);
+		this.setState({isVisibleDispatchNote: false});
+		return false;
+	}
+	console.log('Add Dispatch Note');
+	this.setState({checkinStatus: 'addNote'});
+	console.log(this.state.addDispatchNote);
+	const post = await this.authEventLogApi();
+	await AsyncStorage.removeItem('notes');
+	//console.log(post);
+	this.setState({checkinStatus: 'Stop', DispatchNotes: post.DispatchNotes, isVisibleDispatchNote: false});
+	this.setState({isVisibleDispatchNote: false});
+}
+
 checkStatus =  async () => {
 	
 	 console.log(this.state.checkinStatus);
@@ -308,7 +336,13 @@ checkStatus =  async () => {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive != '1')
 		{
-			await this.uploadImages();
+			if (this.state.notes)
+			{
+				this.setState({addDispatchNote: this.state.notes});
+				await this.addDispatchNote();
+			}
+			this.loadPictures();
+			this.uploadImages();
 			this.setState({checkinStatus: 'Start', active: !this.state.active, customer:false, customerimage:null});
 			await AsyncStorage.removeItem('violation');
 			await AsyncStorage.removeItem('image');
@@ -321,6 +355,19 @@ checkStatus =  async () => {
 
 	//console.log(this.state);
 
+}
+
+async loadPictures () {
+
+		pictures = await lib.getItem('pictures');
+
+		if (pictures && pictures.length > 0)
+		{
+			this.setState({pictures: pictures});
+			this.setState({addDispatchPicture: true});
+		}
+
+return true;
 }
 
  uploadImages = async ()  => {
@@ -387,7 +434,7 @@ customerComplete = () => {
 	else
 	{
 		this.props.navigation.navigate('Signature', {
-      onGoBack: () => this.checkStatus(), LocName: this.state.DispatchName, address: 'customerComplete', reference: this.state.Dispatch});
+      onGoBack: () => this.checkStatus(), Screen: 'DispatchSignaure',LocName: this.state.DispatchName, address: 'customerComplete', reference: this.state.Dispatch});
 	}
 }
 
