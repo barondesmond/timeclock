@@ -20,7 +20,7 @@ import {
   TextInput,
   NetInfo
 } from 'react-native';
-import Expo, { Constants, Location, Permissions } from 'expo';
+import Expo, { Constants, Location, Permissions, ScreenOrientation } from 'expo';
 
 import styles from '../components/styles';
 import * as lib from '../components/lib';
@@ -326,6 +326,7 @@ addDispatchNote = async () => {
 }
 
 checkStatus =  async () => {
+
 	
 	 console.log(this.state.checkinStatus);
 	 const customer = await AsyncStorage.getItem('violation');
@@ -336,6 +337,7 @@ checkStatus =  async () => {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive != '1')
 		{
+			await AsyncStorage.removeItem('noteadded');
 			if (this.state.notes)
 			{
 				this.setState({addDispatchNote: this.state.notes});
@@ -355,6 +357,19 @@ checkStatus =  async () => {
 
 	//console.log(this.state);
 
+}
+
+async loadPictures () {
+
+		pictures = await lib.getItem('pictures');
+
+		if (pictures && pictures.length > 0)
+		{
+			this.setState({pictures: pictures});
+			this.setState({addDispatchPicture: true});
+		}
+
+return true;
 }
 
  uploadImages = async ()  => {

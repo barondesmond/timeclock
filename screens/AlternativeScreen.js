@@ -98,8 +98,15 @@ async saveKey(EmpName, Email, EmpNo) {
 	console.log(EmpName);
 	console.log(Email);
 	console.log(EmpNo);
-	this.props.navigation.state.params.onGoBack();
-	this.props.navigation.goBack();
+	if (this.props.navigation.state.params)
+	{
+		this.props.navigation.state.params.onGoBack();
+		this.props.navigation.goBack();
+	}
+	else
+	{
+		this.props.navigation.navigate('Home');
+	}
 
 
   }

@@ -574,11 +574,18 @@ dispatchCamera = () => {
 
 customerComplete = async () => {
 
+	noteadded = await AsyncStorage.getItem('noteadded');
+	if (!noteadded || noteadded != 'addDispatchNote')
+	{
+		Alert.alert('Notes Required');
+		return false;
+	}
 			if (this.state.notes)
 			{
 				this.setState({addDispatchNote: this.state.notes});
 				await this.addDispatchNote();
 			}
+			
 		    if (this.state.pictures && this.state.pictures.length != 0)
 			{
 				await this.uploadImages();
@@ -599,28 +606,8 @@ renderCustomerComplete = () => {
 	{
 		return false;
 	}
-	//console.log(this.state.dispatchdistance);
-	//console.log(this.state.override);
-	if (!this.state.image && !this.state.override && !this.state.pictures)
-	{
-		return (<View style={styles.noteboxContainer}><Text>Picture Needed</Text></View>);
-	}
-	if (this.state.noteAdded == false)
-	{
-			return(
-		<View style={styles.noteboxContainer}>
-			<Text>Note Needed to Complete Dispatch</Text>
-		</View>);
-	}
-	if (this.state.dispatchdistance != null &&  this.state.dispatchdistance > 2 && this.state.override==false)
-	{
-	//console.log('render distance');
-		return(
-		<View style={styles.noteboxContainer}>
-			<Text>Distance {this.state.dispatchdistance}</Text>
-		</View>);
-		
-	}
+
+
 	//console.log('renderCustomerComplete');
 	return(
 		<View style={styles.buttonContainer}>

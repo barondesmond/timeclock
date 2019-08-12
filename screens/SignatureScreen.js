@@ -4,9 +4,8 @@ import * as ExpoPixi from 'expo-pixi';
 
 import React, { Component } from 'react';
 import * as lib from '../components/lib';
-
 import { Image, Button, Platform, AppState, StyleSheet, Text, View, TouchableOpacity, AsyncStorage } from 'react-native';
-import { Constants, ImagePicker, Permissions, Location } from 'expo';
+import { Constants, ImagePicker, Permissions, Location, ScreenOrientation } from 'expo';
 
 
 
@@ -85,7 +84,9 @@ _getLocationAsync = async () => {
 
  async componentDidMount() {
 
-    AppState.addEventListener('change', this.handleAppStateChangeAsync);
+	await ScreenOrientation.lockAsync(ScreenOrientation.Orientation.LANDSCAPE);
+
+	AppState.addEventListener('change', this.handleAppStateChangeAsync);
 
 	  this._getLocationAsync();
 	  if (!this.state.locationstatus)
@@ -198,6 +199,8 @@ saveSignature = async () => {
     }
 
    await lib.setItem('pictures', pictures)
+	await ScreenOrientation.lockAsync(ScreenOrientation.Orientation.PORTRAIT);
+
    this.props.navigation.state.params.onGoBack();
    this.props.navigation.goBack();
 
@@ -232,7 +235,7 @@ saveSignature = async () => {
         </View>
 
       <TouchableOpacity onPress={this.saveCanvas}>
-        <Text>Sign</Text>
+        <Text style={styles.label}>Sign</Text>
       </TouchableOpacity>
 
       </View>
@@ -248,7 +251,7 @@ saveSignature = async () => {
 const styles = StyleSheet.create({
 
   container: {
-
+	margin:10,
     flex: 1,
 
   },

@@ -9,7 +9,7 @@
     "platforms": [
       "ios", "android"
     ],
-    "version": "1.2.4",
+    "version": "1.2.6",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -33,7 +33,9 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSLocationAlwaysUsageDescription" : "Tracking Authenticates Employees are at Location of Job Site.", 
+	"NSLocationWhenInUseUsageDescription" : "Tracking Authenticates Employees are at Location of Job Site.",
 	"NSCameraUsageDescription": "This app uses the camera to authenticate users installation and login, site job work, and upload receipts of job",
+	"NSPhotoLibraryUsageDescription": "This app uses the photos to authenticate users installation and login, site job work, and upload receipts of job",
 	"NSFaceIDUsageDescription": "Face ID Authenticates Employee Installation of App",
         "NSAppTransportSecurity" : {
           "NSAllowsArbitraryLoads" : true,
@@ -43,7 +45,8 @@
       }
    },
     "android": {
-      "package": "com.plisolutions.timeclock"
+      "package": "com.plisolutions.timeclock",
+      "versionCode": 2,
     }
  }
  }

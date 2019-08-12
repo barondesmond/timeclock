@@ -5,11 +5,12 @@
     "slug": "timeclock",
     "privacy": "unlisted",
     "sdkVersion": "33.0.0",
-  
     "platforms": [
-      "ios", "android"
+      "ios",
+      "android",
+      "web"
     ],
-    "version": "1.2.5",
+    "version": "1.2.7",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -23,27 +24,30 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-  "notification": {
-    "icon": "./assets/images/icon.png",
-    "color": "#000000",
-    "androidMode": "default"
-     },
+    "notification": {
+      "icon": "./assets/images/icon.png",
+      "color": "#000000",
+      "androidMode": "default"
+    },
     "ios": {
       "bundleIdentifier": "com.plisolutions.timeclock",
       "supportsTablet": true,
       "infoPlist": {
-        "NSLocationAlwaysUsageDescription" : "Tracking Authenticates Employees are at Location of Job Site.", 
-	"NSCameraUsageDescription": "This app uses the camera to authenticate users installation and login, site job work, and upload receipts of job",
-	"NSFaceIDUsageDescription": "Face ID Authenticates Employee Installation of App",
-        "NSAppTransportSecurity" : {
-          "NSAllowsArbitraryLoads" : true,
-          "NSAllowsArbitraryLoadsForMedia": true, 
-          "NSAllowsArbitraryLoadsInWebContent": true, 
+        "NSLocationAlwaysUsageDescription": "Tracking Authenticates Employees are at Location of Job Site.",
+        "NSLocationWhenInUseUsageDescription": "Tracking Authenticates Employees are at Location of Job Site.",
+        "NSCameraUsageDescription": "This app uses the camera to authenticate users installation and login, site job work, and upload receipts of job",
+        "NSPhotoLibraryUsageDescription": "This app uses the photos to authenticate users installation and login, site job work, and upload receipts of job",
+        "NSFaceIDUsageDescription": "Face ID Authenticates Employee Installation of App",
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true,
+          "NSAllowsArbitraryLoadsForMedia": true,
+          "NSAllowsArbitraryLoadsInWebContent": true
         }
       }
-   },
+    },
     "android": {
-      "package": "com.plisolutions.timeclock"
+      "package": "com.plisolutions.timeclock",
+      "versionCode": 3
     }
- }
- }
+  }
+}

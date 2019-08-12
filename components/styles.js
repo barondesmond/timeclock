@@ -32,8 +32,10 @@ export default StyleSheet.create({
 	borderWidth: 2,
 
   },
+
   noteboxContainer: {
-	marginTop: 10,
+	margin:20,
+	padding: 20,
 	backgroundColor: '#DDDDDD',
     alignSelf: 'stretch',
 	flex: 1, 
@@ -146,8 +148,7 @@ noteText: {
 	borderColor: 'gray', 
 	},
  noteContainer: {
-    margin: 5,
-	marginTop: 60,
+
 	backgroundColor: '#DDDDDD',
     height: 200, 
 	borderColor: 'gray', 

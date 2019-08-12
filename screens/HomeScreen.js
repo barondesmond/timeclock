@@ -243,8 +243,18 @@ primaryLogin = async (newscreen) => {
 	else
 	{
 		await AsyncStorage.setItem('Screen', newscreen);
+		EmpNo = await AsyncStorage.getItem('EmpNo');
+			
+		if (this.state.EmpNo == null && EmpNo == null)
+        {
+			await this.props.navigation.navigate('Alternative', {onGoBack: () => this.primaryLogin(newscreen)});
+			return false;
 
-	
+        }
+		else
+		{
+		   this.setState({EmpNo: EmpNo});
+		}
 		if (this.state.compatible)
 		{
 	     this.checkForBiometrics(newscreen);
@@ -259,7 +269,7 @@ primaryLogin = async (newscreen) => {
 
 renderPortal = (newscreen) => {
 
-  portal = '';
+  let portal = '';
   if (newscreen != 'Document')
   {
 	  portal = newscreen + " Login";
@@ -331,7 +341,7 @@ render()
 	  {this.renderPortal('Dispatch')}
 	  {this.renderPortal('Employee')}
 	  {this.renderPortal('Document')}
-	  {__DEV__ ? <Button title="Reset" onPress={this.resetKeys} /> : null}
+	  {__DEV__ ? <Button title="Logout" onPress={this.resetKeys} /> : <Button title="Logout" onPress={this.resetKeys} />}
 
       </View>
 

@@ -20,7 +20,7 @@ import {
   TextInput,
   NetInfo
 } from 'react-native';
-import Expo, { Constants, Location, Permissions } from 'expo';
+import Expo, { Constants, Location, Permissions, ScreenOrientation } from 'expo';
 
 import styles from '../components/styles';
 import * as lib from '../components/lib';
@@ -326,6 +326,7 @@ addDispatchNote = async () => {
 }
 
 checkStatus =  async () => {
+
 	
 	 console.log(this.state.checkinStatus);
 	 const customer = await AsyncStorage.getItem('violation');
@@ -336,6 +337,8 @@ checkStatus =  async () => {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive != '1')
 		{
+			await AsyncStorage.removeItem('noteadded');
+			await AsyncStorage.removeItem('override');
 			if (this.state.notes)
 			{
 				this.setState({addDispatchNote: this.state.notes});
