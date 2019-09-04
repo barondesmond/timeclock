@@ -428,14 +428,19 @@ renderAddress = () => {
 
 
 
-customerComplete = () => {
+customerComplete = async () => {
 
+	
 	if (this.state.customer != false && this.state.customerimage != null)
 	{
 		this.checkStatus();
 	}
 	else
 	{
+		if (this.state.violation)
+		{
+			await AsyncStorage.setItem('violation', this.state.violation);
+		}
 		this.props.navigation.navigate('Signature', {
       onGoBack: () => this.checkStatus(), Screen: 'DispatchSignaure',LocName: this.state.DispatchName, address: 'customerComplete', reference: this.state.Dispatch});
 	}
@@ -472,6 +477,10 @@ renderCustomerComplete = () => {
 	{
 	return(
 		<View style={styles.buttonContainer}>
+	    <TextInput placeholder="Customer" 
+        style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+                  onChangeText={data => this.setState({ violation: data })}
+      />	
 <Button title="Customer Accept" onPress={this.customerComplete}  />
 		</View>	
    );
@@ -503,6 +512,7 @@ renderHours = () => {
 
  render() {
 
+	ScreenOrientation.lockAsync(ScreenOrientation.Orientation.PORTRAIT);
 
 	
 	return (

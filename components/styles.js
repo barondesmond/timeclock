@@ -25,6 +25,60 @@ export default StyleSheet.create({
 
 	},
 
+  containersig: {
+	margin:10,
+    flex: 1,
+
+  },
+
+  sketch: {
+
+    flex: 1,
+
+  },
+
+  sketchContainer: {
+
+    height: '90%',
+	borderWidth: 1,
+
+  },
+
+  image: {
+
+    flex: 1,
+
+  },
+
+  label: {
+
+    width: '100%',
+
+    padding: 5,
+
+    alignItems: 'center',
+
+  },
+
+  button: {
+
+    // position: 'absolute',
+
+    // bottom: 8,
+
+    // left: 8,
+
+    zIndex: 1,
+
+    padding: 12,
+
+    minWidth: 56,
+
+    minHeight: 48,
+
+  },
+
+
   contentContainer: {
     padding: 5,
     color: '#fff',

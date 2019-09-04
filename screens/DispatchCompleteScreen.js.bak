@@ -338,6 +338,7 @@ checkStatus =  async () => {
 		if (this.state.auth.EmpActive != '1')
 		{
 			await AsyncStorage.removeItem('noteadded');
+			await AsyncStorage.removeItem('override');
 			if (this.state.notes)
 			{
 				this.setState({addDispatchNote: this.state.notes});
@@ -427,8 +428,9 @@ renderAddress = () => {
 
 
 
-customerComplete = () => {
+customerComplete = async () => {
 
+	
 	if (this.state.customer != false && this.state.customerimage != null)
 	{
 		this.checkStatus();
@@ -471,6 +473,10 @@ renderCustomerComplete = () => {
 	{
 	return(
 		<View style={styles.buttonContainer}>
+	    <TextInput placeholder="Customer" 
+        style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+                  onChangeText={data => this.setState({ violation: data })}
+      />	
 <Button title="Customer Accept" onPress={this.customerComplete}  />
 		</View>	
    );
@@ -502,6 +508,7 @@ renderHours = () => {
 
  render() {
 
+	ScreenOrientation.lockAsync(ScreenOrientation.Orientation.PORTRAIT);
 
 	
 	return (

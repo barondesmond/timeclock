@@ -4,8 +4,9 @@ import * as ExpoPixi from 'expo-pixi';
 
 import React, { Component } from 'react';
 import * as lib from '../components/lib';
-import { Image, Button, Platform, AppState, StyleSheet, Text, View, TouchableOpacity, AsyncStorage } from 'react-native';
+import { Image, Button, Platform, AppState, StyleSheet, Text, View, TouchableOpacity, AsyncStorage, Alert } from 'react-native';
 import { Constants, ImagePicker, Permissions, Location, ScreenOrientation } from 'expo';
+import styles from '../components/styles';
 
 
 
@@ -149,13 +150,22 @@ _getLocationAsync = async () => {
   clearCanvas = () => {
     this.refs.signatureCanvas.clear()
   }
+  altCanvas = () => {
+  
+	console.log('what');
+	Alert.alert('saving signature');
+
+return false;
+  }
+
   saveCanvas = async () => {
-    const signature_result = await
-    this.sketch.takeSnapshotAsync({
+	
+    const signature_result = await this.sketch.takeSnapshotAsync({
       format: 'jpeg', // 'png' also supported
       quality: 0.5, // quality 0 for very poor 1 for very good
       result: 'file' // 
-    })
+    });
+
 		this.setState({image: signature_result.uri});
 		console.log(signature_result);
 		await this.saveSignature();
@@ -210,9 +220,7 @@ saveSignature = async () => {
 
     return (
 
-      <View style={styles.container}>
-
-        <View style={styles.container}>
+      <View style={styles.containersig}>
 
           <View style={styles.sketchContainer}>
 
@@ -230,13 +238,17 @@ saveSignature = async () => {
 
             />
 
-          </View>
 
         </View>
+   
 
-      <TouchableOpacity onPress={this.saveCanvas}>
-        <Text style={styles.label}>Sign</Text>
-      </TouchableOpacity>
+
+          <View style={styles.buttonContainer}>
+			  <Button title="Sign & Accept" onPress={() => this.onReady()} />
+			  </View>
+
+
+
 
       </View>
 
@@ -247,59 +259,3 @@ saveSignature = async () => {
 }
 
 
-
-const styles = StyleSheet.create({
-
-  container: {
-
-    flex: 1,
-
-  },
-
-  sketch: {
-
-    flex: 1,
-
-  },
-
-  sketchContainer: {
-
-    height: '100%',
-
-  },
-
-  image: {
-
-    flex: 1,
-
-  },
-
-  label: {
-
-    width: '100%',
-
-    padding: 5,
-
-    alignItems: 'center',
-
-  },
-
-  button: {
-
-    // position: 'absolute',
-
-    // bottom: 8,
-
-    // left: 8,
-
-    zIndex: 1,
-
-    padding: 12,
-
-    minWidth: 56,
-
-    minHeight: 48,
-
-  },
-
-});

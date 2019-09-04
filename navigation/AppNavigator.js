@@ -29,8 +29,10 @@
 	JobLocation: {screen: JobLocationScreen},
 	DispatchCamera: {screen: DispatchCameraScreen}
 	});
+	
 
   const AppContainer = createAppContainer(AppNavigator);
 
   export default AppContainer;
+
 

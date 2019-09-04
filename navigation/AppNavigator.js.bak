@@ -11,7 +11,7 @@
   import JobLocationScreen from '../screens/JobLocationScreen';
   import DispatchCameraScreen from '../screens/DispatchCameraScreen';
   import PictureScreen from '../screens/PictureScreen';
-  import SignatureScreen from '../screens/Signaturescren';
+  import SignatureScreen from '../screens/SignatureScreen';
   import { createAppContainer } from 'react-navigation';
 
   const AppNavigator = createStackNavigator({
@@ -33,4 +33,6 @@
   const AppContainer = createAppContainer(AppNavigator);
 
   export default AppContainer;
+
+  <AppNavigator screenProps={onGoBack} />
 
