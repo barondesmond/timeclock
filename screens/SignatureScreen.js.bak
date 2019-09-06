@@ -136,6 +136,7 @@ _getLocationAsync = async () => {
   componentWillUnmount() {
 
     AppState.removeEventListener('change', this.handleAppStateChangeAsync);
+	ScreenOrientation.unlockAsync(ScreenOrientation.Orientation.LANDSCAPE);
 
   }
 
@@ -244,7 +245,7 @@ saveSignature = async () => {
 
 
           <View style={styles.buttonContainer}>
-			  <Button title="Sign & Accept" onPress={() => this.onReady()} />
+			  <Button title="Sign & Accept" onPress={() => this.saveCanvas()} />
 			  </View>
 
 

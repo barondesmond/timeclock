@@ -136,6 +136,7 @@ _getLocationAsync = async () => {
   componentWillUnmount() {
 
     AppState.removeEventListener('change', this.handleAppStateChangeAsync);
+	ScreenOrientation.unlockAsync(ScreenOrientation.Orientation.LANDSCAPE);
 
   }
 
@@ -209,7 +210,6 @@ saveSignature = async () => {
     }
 
    await lib.setItem('pictures', pictures)
-	await ScreenOrientation.lockAsync(ScreenOrientation.Orientation.PORTRAIT);
 
    this.props.navigation.state.params.onGoBack();
    this.props.navigation.goBack();

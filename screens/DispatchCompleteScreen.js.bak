@@ -437,6 +437,10 @@ customerComplete = async () => {
 	}
 	else
 	{
+		if (this.state.violation)
+		{
+			await AsyncStorage.setItem('violation', this.state.violation);
+		}
 		this.props.navigation.navigate('Signature', {
       onGoBack: () => this.checkStatus(), Screen: 'DispatchSignaure',LocName: this.state.DispatchName, address: 'customerComplete', reference: this.state.Dispatch});
 	}
@@ -508,7 +512,7 @@ renderHours = () => {
 
  render() {
 
-	ScreenOrientation.lockAsync(ScreenOrientation.Orientation.PORTRAIT);
+	ScreenOrientation.lockAsync(ScreenOrientation.Orientation.ANY);
 
 	
 	return (

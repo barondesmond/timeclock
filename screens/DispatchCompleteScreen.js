@@ -512,7 +512,7 @@ renderHours = () => {
 
  render() {
 
-	ScreenOrientation.lockAsync(ScreenOrientation.Orientation.PORTRAIT);
+	ScreenOrientation.unlockAsync(ScreenOrientation.Orientation.LANDSCAPE);
 
 	
 	return (
