@@ -167,7 +167,7 @@ uploadImages = async () => {
    row = this.state.pictures.pop();
    await lib.setItem('pictures', this.state.pictures);
    this.setState({pictures: this.state.pictures});
-   await uploadImageAsync(row);
+   await lib.uploadImageAsync(row);
 
    }
    Alert.alert('Images Uploaded ');
@@ -210,7 +210,7 @@ async function uploadImageAsync(row) {
 
     uri: row.image,
 
-    name: `${row.key}.${row.EmpNo}.${row.Screen}.${row.reference}.${row.LocName}.${row.violation}.${row.latitude}.${row.longitude}.${fileType}`,
+    name: `${row.key}.${row.EmpNo}.${row.Screen}.${row.reference}.${row.address}.${row.violation}.${row.latitude}.${row.longitude}.${fileType}`,
 
     type: `multipart/form-data`,
 

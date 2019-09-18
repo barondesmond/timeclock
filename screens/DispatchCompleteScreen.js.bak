@@ -90,7 +90,7 @@ constructor(props){
 async fetchDispatchsFromApi() {
 
  
-	await fetch(URL + `dispatchs_json.php?latitude=${this.state.latitude}&longitude=${this.state.longitude}&ServiceMan=${this.state.EmpNo}&EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&dev=${__DEV__}`)
+	await fetch(URL + `dispatchs_json.php?latitude=${this.state.latitude}&longitude=${this.state.longitude}&ServiceMan=${this.state.EmpNo}&EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&dev=${__DEV__}`)
       .then((response) => response.json())
       .then((responseJson) => {
 
@@ -126,7 +126,7 @@ async fetchDispatchsFromApi() {
 async authEmpInstApi() {
 
  
-	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&dev=${__DEV__}`)
+	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&dev=${__DEV__}`)
       .then((response2) => response2.json())
       .then((responseJson2) => {
 
@@ -512,7 +512,7 @@ renderHours = () => {
 
  render() {
 
-	ScreenOrientation.lockAsync(ScreenOrientation.Orientation.ANY);
+	ScreenOrientation.unlockAsync(ScreenOrientation.Orientation.LANDSCAPE);
 
 	
 	return (

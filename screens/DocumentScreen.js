@@ -192,52 +192,6 @@ return false;
 
 
 
-async function uploadImageAsync(row) {
-
-  let apiUrl = URL + `upload/index.php`;
-
-
-
-
-  let uriParts = row.image.split('.');
-
-  let fileType = uriParts[uriParts.length - 1];
-
-
-  let formData = new FormData();
-
-  formData.append('photo', {
-
-    uri: row.image,
-
-    name: `${row.key}.${row.EmpNo}.${row.Screen}.${row.reference}.${row.LocName}.${row.violation}.${row.latitude}.${row.longitude}.${fileType}`,
-
-    type: `multipart/form-data`,
-
-  });
-
-
-  opt = {
-
-    method: 'POST',
-
-    body: formData,
-
-    headers: new Headers({
-        'Accept': 'application/json',
-		'Content-Type': 'multipart/form-data; boundary=someArbitraryUniqueString'
-
-    }),
-
-  };
-console.log(apiUrl);
-console.log(opt);
-
-
-  return fetch(apiUrl, opt);
-
-}
-
 
    
  

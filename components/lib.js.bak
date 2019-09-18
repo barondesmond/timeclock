@@ -4,11 +4,10 @@ import { NetInfo,   AsyncStorage } from 'react-native';
 import axios from 'axios';
 
 export async function postData (url) {
-	resp =	await axios.get(url) .then(res => {
-        return res;
-	})
+	const resp =	await axios.get(url);
+	console.log(resp);
 
-	return res;
+	return resp;
   }
 
 export async function postData2 (url, str) {

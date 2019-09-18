@@ -276,7 +276,7 @@ savePicture = async () => {
    {
 	   await AsyncStorage.setItem('violation', this.state.violation);
    }
-   if (this.state.Screen != 'Document)
+   if (this.state.Screen != 'Document')
    {
 	   await AsyncStorage.setItem('image', this.state.image);
 	}
@@ -325,6 +325,7 @@ async componentDidMount () {
 		this.setState({LocName: this.props.navigation.state.params.LocName});
 		this.setState({Screen: this.props.navigation.state.params.Screen});
 		this.setState({reference: this.props.navigation.state.params.reference});
+		console.log(this.state);
 
 	}
 

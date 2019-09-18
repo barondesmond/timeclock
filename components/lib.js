@@ -54,7 +54,7 @@ export async function uploadImageAsync(row) {
 
     uri: row.image,
 
-    name: `${row.key}.${row.EmpNo}.${row.Screen}.${row.reference}.${row.LocName}.${row.violation}.${row.latitude}.${row.longitude}.${fileType}`,
+    name: `${row.key}.${row.EmpNo}.${row.Screen}.${row.reference}.${row.address}.${row.violation}.${row.latitude}.${row.longitude}.${fileType}`,
 
     type: `multipart/form-data`,
 

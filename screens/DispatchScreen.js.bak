@@ -20,7 +20,7 @@ import {
   TextInput,
   NetInfo
 } from 'react-native';
-import Expo, { Constants, Location, Permissions } from 'expo';
+import expo, { Constants, Location, Permissions } from 'expo';
 
 import * as lib from '../components/lib';
 import styles from '../components/styles';
@@ -85,6 +85,7 @@ constructor(props){
 		isVisibleDispatchNote: false,
 		notes: '',
 		gps: __DEV__,
+		isLoading: false,
     }
 
 }
@@ -111,7 +112,8 @@ async fetchDispatchsFromApi(load) {
 	{
 		return false;
 	}
-	await fetch(URL + `dispatchs_json.php?latitude=${this.state.latitude}&longitude=${this.state.longitude}&ServiceMan=${this.state.EmpNo}&EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&dev=${__DEV__}`)
+	await fetch(URL + `dispatchs_json.php?latitude=${this.state.latitude}&longitude=${this.state.longitude}&ServiceMan=${this.state.EmpNo}&EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.nativeAppVersion
+}&dev=${__DEV__}`)
       .then((response) => response.json())
       .then((responseJson) => {
 
@@ -175,7 +177,7 @@ async authEmpInstApi() {
 
     this.setState({isLoading: true});
 
-	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}`)
+	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.nativeAppVersion}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}`)
       .then((response2) => response2.json())
       .then((responseJson2) => {
 
@@ -227,7 +229,7 @@ async authEventLogApi() {
     this.setState({isLoading: true});
 
 	Screen = await AsyncStorage.getItem('Screen');
-	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&event=${this.state.event}&Dispatch=${this.state.Dispatch}&Counter=${this.state.Counter}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}&addDispatchNote=${this.state.addDispatchNote}&dev=${__DEV__}`;
+	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.nativeAppVersion}&event=${this.state.event}&Dispatch=${this.state.Dispatch}&Counter=${this.state.Counter}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}&addDispatchNote=${this.state.addDispatchNote}&dev=${__DEV__}`;
 	  await fetch(authurl)
       .then((response2) => response2.json())
       .then((responseJson2) => {
@@ -367,6 +369,12 @@ error(err) {
   }
 
  async checkStatus(override) {
+	 if (this.state.isLoading)
+	 {
+		 Alert.alert('Please Wait...');
+	 }
+	 this.setState({isLoading: true});
+
 	 if (this.state.image)
 	 {
 		 override = true;
@@ -384,10 +392,13 @@ error(err) {
 		if (this.state.auth.EmpActive == '1')
 		{
 			this.setState({checkinStatus: 'Stop', active: !this.state.active});
+			this.setState({isLoading: false});
 			return false;
 		}
 	}
 	else if (this.state.checkinStatus == 'Stop' && !this.state.dispatchstatus && !this.state.eventstatus) {
+		const notes = await AsyncStorage.getItem('notes');
+	
 		if (this.state.notes)
 			{
 				this.setState({addDispatchNote: this.state.notes});
@@ -396,7 +407,7 @@ error(err) {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive != '1')
 		{
-	
+			await this.loadPictures();
 			if (this.state.pictures && this.state.pictures.length != 0)
 			{
 				await this.uploadImages();
@@ -405,6 +416,7 @@ error(err) {
 			this.setState({checkinStatus: 'Start', active: !this.state.active});
 			this.props.navigation.navigate('Home');
 			Alert.alert('Dispatch Work Done');
+			this.setState({isLoading: false});
 			return false;
 		}
 	}
@@ -415,17 +427,21 @@ error(err) {
 			Alert.alert('Not within range of ' + this.state.DispatchLocation + ' or gps not valid ' + this.state.dispatchdistance); 
 		    clearInterval(this.intervalID);
 			this.props.navigation.navigate('Picture', {onGoBack: () => this.checkStatus(true), Screen: 'DispatchOverride', address: this.state.DispatchLocation, reference: this.state.Dispatch, LocName: this.state.DispatchLocation});
+			this.setState({isLoading: false});
+
 			return false;
 		}
 	 }
 	 if (this.state.LocName != 'Select Dispatch' && this.state.dispatchstatus)
 	 {
 		 Alert.alert(this.state.DispatcName + ' dispatch status state invalid');
+		 this.setState({isLoading: false});
+		
 		 return false;
 	 }
 	Alert.alert('Error ' + this.state.checkinStatus + ' ' + this.state.event + ' ' + this.state.auth.EmpActive);
 	//console.log(this.state);
-
+	 this.setState({isLoading: false});
 }
 
   updateEvent = (event) => {
@@ -512,29 +528,36 @@ workingStatus = async () => {
 
 }
 
+
+
 renderMaybeWorking = () => {
 	
-
-
-	if (this.state.event != 'Traveling')
+	if (this.isLoading==true)
 	{
 		return false;
 	}
-	if (this.state.checkinStatus != 'Stop')
+
+	if (this.state.event != 'Traveling' || this.state.checkinStatus != 'Stop')
 	{
 		return false;
 	}
+
 	if (this.state.dispatchdistance != null &&  this.state.dispatchdistance > 2  && this.state.override == false)
 	{
 		return (
 		<View style={styles.buttonContainer}>
-			<Text>Distance to Dispatch {this.state.dispatchdistance}</Text>
+			<Text>Distance to Job {this.state.jobdistance}</Text>
 		</View>);
 		
 	}
 
-
+	return(
+		<View style={styles.buttonContainer}>
+<Button title="Switch Status to Working" onPress={() => this.workingStatus()}  />
+		</View>	
+   );
 }
+
 
 renderWorking = () => {
 
@@ -545,7 +568,7 @@ renderWorking = () => {
 	return(
 		<View style={styles.buttonContainer}>
 
-			<Button title="Add Picture" onPress={this.dispatchCamera}  />
+			<Button title="Add Picture" onPress={() => this.dispatchCamera()}  />
 		</View>	
    );
 
@@ -574,6 +597,12 @@ dispatchCamera = () => {
 
 customerComplete = async () => {
 
+	noteadded = await AsyncStorage.getItem('noteadded');
+	if (!noteadded || noteadded != 'addDispatchNote')
+	{
+		Alert.alert('Notes Required');
+		return false;
+	}
 			if (this.state.notes)
 			{
 				this.setState({addDispatchNote: this.state.notes});
@@ -600,12 +629,7 @@ renderCustomerComplete = () => {
 	{
 		return false;
 	}
-	noteadded = await AsyncStorage.getItem('noteadded');
-	if (!noteadded || noteadded != 'addDispatchNote')
-	{
-		Alert.alert('Notes Required');
-		return false;
-	}
+
 
 	//console.log('renderCustomerComplete');
 	return(
@@ -683,7 +707,7 @@ addDispatchNote = async () => {
 
 		return false;
 	}
-	console.log('checking for notes');
+
 	if (this.state.addDispatchNote == '' || this.state.checkinStatus != 'Stop')
 	{
 		//console.log(this.state.data);
@@ -725,13 +749,13 @@ renderWorkingDispatchNotes = () => {
       />
 		   <Button key="Post" title="Post Note"
 
-          onPress={this.addDispatchNote}
+          onPress={() => this.addDispatchNote()}
 
           style={styles.buttonContainer} value="Post" />
 
 		   <Button key="Close" title="Back"
 
-          onPress={() => this.addToNote} value="Close"
+          onPress={() => this.addToNote() } value="Close"
 
           style={styles.buttonContainer} />
 		        </ScrollView>
@@ -760,7 +784,7 @@ renderDispatchModal = ()  => {
 					</ScrollView>
                </Modal>
 			  {
-			   this.state.dispatchstatus? <Button title={this.state.DispatchName} onPress = {() => this.setState({isDispatchVisible: true})} /> : <Button style={styles.buttonContainer} title={this.state.DispatchName}  onPress={this.resetDispatchStatus} /> 
+			   this.state.dispatchstatus? <Button title={this.state.DispatchName} onPress = {() => this.setState({isDispatchVisible: true})} /> : <Button style={styles.buttonContainer} title={this.state.DispatchName}  onPress={() => this.resetDispatchStatus()} /> 
 			   }
          </View>
 	  );
@@ -883,7 +907,7 @@ renderNoteBox = () => {
 			   </ScrollView>
       </Modal>
 		{
-    	    this.state.eventstatus? <Button title={this.state.event} onPress = {() => this.setState({isEventVisible: true})} /> : <Button style={styles.buttonContainer} title={this.state.event}  onPress={this.resetEventStatus} /> 
+    	    this.state.eventstatus? <Button title={this.state.event} onPress = {() => this.setState({isEventVisible: true})} /> : <Button style={styles.buttonContainer} title={this.state.event}  onPress={() => this.resetEventStatus()} /> 
          }
 		</View>
 
@@ -894,7 +918,7 @@ renderNoteBox = () => {
 	 {this.renderMaybeWorking()}
 	 {this.renderWorking()}
 	 {this.renderCustomerComplete()}
-	 {this.renderWorkingDispatchNotes()}
+
 
             </View>
 	   

@@ -179,7 +179,7 @@ async authEmpInstApi() {
 	{
 		return false;
 	}
-	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}`)
+	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&dev=${__DEV__}`)
       .then((response2) => response2.json())
       .then((responseJson2) => {
 

@@ -39,7 +39,8 @@ export default class CameraScreen extends Component {
 	latitude: null,
 	longitude: null,
 	locationstatus: false,
-    reference: null,
+    reference: '',
+	address: '',
     Screen: null,
 	timestamp: null,
 	LocName: '',
@@ -325,6 +326,7 @@ async componentDidMount () {
 		this.setState({LocName: this.props.navigation.state.params.LocName});
 		this.setState({Screen: this.props.navigation.state.params.Screen});
 		this.setState({reference: this.props.navigation.state.params.reference});
+		console.log(this.state);
 
 	}
 

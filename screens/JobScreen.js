@@ -91,7 +91,7 @@ constructor(props){
 async fetchJobsFromApi() {
 
 	 
-	await fetch(URL + `jobs_json.php?latitude=${this.state.latitude}&longitude=${this.state.longitude}&EmpNo=${this.state.EmpNo}&ServiceMan=${this.state.EmpNo}&installationId=${Constants.installationId}&dev=${__DEV__}`)
+	await fetch(URL + `jobs_json.php?latitude=${this.state.latitude}&longitude=${this.state.longitude}&EmpNo=${this.state.EmpNo}&ServiceMan=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&dev=${__DEV__}`)
       .then((response) => response.json())
       .then((responseJson) => {
 
@@ -340,7 +340,8 @@ error(err) {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive != '1')
 		{
-	
+			await this.loadPictures();
+
 			if (this.state.pictures && this.state.pictures.length != 0)
 			{
 				await this.uploadImages();
