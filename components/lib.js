@@ -1,6 +1,6 @@
 
 import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, URL, STORAGE_KEY} from '../constants/common';
-import { NetInfo,   AsyncStorage } from 'react-native';
+import { NetInfo,   AsyncStorage, Linking,   Alert } from 'react-native';
 import axios from 'axios';
 
 export async function postData (url) {
@@ -27,6 +27,24 @@ export async function postData2 (url, str) {
       console.error(e);
     }
   }
+export async function mapDirections(address) {
+	//https://www.google.com/maps/dir/?api=1&parameters
+	const url = `https://www.google.com/maps/search/?api=1&query=` + encodeURI(address);
+
+
+Linking.canOpenURL(url).then(supported => {
+    if (supported) {
+        Linking.openURL(url);
+    } else {
+        Alert.alert(
+            'Alert',
+            'This URL scheme is not installed',
+        )
+    }
+});
+
+
+}
 
 export async function uploadImageAsync(row) {
 

@@ -482,6 +482,7 @@ resetEventStatus = () => {
 	    //console.log(this.state);
    }
 
+
 renderAddress = () => {
 
 
@@ -489,17 +490,16 @@ renderAddress = () => {
 	{
 		return false;
 	}
+
 	return(
-		      <View style={styles.buttonContainer}>
+		<View style={styles.buttonContainer}>
+		      <TouchableHighlight  onPress={()=>lib.mapDirections(`${this.state.Add1}, ${this.state.City} ${this.state.State} ${this.state.Zip}` )}>
 			<Text style={styles.getStartedText}>
-					Address: {this.state.Add1} {this.state.Add2}
-            </Text>
-			<Text style={styles.getStartedText}>
-				  {this.state.City}, {this.state.State} {this.state.Zip}
-            </Text>
-			<Text style={styles.getStartedText}>
-	             Phone: {this.state.Phone1}         
+					Address: {this.state.Add1} {this.state.Add2} {"\n"}
+				  {this.state.City}, {this.state.State} {this.state.Zip}  {"\n"}
+	              Phone: {this.state.Phone1}         
 			</Text>
+	</TouchableHighlight>
 		</View>
 	
 		)
