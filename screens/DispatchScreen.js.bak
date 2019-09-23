@@ -492,8 +492,8 @@ renderAddress = () => {
 	}
 
 	return(
-		<View>
-		      <TouchableHighlight style={styles.buttonContainer} onPress={()=>lib.mapDirections(`${this.state.Add1}, ${this.state.City} ${this.state.State} ${this.state.Zip}` )}>
+		<View style={styles.buttonContainer}>
+		      <TouchableHighlight  onPress={()=>lib.mapDirections(`${this.state.Add1}, ${this.state.City} ${this.state.State} ${this.state.Zip}` )}>
 			<Text style={styles.getStartedText}>
 					Address: {this.state.Add1} {this.state.Add2} {"\n"}
 				  {this.state.City}, {this.state.State} {this.state.Zip}  {"\n"}

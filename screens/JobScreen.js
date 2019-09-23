@@ -20,8 +20,11 @@ import {
   TextInput,
   NetInfo
 } from 'react-native';
-import Expo, { Constants, Location, Permissions } from 'expo';
+import expo from 'expo';
 
+import Constants from 'expo-constants';
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
 import styles from '../components/styles';
 import * as lib from '../components/lib';
 
@@ -358,7 +361,7 @@ error(err) {
 		{
 			Alert.alert('Not within range of ' + this.state.JobLocation + ' or gps not valid ' + this.state.jobdistance); 
 		    clearInterval(this.intervalID);
-			this.props.navigation.navigate('Picture', {onGoBack: () => this.checkStatus(true), LocName: this.state.LocName, address: this.state.JobLocation, reference: this.state.JobID});
+			this.props.navigation.navigate('Picture', {onGoBack: () => this.checkStatus(true), LocName: this.state.LocName, address: this.state.JobLocation, reference: this.state.JobID, Screen: 'JobOverride'});
 			return false;
 		}
 	 }
@@ -456,6 +459,30 @@ async loadPictures () {
 return true;
 }
 
+renderAddress = () => {
+
+
+	if (this.state.Add1 == '')
+	{
+		return false;
+	}
+
+	return(
+		<View style={styles.buttonContainer}>
+		      <TouchableHighlight  onPress={()=>lib.mapDirections(`${this.state.Add1}, ${this.state.City} ${this.state.State} ${this.state.Zip}` )}>
+			<Text style={styles.getStartedText}>
+					Address: {this.state.Add1} {this.state.Add2} {"\n"}
+				  {this.state.City}, {this.state.State} {this.state.Zip}  {"\n"}
+	              Phone: {this.state.Phone1}         
+			</Text>
+	</TouchableHighlight>
+		</View>
+	
+		)
+}
+
+
+
 workingStatus = async () => {
 
 
@@ -471,28 +498,6 @@ workingStatus = async () => {
 
 }
 
-renderAddress = () => {
-
-
-	if (this.state.Add1 == '')
-	{
-		return false;
-	}
-	return(
-		      <View style={styles.buttonContainer}>
-			<Text style={styles.getStartedText}>
-					Address: {this.state.Add1} {this.state.Add2}
-            </Text>
-			<Text style={styles.getStartedText}>
-				  {this.state.City}, {this.state.State} {this.state.Zip}
-            </Text>
-			<Text style={styles.getStartedText}>
-	             Phone: {this.state.Phone1}         
-			</Text>
-		</View>
-	
-		)
-}
 
 renderMaybeWorking = () => {
 	

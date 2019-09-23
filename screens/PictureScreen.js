@@ -16,6 +16,8 @@ import {
   AsyncStorage,
   Alert,
   Geolocation,
+  ScrollView,
+  NetInfo,
 
 
 } from 'react-native';
@@ -23,7 +25,7 @@ import {
 import { Constants, ImagePicker, Permissions, Location } from 'expo';
 
 import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, URL, STORAGE_KEY} from '../constants/common';
-
+import * as lib from '../components/lib';
 import styles from '../components/styles';
 
 
@@ -53,63 +55,44 @@ export default class CameraScreen extends Component {
 
   render() {
 
-    let {
-
-      image
-
-    } = this.state;
-
-	if (!image)
-	{
-
-	}
+ 
 
 
-    return (
+     return (
 
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
 	<View style={styles.welcomeContainer}>
 
         <StatusBar barStyle="default" />
-
-  
-	
-	
-	    {this.renderNoteInput()}
-        {this._maybeRenderImage()}
-	    
-        {this._maybeRenderUploadingOverlay()}
-
+	  {this.renderTakePicture()}	
+	  {this._maybeRenderImage()}
+	  {this.renderUpload()}
+	  {this.renderList()}
       </View>
-    </View>
+    </ScrollView>
 
     );
 
   }
 
-async setItem(key, value) {
-    try {
-        return await AsyncStorage.setItem(key, JSON.stringify(value));
-    } catch (error) {
-         console.error('AsyncStorage#setItem error: ' + error.message);
-    }
+renderTakePicture = () => {
+
+
+	return (<View>
+        <Button onPress={this._takePhoto} title="Take a Picture" />
+	</View>);
+
+
 }
 
-async getItem(key) {
-    return await AsyncStorage.getItem(key)
-        .then((result) => {
-            if (result) {
-                try {
-                    result = JSON.parse(result);
-                } catch (e) {
-                     console.error('AsyncStorage#getItem error deserializing JSON for key: ' + key, e.message);
-                }
-            }
-            return result;
-        });
+renderUpload = () => {
+
+if (this.state.pictures && this.state.pictures.length > 0 && !this.state.image)
+{
+return (<View><Button onPress={this.uploadImages} title="Upload" /></View>);
+
 }
-async removeItem(key) {
-    return await AsyncStorage.removeItem(key);
+
 }
 
 
@@ -147,48 +130,24 @@ _getLocationAsync = async () => {
 
   };
 
-renderNoteInput = () => {
+renderList = () => {
 
-    let {
+	 if (this.state.loadingPictures == true)
+	 {
 
-      image
+		 return false;
+	 }
+	 if (!this.state.pictures || this.state.pictures.length <= 0)
+	 {
+		 return false;
+	 }
+	 if (this.state.image)
+	 {
+		 return false;
+	 }
+	return (this.state.pictures.map((row)=>(<Image key={row.key} source={{ uri: row.image }} style={styles.maybeRenderImage} /> ) ));
+  }
 
-    } = this.state;
-
-
-
-    if (!image) {
-
-      return;
-
-    }
-
-if (this.state.Screen == 'Document')
-{
-return (
-				<View>
-			<Text style={styles.buttonContainer}>
-			Please enter name of location
-			</Text>
-			<Text style={styles.buttonContainer}>
-	  {this.state.LocName} {this.state.latitude} {this.state.longitude}
-		</Text>
-		    <TextInput placeholder="Location" 
-        style={{height: 40, borderColor: 'gray', borderWidth: 1}}
-                  onChangeText={data => this.setState({ violation: data })}
-      />
-		  </View>
-);
-}
-
-return ( <View>
-	<Text style={styles.buttonContainer}>Enter Note</Text>
-	    <TextInput placeholder="Note" 
-        style={{height: 40, borderColor: 'gray', borderWidth: 1}}
-                  onChangeText={data => this.setState({ violation: data })}
-      />	
-</View>);
-}
 
 
 
@@ -241,32 +200,7 @@ return ( <View>
 
 
 
-  _share = () => {
 
-    Share.share({
-
-      message: this.state.image,
-
-      title: 'Check out this photo',
-
-      url: this.state.image,
-
-    });
-
-  };
-
-
-
-  _copyToClipboard = async () => {
-	  
-		uploadImageAsync(this.state.image);
-		Alert.alert(`Upload Complete ${image} ${this.state.EmpNo}  ${this.state.violation} ${this.state.LocName} ${this.state.latitude} ${this.state.longitude} ${this.state.reference} ${this.state.Screen} ${this.state.timestamp}`);
-
-		this.setState({image: null, violation: ''});
-		this.props.navigation.state.params.onGoBack();
-		this.props.navigation.goBack();
-
-  };
 savePicture = async () => {
 
 
@@ -282,7 +216,7 @@ savePicture = async () => {
 	   await AsyncStorage.setItem('image', this.state.image);
 	}
 
-   let pictures = await this.getItem('pictures');
+   let pictures = await lib.getItem('pictures');
    console.log('pictures');
    console.log(pictures);
    console.log('savePicture');
@@ -294,7 +228,7 @@ savePicture = async () => {
    }
    else
 	{
-	   this.removeItem('pictures');
+	   await lib.removeItem('pictures');
 
 	   pictures = [];
 	   pictures.push(picture);
@@ -302,10 +236,19 @@ savePicture = async () => {
 	   console.log(pictures);
 
     }
+	 await lib.setItem('pictures', pictures);
 
-   await this.setItem('pictures', pictures)
-   this.props.navigation.state.params.onGoBack();
-   this.props.navigation.goBack();
+	if (this.state.image  && (this.state.Screen == 'DispatchOverride' || this.state.Screen == 'JobOverride' || this.state.Screen == 'EmployeeOverride' || this.state.Screen == 'Document') )
+	{
+	
+
+	    this.props.navigation.state.params.onGoBack();
+		this.props.navigation.goBack();
+	}
+	else
+	{
+		this.setState({image: null, pictures: pictures});
+	}	
 
 };
 
@@ -355,12 +298,12 @@ async componentDidMount () {
 		}
 	}
 
-	if (!this.state.image)
+	if (!this.state.image && (this.state.Screen == 'DispatchOverride' || this.state.Screen == 'JobOverride' || this.state.Screen == 'EmployeeOverride' || this.state.Screen == 'Document') )
 	{
 		console.log('take a picture');
 		this._takePhoto();
 	}
-	else
+	if (this.state.image  && (this.state.Screen == 'DispatchOverride' || this.state.Screen == 'JobOverride' || this.state.Screen == 'EmployeeOverride' || this.state.Screen == 'Document') )
 	{
 		console.log('picture taken');
 		this.props.navigation.state.params.onGoBack();
@@ -369,6 +312,33 @@ async componentDidMount () {
 	
 
 };
+
+
+uploadImages = async () => {
+
+	const netStatus = await NetInfo.getConnectionInfo()  
+
+	if (netStatus.type == 'none')
+	{
+		Alert.alert('no connection');
+
+		return false;
+	}
+   let max = this.state.pictures.length;
+   for(let i = 1; i <= max; i++) {
+  
+   row = this.state.pictures.pop();
+   await lib.setItem('pictures', this.state.pictures);
+   this.setState({pictures: this.state.pictures});
+   await lib.uploadImageAsync(row);
+
+   }
+
+
+	    this.props.navigation.state.params.onGoBack();
+		this.props.navigation.goBack();
+
+}
 
   _takePhoto = async () => {
 
@@ -407,141 +377,4 @@ async componentDidMount () {
 
   };
 
-
-
-  _pickImage = async () => {
-
-    const {
-
-      status: cameraRollPerm
-
-    } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-
-
-
-    // only if user allows permission to camera roll
-
-    if (cameraRollPerm === 'granted') {
-
-      let pickerResult = await ImagePicker.launchImageLibraryAsync({
-
-        allowsEditing: true,
-
-        aspect: [4, 3],
-
-      });
-
-
-		this.setState({image: pickerResult.uri});
-
-    }
-
-  };
-
-
-
-  _handleImagePicked = async pickerResult => {
-
-    let uploadResponse, uploadResult;
-
-
-
-    try {
-
-      this.setState({
-
-        uploading: true
-
-      });
-
-
-
-      if (!pickerResult.cancelled) {
-
-        uploadResponse = await uploadImageAsync(pickerResult.uri);
-
-        uploadResult = await uploadResponse.json();
-
-
-
-        this.setState({
-
-          image: uploadResult.location
-
-        });
-
-      }
-
-    } catch (e) {
-
-      console.log({ uploadResponse });
-
-      console.log({ uploadResult });
-
-      console.log({ e });
-
-      alert('Upload failed, sorry :(');
-
-    } finally {
-
-      this.setState({
-
-        uploading: false
-
-      });
-
-    }
-
-  };
-
 }
-
-
-
-async function uploadImageAsync(uri) {
-
-  let apiUrl = URL + `upload/index.php`;
-
-
-
-
-  let uriParts = uri.split('.');
-
-  let fileType = uriParts[uriParts.length - 1];
-
-
-  let formData = new FormData();
-
-  formData.append('photo', {
-
-    uri,
-
-    name: `${timestamp}.${EmpNo}.${Screen}.${reference}.${LocName}.${violation}.${latitude}.${longitude}.${fileType}`,
-
-    type: `multipart/form-data`,
-
-  });
-
-
-  opt = {
-
-    method: 'POST',
-
-    body: formData,
-
-    headers: new Headers({
-        'Accept': 'application/json',
-		'Content-Type': 'multipart/form-data; boundary=someArbitraryUniqueString'
-
-    }),
-
-  };
-console.log(apiUrl);
-console.log(opt);
-
-
-  return fetch(apiUrl, opt);
-
-}
-
-
