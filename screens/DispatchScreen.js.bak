@@ -20,7 +20,11 @@ import {
   TextInput,
   NetInfo
 } from 'react-native';
-import expo, { Constants, Location, Permissions } from 'expo';
+import expo from 'expo';
+
+import Constants from 'expo-constants';
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
 
 import * as lib from '../components/lib';
 import styles from '../components/styles';
