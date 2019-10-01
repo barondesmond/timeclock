@@ -87,7 +87,7 @@ constructor(props){
 		addDispatchPicture: false,
 		pictures: null,
 		isVisibleDispatchNote: false,
-		notes: '',
+		notes: false,
 		gps: __DEV__,
 		isLoading: false,
     }
