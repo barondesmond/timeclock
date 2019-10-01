@@ -606,6 +606,12 @@ customerComplete = async () => {
 		Alert.alert('Notes Required');
 		return false;
 	}
+	if (this.state.isLoading)
+	{
+		Alert.alert('Please Wait...');
+	}
+	this.setState({isLoading: true});
+
 			if (this.state.notes)
 			{
 				this.setState({addDispatchNote: this.state.notes});
@@ -617,7 +623,7 @@ customerComplete = async () => {
 				await this.uploadImages();
 			}
 
-
+	this.setState({isLoading: false});
 	this.props.navigation.navigate('DispatchComplete');
 }
 
@@ -722,8 +728,9 @@ addDispatchNote = async () => {
 	console.log(this.state.addDispatchNote);
 	const post = await this.authEventLogApi();
 	await AsyncStorage.removeItem('notes');
+	
 	//console.log(post);
-	this.setState({checkinStatus: 'Stop', DispatchNotes: post.DispatchNotes, isVisibleDispatchNote: false});
+	this.setState({checkinStatus: 'Stop', DispatchNotes: post.DispatchNotes, isVisibleDispatchNote: false, notes: ''});
 	this.setState({isVisibleDispatchNote: false});
 }
 

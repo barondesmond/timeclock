@@ -87,7 +87,7 @@ constructor(props){
 		addDispatchPicture: false,
 		pictures: null,
 		isVisibleDispatchNote: false,
-		notes: '',
+		notes: false,
 		gps: __DEV__,
 		isLoading: false,
     }
@@ -728,8 +728,9 @@ addDispatchNote = async () => {
 	console.log(this.state.addDispatchNote);
 	const post = await this.authEventLogApi();
 	await AsyncStorage.removeItem('notes');
+	
 	//console.log(post);
-	this.setState({checkinStatus: 'Stop', DispatchNotes: post.DispatchNotes, isVisibleDispatchNote: false});
+	this.setState({checkinStatus: 'Stop', DispatchNotes: post.DispatchNotes, isVisibleDispatchNote: false, notes: ''});
 	this.setState({isVisibleDispatchNote: false});
 }
 
