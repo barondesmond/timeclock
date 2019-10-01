@@ -229,6 +229,7 @@ async authEventLogApi() {
 
 		return false;
 	}
+
     this.setState({isLoading: true});
 
 	Screen = await AsyncStorage.getItem('Screen');
@@ -388,7 +389,7 @@ error(err) {
 	{
 		this.setState({override: override});
 	}
-	if (this.state.checkinStatus == 'Start' && !this.state.dispatchstatus && !this.state.eventstatus && (this.state.event=='Traveling' || override || (this.state.event=='Working' && (this.state.dispatchdistance != null && this.state.dispatchdistance < 2)))) {
+	if (this.state.checkinStatus == 'Start' &&  !this.state.dispatchstatus && !this.state.eventstatus && (this.state.event=='Traveling' || override || (this.state.event=='Working' && (this.state.dispatchdistance != null && this.state.dispatchdistance < 2)))) {
 		await this.authEventLogApi();
 		if (this.state.event=='Working')
 		{
@@ -401,7 +402,7 @@ error(err) {
 			return false;
 		}
 	}
-	else if (this.state.checkinStatus == 'Stop' && !this.state.dispatchstatus && !this.state.eventstatus) {
+	else if (this.state.checkinStatus == 'Stop' && !this.state.dispatchstatus && !this.state.eventstatus  && this.state.Counter && this.state.Counter != 'null') {
 		const notes = await AsyncStorage.getItem('notes');
 	
 		if (this.state.notes)
@@ -444,7 +445,7 @@ error(err) {
 		
 		 return false;
 	 }
-	Alert.alert('Error ' + this.state.checkinStatus + ' ' + this.state.event + ' ' + this.state.auth.EmpActive);
+	Alert.alert('Error ' + this.state.checkinStatus + ' ' + this.state.event + ' ' + this.state.auth.EmpActive + ' ' . this.state.Dispatch . ' ' . this.state.Counter);
 	//console.log(this.state);
 	 this.setState({isLoading: false});
 }
