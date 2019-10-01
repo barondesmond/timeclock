@@ -445,7 +445,7 @@ error(err) {
 		
 		 return false;
 	 }
-	Alert.alert('Error ' + this.state.checkinStatus + ' ' + this.state.event + ' ' + this.state.auth.EmpActive);
+	Alert.alert('Error ' + this.state.checkinStatus + ' ' + this.state.event + ' ' + this.state.auth.EmpActive + ' ' . this.state.Dispatch . ' ' . this.state.Counter);
 	//console.log(this.state);
 	 this.setState({isLoading: false});
 }
