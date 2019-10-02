@@ -524,6 +524,7 @@ workingStatus = async () => {
 	const auth1 = await this.authEventLogApi();
 	this.setState({checkinStatus: 'Start', event: 'Working'}); 
 	//Alert.alert(this.state.checkinStatus + ' ' + this.state.event + ' for a living');
+	const auth = await authEmpInstApi();
 
 	const auth2 = await this.authEventLogApi();
 	//Alert.alert(this.state.checkinStatus + ' ' + this.state.event + ' auth ' + auth.authorized);
