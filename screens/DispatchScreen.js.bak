@@ -530,6 +530,8 @@ workingStatus = async () => {
 	//Alert.alert(this.state.checkinStatus + ' ' + this.state.event + ' auth ' + auth.authorized);
 	//console.log(auth);
 	this.setState({checkinStatus: 'Stop'});
+	await this.authEmpInstApi();
+
 
 	
 
