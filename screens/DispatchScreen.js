@@ -927,7 +927,7 @@ renderNoteBox = () => {
 			<View style={styles.buttonContainer}>
 
 	
-	 {this.renderMaybeWorking()}
+	
 	 {this.renderWorking()}
 	 {this.renderCustomerComplete()}
 
