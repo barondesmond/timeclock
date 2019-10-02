@@ -523,7 +523,7 @@ workingStatus = async () => {
 	}
 	await this.authEventLogApi();
 	//Alert.alert(this.state.checkinStatus + ' ' + this.state.event + ' for a living');
-	this.setState({event: 'Select Event', Dispatch:'Select Dispatch', eventstatus: true, checkinStatus: 'Start', active = true});
+	//this.setState({event: 'Select Event', Dispatch:'Select Dispatch', eventstatus: true, checkinStatus: 'Start', active = true});
 	  const auth = await this.authEmpInstApi();
 	  const dispatchs = await this.fetchDispatchsFromApi(true);	
 
