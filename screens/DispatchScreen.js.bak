@@ -526,6 +526,7 @@ workingStatus = async () => {
 	this.setState({checkStatus: 'Start', event: 'Working', active: true});
 	  const auth = await this.authEmpInstApi();
 	  const dispatchs = await this.fetchDispatchsFromApi(true);	
+ 	await this.authEventLogApi();
 
 	
 
