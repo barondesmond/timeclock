@@ -521,12 +521,12 @@ workingStatus = async () => {
 
 		return false;
 	}
-	const auth1 = await this.authEventLogApi();
-	const auth = await authEmpInstApi();
+	await this.authEventLogApi();
+	await this.authEmpInstApi();
 	//Alert.alert(this.state.checkinStatus + ' ' + this.state.event + ' for a living');
 	this.setState({checkinStatus: 'Start', event: 'Working'} );
 
-	const auth2 = await this.authEventLogApi();
+	await this.authEventLogApi();
 	//Alert.alert(this.state.checkinStatus + ' ' + this.state.event + ' auth ' + auth.authorized);
 	//console.log(auth);
 	this.setState({checkinStatus: 'Stop'});
