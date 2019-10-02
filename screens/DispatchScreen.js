@@ -523,7 +523,7 @@ workingStatus = async () => {
 	}
 	await this.authEventLogApi();
 	//Alert.alert(this.state.checkinStatus + ' ' + this.state.event + ' for a living');
-	this.componentDidMount();
+	await this.componentWillMount();
 	
 
 
