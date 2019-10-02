@@ -522,7 +522,6 @@ workingStatus = async () => {
 		return false;
 	}
 	await this.authEventLogApi();
-	await this.authEmpInstApi();
 	//Alert.alert(this.state.checkinStatus + ' ' + this.state.event + ' for a living');
 	this.componentDidMount();
 	
