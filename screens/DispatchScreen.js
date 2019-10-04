@@ -116,6 +116,10 @@ async fetchDispatchsFromApi(load) {
 	{
 		return false;
 	}
+	if (!this.state.latitude)
+	{
+		return false;
+	}
 	await fetch(URL + `dispatchs_json.php?latitude=${this.state.latitude}&longitude=${this.state.longitude}&ServiceMan=${this.state.EmpNo}&EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&dev=${__DEV__}`)
       .then((response) => response.json())
       .then((responseJson) => {
@@ -174,6 +178,10 @@ async authEmpInstApi() {
 	const netStatus = await NetInfo.getConnectionInfo()  
 	console.log(netStatus);
 	if (netStatus.type == 'none')
+	{
+		return false;
+	}
+	if (!this.state.latitude)
 	{
 		return false;
 	}
@@ -780,7 +788,7 @@ renderDispatchModal = ()  => {
 
     if (this.state.dispatchs == null && this.state.pickers == null)
     {
-		Alert.alert('no dispatches for modal');
+	
 		return false;
     }
 	return (
@@ -870,7 +878,7 @@ renderNoteBox = () => {
 
  render() {
 
-	if (this.state.latitude == null)
+	if (!this.state.latitude)
 	{
 		return ( 
 	<View style={styles.container}>
