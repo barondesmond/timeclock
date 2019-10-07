@@ -44,6 +44,9 @@ export default class HomeScreen extends React.Component {
     isLoading: true,
 	auth: null,
 	locationstatus: null,
+	latitude: null,
+	longitude: null,
+	EmpActive: null,
   };
 
 
@@ -61,7 +64,8 @@ export default class HomeScreen extends React.Component {
 		 //console.log(location);
 
 		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
-		 
+		 await this.authEmpInstApi();
+
 	  }
 
 
@@ -136,7 +140,7 @@ _getLocationAsync = async () => {
 	
 			else
 			{
-				if (this.state.auth && this.state.auth.EmpActive == 1 && this.state.auth.Screen != Screen && Screen != 'Document')
+				if (this.state.auth && this.state.EmpActive && this.state.auth.EmpActive == 1 && this.state.Screen && this.state.auth.Screen != Screen && Screen != 'Document')
 		     {
 					 Alert.alert('You are logged into ' + this.state.auth.Screen + ' Portal');
 		     }
@@ -209,7 +213,11 @@ async authEmpInstApi() {
 	{
 		return false;
 	}
-	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&dev=${__DEV__}`)
+	if (!this.state.latitude || !this.state.longitude)
+	{
+		return false;
+	}
+	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}`)
       .then((response2) => response2.json())
       .then((responseJson2) => {
 
@@ -262,6 +270,10 @@ resetKeys = async ()  => {
 primaryLogin = async (newscreen) => {
 
 	if (!newscreen)
+	{
+		return false;
+	}
+	if (!this.state.latitude || !this.state.longitude)
 	{
 		return false;
 	}
