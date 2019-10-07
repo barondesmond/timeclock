@@ -247,7 +247,7 @@ savePicture = async () => {
 	}
 	else
 	{
-		this.setState({image: null});
+		this.setState({image: null, pictures: pictures});
 	}	
 
 };

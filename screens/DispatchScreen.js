@@ -112,10 +112,7 @@ async fetchDispatchsFromApi(load) {
 
 		return false;
 	}
-	if (this.state.dispatchs != null && !load)
-	{
-		return false;
-	}
+
 	if (!this.state.latitude)
 	{
 		return false;
@@ -879,12 +876,21 @@ renderNoteBox = () => {
 
  render() {
 
-	if (!this.state.latitude)
+	if (!this.state.latitude || !this.state.dispatchs)
 	{
+		let loading = '';
+		if (!this.state.dispatchs && this.state.latitude)
+		{
+			let loading = 'Dispatchs';
+		}
+		if (!this.state.latitude && this.state.dispatchs)
+		{
+			let loading = 'Location';
+		}
 		return ( 
 	<View style={styles.container}>
     <View style={styles.welcomeContainer}>
-			<Text style={styles.noteText}> Loading... </Text>
+			<Text style={styles.noteText}> Loading...{loading} </Text>
     </View>
 	</View>
 			);
