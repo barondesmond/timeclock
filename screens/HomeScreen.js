@@ -43,6 +43,7 @@ export default class HomeScreen extends React.Component {
     uids: null,
     isLoading: true,
 	auth: null,
+	locationstatus: null,
   };
 
 
@@ -54,6 +55,14 @@ export default class HomeScreen extends React.Component {
 		await this._getLocationAsync();
 
 	}
+	  if (!this.state.locationstatus)
+	  {
+		 let location = await Location.getCurrentPositionAsync({});
+		 //console.log(location);
+
+		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
+		 
+	  }
 
 
 	const EmpNo = await AsyncStorage.getItem('EmpNo');
@@ -100,7 +109,7 @@ _getLocationAsync = async () => {
 	let { status } = await Permissions.askAsync(Permissions.LOCATION);
 	if (status !== 'granted') 
 	{
-	   Alert.alert('Location services required');
+	   Alert.alert('Location services required ' + status);
 	   this.setState({locationstatus: status});
 	}
 

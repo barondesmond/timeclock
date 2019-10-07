@@ -18,7 +18,8 @@ import {
 import Constants from 'expo-constants'
 import * as LocalAuthentication from 'expo-local-authentication';
 import { MonoText } from '../components/StyledText';
-
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
 
 
 import styles from '../components/styles';
@@ -42,6 +43,7 @@ export default class HomeScreen extends React.Component {
     uids: null,
     isLoading: true,
 	auth: null,
+	locationstatus: null,
   };
 
 
@@ -53,6 +55,14 @@ export default class HomeScreen extends React.Component {
 		await this._getLocationAsync();
 
 	}
+	  if (!this.state.locationstatus)
+	  {
+		 let location = await Location.getCurrentPositionAsync({});
+		 //console.log(location);
+
+		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
+		 
+	  }
 
 
 	const EmpNo = await AsyncStorage.getItem('EmpNo');
