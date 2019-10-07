@@ -12,6 +12,8 @@ import {
   Navigation,
   AsyncStorage,
   NetInfo,
+  Geolocation,
+
 } from 'react-native';
 import Constants from 'expo-constants'
 import * as LocalAuthentication from 'expo-local-authentication';
@@ -44,6 +46,14 @@ export default class HomeScreen extends React.Component {
 
 
   async componentWillMount() {
+
+
+	if (!this.state.lcationstatus)
+	{
+		await this._getLocationAsync();
+
+	}
+
 
 	const EmpNo = await AsyncStorage.getItem('EmpNo');
 
@@ -84,6 +94,16 @@ export default class HomeScreen extends React.Component {
     );
   };
 
+_getLocationAsync = async () => {
+
+	let { status } = await Permissions.askAsync(Permissions.LOCATION);
+	if (status !== 'granted') 
+	{
+	   Alert.alert('Location services required');
+	   this.setState({locationstatus: status});
+	}
+
+}
 
   checkForBiometrics = async (Screen) => {
     let biometricRecords = await LocalAuthentication.isEnrolledAsync();
@@ -179,7 +199,7 @@ async authEmpInstApi() {
 	{
 		return false;
 	}
-	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&dev={__DEV__}`)
+	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&dev=${__DEV__}`)
       .then((response2) => response2.json())
       .then((responseJson2) => {
 

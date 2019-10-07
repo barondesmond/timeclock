@@ -290,6 +290,7 @@ _getLocationAsync = async () => {
 	let { status } = await Permissions.askAsync(Permissions.LOCATION);
 	if (status !== 'granted') 
 	{
+	   Alert.alert('Location services required');
 	   this.setState({locationstatus: status});
 	}
 

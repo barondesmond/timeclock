@@ -12,11 +12,14 @@ import {
   Navigation,
   AsyncStorage,
   NetInfo,
+  Geolocation,
+
 } from 'react-native';
 import Constants from 'expo-constants'
 import * as LocalAuthentication from 'expo-local-authentication';
 import { MonoText } from '../components/StyledText';
-
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
 
 
 import styles from '../components/styles';
@@ -44,6 +47,14 @@ export default class HomeScreen extends React.Component {
 
 
   async componentWillMount() {
+
+
+	if (!this.state.lcationstatus)
+	{
+		await this._getLocationAsync();
+
+	}
+
 
 	const EmpNo = await AsyncStorage.getItem('EmpNo');
 
@@ -84,6 +95,16 @@ export default class HomeScreen extends React.Component {
     );
   };
 
+_getLocationAsync = async () => {
+
+	let { status } = await Permissions.askAsync(Permissions.LOCATION);
+	if (status !== 'granted') 
+	{
+	   Alert.alert('Location services required');
+	   this.setState({locationstatus: status});
+	}
+
+}
 
   checkForBiometrics = async (Screen) => {
     let biometricRecords = await LocalAuthentication.isEnrolledAsync();
