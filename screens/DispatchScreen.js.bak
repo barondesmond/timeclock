@@ -339,11 +339,18 @@ async componentWillMount () {
 		console.log('image check');
 		console.log(image);
 	  this.setState({violation: violation, image: image, notes: notes});
+	  console.log('requesting location');
+	  if (!this.state.locationstatus)
+	  {
+		await this._getLocationAsync();
+	  }
+	  console.log('authing');
 
-	  this._getLocationAsync();
 	  const auth = await this.authEmpInstApi();
+	  console.log(auth);
+	  console.log('dispatching');
 	  const dispatchs = await this.fetchDispatchsFromApi(true);
-
+	  console.log(dispatchs);
 	  if (!this.state.locationstatus)
 	  {
 		 let location = await Location.getCurrentPositionAsync({});
@@ -878,10 +885,19 @@ renderNoteBox = () => {
 
 	if (!this.state.latitude || !this.state.dispatchs)
 	{
+		let loading = '';
+		if (!this.state.dispatchs && this.state.latitude)
+		{
+			let loading = 'Dispatchs';
+		}
+		if (!this.state.latitude && this.state.dispatchs)
+		{
+			let loading = 'Location';
+		}
 		return ( 
 	<View style={styles.container}>
     <View style={styles.welcomeContainer}>
-			<Text style={styles.noteText}> Loading... </Text>
+			<Text style={styles.noteText}> Loading...{loading} </Text>
     </View>
 	</View>
 			);

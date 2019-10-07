@@ -339,11 +339,18 @@ async componentWillMount () {
 		console.log('image check');
 		console.log(image);
 	  this.setState({violation: violation, image: image, notes: notes});
+	  console.log('requesting location');
+	  if (!this.state.locationstatus)
+	  {
+		await this._getLocationAsync();
+	  }
+	  console.log('authing');
 
-	  this._getLocationAsync();
 	  const auth = await this.authEmpInstApi();
+	  console.log(auth);
+	  console.log('dispatching');
 	  const dispatchs = await this.fetchDispatchsFromApi(true);
-
+	  console.log(dispatchs);
 	  if (!this.state.locationstatus)
 	  {
 		 let location = await Location.getCurrentPositionAsync({});
@@ -353,11 +360,10 @@ async componentWillMount () {
 	  }
 	  console.log('componentDidMount');
 	  console.log(this.state.image);
-	  if (!this.state.image)
-	  {
+	
 	      this.intervalID = setInterval(this.gps_update, 5000);
 
-	  }
+	
 
 
 
