@@ -89,6 +89,7 @@ constructor(props){
 		isVisibleDispatchNote: false,
 		notes: false,
 		gps: __DEV__,
+		change: '10/10/2019',
 		isLoading: false,
     }
 
@@ -175,7 +176,7 @@ async authEmpInstApi() {
 
     this.setState({isLoading: true});
 
-	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=10/10/2019`)
+	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`)
       .then((response2) => response2.json())
       .then((responseJson2) => {
 
