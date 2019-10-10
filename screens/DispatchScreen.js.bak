@@ -360,11 +360,10 @@ async componentWillMount () {
 	  }
 	  console.log('componentDidMount');
 	  console.log(this.state.image);
-	  if (!this.state.image)
-	  {
+	
 	      this.intervalID = setInterval(this.gps_update, 5000);
 
-	  }
+	
 
 
 

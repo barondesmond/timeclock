@@ -344,13 +344,6 @@ async componentWillMount () {
 	  {
 		await this._getLocationAsync();
 	  }
-	  console.log('authing');
-
-	  const auth = await this.authEmpInstApi();
-	  console.log(auth);
-	  console.log('dispatching');
-	  const dispatchs = await this.fetchDispatchsFromApi(true);
-	  console.log(dispatchs);
 	  if (!this.state.locationstatus)
 	  {
 		 let location = await Location.getCurrentPositionAsync({});
@@ -358,6 +351,14 @@ async componentWillMount () {
 		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
 		 
 	  }
+	  console.log('authing');
+
+	  const auth = await this.authEmpInstApi();
+	  console.log(auth);
+	  console.log('dispatching');
+	  const dispatchs = await this.fetchDispatchsFromApi(true);
+	  console.log(dispatchs);
+
 	  console.log('componentDidMount');
 	  console.log(this.state.image);
 	
