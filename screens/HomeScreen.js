@@ -64,7 +64,6 @@ export default class HomeScreen extends React.Component {
 		 //console.log(location);
 
 		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
-		 await this.authEmpInstApi();
 
 	  }
 
