@@ -94,7 +94,7 @@ constructor(props){
 
 }
 
-async fetchDispatchsFromApi(load) {
+async fetchDispatchsFromApi() {
 
  
 	const netStatus = await NetInfo.getConnectionInfo()  
@@ -113,27 +113,12 @@ async fetchDispatchsFromApi(load) {
 		return false;
 	}
 
+
 	if (!this.state.latitude)
 	{
 		return false;
 	}
-	await fetch(URL + `dispatchs_json.php?latitude=${this.state.latitude}&longitude=${this.state.longitude}&ServiceMan=${this.state.EmpNo}&EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&dev=${__DEV__}`)
-      .then((response) => response.json())
-      .then((responseJson) => {
 
-        this.setState({
-          isLoading: false,
-          dispatchs: responseJson.dispatchs,
-        }, function(){
-
-
-        });
-
-      })
-      .catch((error) =>{
-        console.error(error);
-      });
-	  let pickers = [];
 	 if (this.state.dispatchs == null)
 	 {
 		 await AsyncStorage.removeItem('Screen');
@@ -192,6 +177,7 @@ async authEmpInstApi() {
         this.setState({
           isLoading: false,
           auth: responseJson2,
+		  dispatchs: responseJson2.dispatchs,
         }, function(){
 
         });
@@ -344,20 +330,18 @@ async componentWillMount () {
 	  {
 		await this._getLocationAsync();
 	  }
-	  console.log('authing');
-
-	  const auth = await this.authEmpInstApi();
-	  console.log(auth);
-	  console.log('dispatching');
-	  const dispatchs = await this.fetchDispatchsFromApi(true);
-	  console.log(dispatchs);
 	  if (!this.state.locationstatus)
 	  {
 		 let location = await Location.getCurrentPositionAsync({});
 		 console.log(location);
-		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
+		 await this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
 		 
 	  }
+	  console.log('authing');
+
+	  const auth = await this.authEmpInstApi();
+	  console.log(auth);
+
 	  console.log('componentDidMount');
 	  console.log(this.state.image);
 	
@@ -537,7 +521,6 @@ workingStatus = async () => {
 	//Alert.alert(this.state.checkinStatus + ' ' + this.state.event + ' for a living');
 	//this.setState({event: 'Select Event', Dispatch:'Select Dispatch', eventstatus: true, checkinStatus: 'Start', active = true});
 	  const auth = await this.authEmpInstApi();
-	  const dispatchs = await this.fetchDispatchsFromApi(true);	
 
 	
 
