@@ -214,7 +214,8 @@ async authEmpInstApi() {
 		  this.setState({Dispatch: this.state.auth.Dispatch, Counter: this.state.auth.Counter, DispatchName: this.state.auth.DispatchName, DispatchNotes: this.state.auth.DispatchNotes, DispatchLocation: this.state.auth.location, dispatchlatitde: this.state.auth.latitude, dispatchlongitude: this.state.auth.longitude, dispatchdistance: this.state.auth.distance,Add1: this.state.auth.Add1, Add2: this.state.auth.Add2, City: this.state.auth.City, State: this.state.auth.State, Zip: this.state.auth.Zip, Phone1: this.state.auth.Phone1,event : this.state.auth.event, eventstatus: false, dispatchstatus: false, checkinStatus: 'Stop', active: false, isDispatchVisible: false})
 	  }
 	  
-	  
+	 this.setState({isLoading: false});
+	 
      return this.state.auth;	
 }
 
@@ -228,7 +229,10 @@ async authEventLogApi() {
 
 		return false;
 	}
-
+	if (this.state.isLoading)
+	{
+		return false;
+	}
     this.setState({isLoading: true});
 
 	Screen = await AsyncStorage.getItem('Screen');
@@ -270,7 +274,8 @@ async authEventLogApi() {
 		  console.log('logged out');
      }
 	  }
-	  
+	  	 this.setState({isLoading: false});
+
      return this.state.auth;	
 }
 
@@ -449,8 +454,8 @@ error(err) {
 		
 		 return false;
 	 }
-	Alert.alert('Error ' + this.state.checkinStatus + ' ' + this.state.event + ' ' + this.state.auth.EmpActive + ' ' + this.state.Dispatch + ' ' + this.state.Counter);
-	//console.log(this.state);
+	Alert.alert('Error ' + this.state.EmpNo + ' '  + this.state.checkinStatus + ' ' + this.state.event + ' ' + this.state.auth.EmpActive + ' ' + this.state.Dispatch + ' ' + this.state.Counter + ' ' + this.state.dispatchstatus + ' ' + this.state.eventstatus + ' '  + this.state.isLoading);
+	console.log(this.state);
 	 this.setState({isLoading: false});
 }
 
