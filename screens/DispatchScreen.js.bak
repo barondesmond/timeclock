@@ -113,11 +113,15 @@ async fetchDispatchsFromApi() {
 		return false;
 	}
 
-
+	if (!this.state.dispatchs)
+	{
+		return false;
+	}
 	if (!this.state.latitude)
 	{
 		return false;
 	}
+	var pickers = [];
 
 	 if (this.state.dispatchs == null)
 	 {
@@ -164,6 +168,10 @@ async authEmpInstApi() {
 		return false;
 	}
 	if (!this.state.latitude)
+	{
+		return false;
+	}
+	if (this.state.isLoading)
 	{
 		return false;
 	}

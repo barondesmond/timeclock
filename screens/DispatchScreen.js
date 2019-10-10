@@ -171,6 +171,10 @@ async authEmpInstApi() {
 	{
 		return false;
 	}
+	if (this.state.isLoading)
+	{
+		return false;
+	}
 
     this.setState({isLoading: true});
 
@@ -224,7 +228,10 @@ async authEventLogApi() {
 
 		return false;
 	}
-
+	if (this.state.isLoading)
+	{
+		return false;
+	}
     this.setState({isLoading: true});
 
 	Screen = await AsyncStorage.getItem('Screen');
