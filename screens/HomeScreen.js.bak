@@ -21,7 +21,7 @@ import { MonoText } from '../components/StyledText';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 
-
+import * as lib from '../components/lib';
 import styles from '../components/styles';
 
 import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, URL, AUTHKEY} from '../constants/common';
@@ -47,6 +47,10 @@ export default class HomeScreen extends React.Component {
 	latitude: null,
 	longitude: null,
 	EmpActive: null,
+	change: 'HS10142019',
+	auth: null,
+	dispatchs: null,
+	jobs: null,
   };
 
 
@@ -64,7 +68,6 @@ export default class HomeScreen extends React.Component {
 		 //console.log(location);
 
 		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
-		 await this.authEmpInstApi();
 
 	  }
 
@@ -84,11 +87,32 @@ export default class HomeScreen extends React.Component {
 		await AsyncStorage.removeItem('Bio');
 		await AsyncStorage.removeItem('violation');
 		await AsyncStorage.removeItem('image');
+
+
+
 	}
 
 	this.checkDeviceForHardware();
+
+		if (this.state.latitude && this.state.longitude && this.state.EmpNo && URL != '')
+		{
+		  await lib.fetch_authemp(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`);
+		  auth = await lib.getItem('auth');
+		  console.log(auth);
+		  if (auth && auth.authorized == 1)
+		  {
+			  this.setState({auth: auth});
+		  }
+		  if (auth && auth.authorized == 0)
+		  {
+			  this.props.navigation.navigate('Alternate');
+
+		  }
+		}
+
   }
 
+ 
 
   checkDeviceForHardware = async () => {
     let compatible = await LocalAuthentication.hasHardwareAsync();

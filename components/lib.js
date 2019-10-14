@@ -2,6 +2,31 @@
 import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, URL, STORAGE_KEY} from '../constants/common';
 import { NetInfo,   AsyncStorage, Linking,   Alert } from 'react-native';
 import axios from 'axios';
+import Constants from 'expo-constants';
+
+
+export async function fetch_authemp(url) {
+
+var auth = null;
+var dispatchs = null;
+var jobs = null;
+var opt = {
+  method: 'get',
+  url: url,
+  timeout: 2500
+}
+var response = await axios.get(url, opt)
+ 
+
+	if (response.data)
+	{
+		await AsyncStorage.setItem('auth', JSON.stringify(response.data));
+
+	}
+
+
+
+}
 
 export async function postData (url) {
 	const resp =	await axios.get(url);

@@ -98,22 +98,14 @@ constructor(props){
 async fetchDispatchsFromApi() {
 
  
-	const netStatus = await NetInfo.getConnectionInfo()  
-	console.log(netStatus);
+
 		dispatched = lib.getItem('dispatched')
 		if (dispatched)
 		{
 			console.log('dispatched');
 			this.setState({dispatched: dispatched})
-			console.log(dispatched);
 		}
-	if (netStatus.type == 'none')
-	{
-		Alert.alert('no connection');
-
-		return false;
-	}
-
+	
 	if (!this.state.dispatchs)
 	{
 		return false;
@@ -160,38 +152,21 @@ return (
  );
 };
 
-async authEmpInstApi() {
-
-	const netStatus = await NetInfo.getConnectionInfo()  
-	console.log(netStatus);
-	if (netStatus.type == 'none')
-	{
-		return false;
-	}
-	if (!this.state.latitude)
-	{
-		return false;
-	}
+async authEmpInstApi(refresh) {
 
 
-    this.setState({isLoading: true});
 
-	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`)
-      .then((response2) => response2.json())
-      .then((responseJson2) => {
 
-        this.setState({
-          isLoading: false,
-          auth: responseJson2,
-		  dispatchs: responseJson2.dispatchs,
-        }, function(){
 
-        });
-
-      })
-      .catch((error) =>{
-        console.error(error);
-      });
+		if (!this.state.auth || !this.state.dispatchs || !refresh)
+		{		
+			await lib.fetch_authemp(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`);
+			auth = await lib.getItem('auth');
+			if (auth)
+			{
+			    await this.setState({auth: auth, dispatchs: auth.dispatchs});
+			}
+		}
 
 	  if (this.state.auth.authorized == 0)
 	  {
@@ -199,12 +174,12 @@ async authEmpInstApi() {
 		  console.log('not authorized');
 	  }
 	  else
-	 {
-		 this.fetchDispatchsFromApi();	  
+ 	 {
+		  this.fetchDispatchsFromApi();
 	 }
+
 	  if (this.state.auth.EmpActive == 1)
 	  {
-		  console.log('logged in');
 		  if (this.state.auth.Screen != 'Dispatch')
 		  {
 			  this.props.navigation.navigate(this.state.auth.Screen);
@@ -228,29 +203,30 @@ async authEventLogApi() {
 		return false;
 	}
 
-    this.setState({isLoading: true});
 
 	Screen = await AsyncStorage.getItem('Screen');
 	violation = encodeURIComponent(this.state.violation);
 	addDispatchNote = encodeURIComponent(this.state.addDispatchNote);
-	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&event=${this.state.event}&Dispatch=${this.state.Dispatch}&Counter=${this.state.Counter}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}&addDispatchNote=${addDispatchNote}&dev=${__DEV__}`;
-	  await fetch(authurl)
-      .then((response2) => response2.json())
-      .then((responseJson2) => {
+	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&event=${this.state.event}&Dispatch=${this.state.Dispatch}&Counter=${this.state.Counter}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}&addDispatchNote=${addDispatchNote}&dev=${__DEV__}&change=${this.state.change}`;
+	  await lib.fetch_authemp(authurl);
+	  var auth = await lib.getItem('auth');
+	  if (auth)
+	  {
+		  await this.setState({auth: auth, dispatchs: auth.dispatchs});
 
-        this.setState({
-          isLoading: false,
-          auth: responseJson2,
-        }, function(){
+	  }
 
-        });
+	  if (this.state.auth.authorized == 0)
+	  {
+		  this.props.navigation.navigate('Alternative');
+		  console.log('not authorized');
+	  }
+	  else
+ 	 {
+		  this.fetchDispatchsFromApi();
+	 }
 
-      })
-      .catch((error) =>{
-        console.error(error);
-      });
 
-      console.log(this.state.auth);
 	  if (this.state.auth != null)
 	  {
 	  
@@ -269,7 +245,6 @@ async authEventLogApi() {
 		  console.log('logged out');
      }
 	  }
-	  	 this.setState({isLoading: false});
 
      return this.state.auth;	
 }
@@ -346,9 +321,24 @@ async componentWillMount () {
 		 
 	  }
 	  console.log('authing');
+	  if (!this.state.auth || !this.state.dispatchs)
+	  {
+		  var auth = lib.getItem('auth');
+	
+		  if (!auth || !auth.dispatchs)
+		  {
+			  var auth = await this.authEmpInstApi();
 
-	  const auth = await this.authEmpInstApi();
-	  console.log(auth);
+		  }
+		  if (auth && auth.dispatchs)
+		  {
+			this.setState({auth: auth, dispatchs: auth.dispatchs});
+			this.fetchDispatchsFromApi();
+		  }
+		  
+
+	  }
+
 
 	  console.log('componentDidMount');
 	  console.log(this.state.image);
@@ -450,7 +440,6 @@ error(err) {
 		 return false;
 	 }
 	Alert.alert('Error ' + this.state.EmpNo + ' '  + this.state.checkinStatus + ' ' + this.state.event + ' ' + this.state.auth.EmpActive + ' ' + this.state.Dispatch + ' ' + this.state.Counter + ' ' + this.state.dispatchstatus + ' ' + this.state.eventstatus + ' '  + this.state.isLoading);
-	console.log(this.state);
 	 this.setState({isLoading: false});
 }
 

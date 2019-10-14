@@ -21,7 +21,7 @@ import { MonoText } from '../components/StyledText';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 
-
+import * as lib from '../components/lib';
 import styles from '../components/styles';
 
 import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, URL, AUTHKEY} from '../constants/common';
@@ -47,6 +47,10 @@ export default class HomeScreen extends React.Component {
 	latitude: null,
 	longitude: null,
 	EmpActive: null,
+	change: 'HS10142019',
+	auth: null,
+	dispatchs: null,
+	jobs: null,
   };
 
 
@@ -83,11 +87,32 @@ export default class HomeScreen extends React.Component {
 		await AsyncStorage.removeItem('Bio');
 		await AsyncStorage.removeItem('violation');
 		await AsyncStorage.removeItem('image');
+
+
+
 	}
 
 	this.checkDeviceForHardware();
+
+		if (this.state.latitude && this.state.longitude && this.state.EmpNo && URL != '')
+		{
+		  await lib.fetch_authemp(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`);
+		  auth = await lib.getItem('auth');
+		  console.log(auth);
+		  if (auth && auth.authorized == 1)
+		  {
+			  this.setState({auth: auth});
+		  }
+		  if (auth && auth.authorized == 0)
+		  {
+			  this.props.navigation.navigate('Alternate');
+
+		  }
+		}
+
   }
 
+ 
 
   checkDeviceForHardware = async () => {
     let compatible = await LocalAuthentication.hasHardwareAsync();
@@ -125,9 +150,15 @@ _getLocationAsync = async () => {
 			if (this.state.EmpNo)
 			{
 				await AsyncStorage.setItem('Bio', this.state.EmpNo);
-				const auth = await this.authEmpInstApi();
+				if (!this.state.auth)
+				{		
+					await lib.fetch_authemp(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`);
+				    auth = await lib.getItem('auth');
+					await this.setState({auth: auth});
+				}	
+
 			    const Screen =  await AsyncStorage.getItem('Screen');
-				if (auth && auth.authorized != 1)
+				if (this.state.auth && this.state.auth.authorized != 1)
 				{
 					this.props.navigation.navigate('Alternative', {onGoBack: () => this.primaryLogin(Screen)});
 				}
@@ -179,9 +210,14 @@ _getLocationAsync = async () => {
 		{
 	
 		    await AsyncStorage.setItem('Bio', this.state.EmpNo);
-			const auth = await this.authEmpInstApi();
+			if (!this.state.auth)
+			{		
+				await lib.fetch_authemp(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`);
+			    auth = await lib.getItem('auth');
+				await this.setState({auth: auth});
+			}
 		    const Screen =  await AsyncStorage.getItem('Screen');
-			if (auth && auth.authorized != 1)
+			if (this.state.auth && this.state.auth.authorized != 1)
 			{
 				this.props.navigation.navigate('Alternative', {onGoBack: () => this.primaryLogin(Screen)});
 			}
@@ -203,40 +239,6 @@ _getLocationAsync = async () => {
 	}
   };
 
-async authEmpInstApi() {
-
- 
- 	const netStatus = await NetInfo.getConnectionInfo()  
-	console.log(netStatus);
-	if (netStatus.type == 'none')
-	{
-		return false;
-	}
-	if (!this.state.latitude || !this.state.longitude)
-	{
-		return false;
-	}
-	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}`)
-      .then((response2) => response2.json())
-      .then((responseJson2) => {
-
-        this.setState({
-          isLoading: false,
-          auth: responseJson2,
-        }, function(){
-
-        });
-
-      })
-      .catch((error) =>{
-        console.error(error);
-      });
-
-      console.log(this.state.auth);
-	  
-     return this.state.auth;	
-}
- 
  
 
 alternateLogin = async (newscreen) => {
