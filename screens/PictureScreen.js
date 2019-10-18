@@ -321,24 +321,8 @@ async componentDidMount () {
 
 uploadImages = async () => {
 
-	const netStatus = await NetInfo.getConnectionInfo()  
 
-	if (netStatus.type == 'none')
-	{
-		Alert.alert('no connection');
-
-		return false;
-	}
-   let max = this.state.pictures.length;
-   for(let i = 1; i <= max; i++) {
-  
-   row = this.state.pictures.pop();
-   await lib.setItem('pictures', this.state.pictures);
-   this.setState({pictures: this.state.pictures});
-   await lib.uploadImageAsync(row);
-
-   }
-
+	    lib.uploadImages();
 
 	    this.props.navigation.state.params.onGoBack();
 		this.props.navigation.goBack();

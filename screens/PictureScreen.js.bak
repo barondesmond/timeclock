@@ -174,6 +174,11 @@ renderList = () => {
 
         style={styles.maybeRenderContainer}>
 
+		<Text>Note</Text>
+		    <TextInput placeholder="violation" 
+        style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+                  onChangeText={data => this.setState({ violation: data })}
+      />
 
         <View
 

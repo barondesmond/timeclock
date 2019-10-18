@@ -59,12 +59,12 @@ export default class HomeScreen extends React.Component {
 
 	if (!this.state.lcationstatus)
 	{
-		await this._getLocationAsync();
+		await this._getLocationAsync().catch((response) => console.log(response));
 
 	}
 	  if (!this.state.locationstatus)
 	  {
-		 let location = await Location.getCurrentPositionAsync({});
+		 let location = await Location.getCurrentPositionAsync({}).catch((response) => console.log(response));
 		 //console.log(location);
 
 		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});

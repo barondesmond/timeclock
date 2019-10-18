@@ -152,26 +152,16 @@ return (<View><Button onPress={this.uploadImages} title="Upload a Document" /></
 
 uploadImages = async () => {
 
-	const netStatus = await NetInfo.getConnectionInfo()  
+   var img = await lib.uploadImages();
 
-	if (netStatus.type == 'none')
+	if (!img)
 	{
-		Alert.alert('no connection');
-
-		return false;
+		Alert.alert('Error');
 	}
-   Alert.alert('Uploadig Pictures ' + this.state.pictures.length);
-   let max = this.state.pictures.length;
-   for(let i = 1; i <= max; i++) {
-  
-   row = this.state.pictures.pop();
-   await lib.setItem('pictures', this.state.pictures);
-   this.setState({pictures: this.state.pictures});
-   await lib.uploadImageAsync(row);
-
-   }
-   Alert.alert('Images Uploaded ');
-
+	else
+	{
+	  Alert.alert('Images Uploaded ');
+	}
 }
 
 
@@ -191,52 +181,6 @@ return false;
 }
 
 
-
-async function uploadImageAsync(row) {
-
-  let apiUrl = URL + `upload/index.php`;
-
-
-
-
-  let uriParts = row.image.split('.');
-
-  let fileType = uriParts[uriParts.length - 1];
-
-
-  let formData = new FormData();
-
-  formData.append('photo', {
-
-    uri: row.image,
-
-    name: `${row.key}.${row.EmpNo}.${row.Screen}.${row.reference}.${row.address}.${row.violation}.${row.latitude}.${row.longitude}.${fileType}`,
-
-    type: `multipart/form-data`,
-
-  });
-
-
-  opt = {
-
-    method: 'POST',
-
-    body: formData,
-
-    headers: new Headers({
-        'Accept': 'application/json',
-		'Content-Type': 'multipart/form-data; boundary=someArbitraryUniqueString'
-
-    }),
-
-  };
-console.log(apiUrl);
-console.log(opt);
-
-
-  return fetch(apiUrl, opt);
-
-}
 
 
    

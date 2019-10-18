@@ -152,26 +152,16 @@ return (<View><Button onPress={this.uploadImages} title="Upload a Document" /></
 
 uploadImages = async () => {
 
-	const netStatus = await NetInfo.getConnectionInfo()  
-
-	if (netStatus.type == 'none')
+   var img = await lib.uploadImages();
+	await this.loadPictures();
+	if (!img)
 	{
-		Alert.alert('no connection');
-
-		return false;
+		Alert.alert('Error');
 	}
-   Alert.alert('Uploadig Pictures ' + this.state.pictures.length);
-   let max = this.state.pictures.length;
-   for(let i = 1; i <= max; i++) {
-  
-   row = this.state.pictures.pop();
-   await lib.setItem('pictures', this.state.pictures);
-   this.setState({pictures: this.state.pictures});
-   await lib.uploadImageAsync(row);
-
-   }
-   Alert.alert('Images Uploaded ');
-
+	else
+	{
+	  Alert.alert('Images Uploaded ');
+	}
 }
 
 

@@ -157,15 +157,27 @@ async authEmpInstApi(refresh) {
 
 
 
+	console.log('authEmpInstApi ' + refresh + this.state.auth + this.state.dispatchs);
 
 		if (!this.state.auth || !this.state.dispatchs || !refresh)
 		{		
-			await lib.fetch_authemp(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`);
-			auth = await lib.getItem('auth');
-			if (auth)
+			var auth = await lib.fetch_authemp(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`);
+			if (auth && auth.dispatchs)
 			{
 			    await this.setState({auth: auth, dispatchs: auth.dispatchs});
+
 			}
+			else if (auth && !auth.dispatchs)
+			{
+				  Alert.alert('No Dispatchs');
+					this.props.navigation.navigate('Home');
+				  return false;
+			}
+	    }
+		if (!auth && this.state.auth)
+		{
+			this.setState({checkinStatus: 'Offline'});
+			return false;
 		}
 
 	  if (this.state.auth.authorized == 0)
@@ -186,10 +198,16 @@ async authEmpInstApi(refresh) {
 		  }
 		  this.setState({Dispatch: this.state.auth.Dispatch, Counter: this.state.auth.Counter, DispatchName: this.state.auth.DispatchName, DispatchNotes: this.state.auth.DispatchNotes, DispatchLocation: this.state.auth.location, dispatchlatitde: this.state.auth.latitude, dispatchlongitude: this.state.auth.longitude, dispatchdistance: this.state.auth.distance,Add1: this.state.auth.Add1, Add2: this.state.auth.Add2, City: this.state.auth.City, State: this.state.auth.State, Zip: this.state.auth.Zip, Phone1: this.state.auth.Phone1,event : this.state.auth.event, eventstatus: false, dispatchstatus: false, checkinStatus: 'Stop', active: false, isDispatchVisible: false})
 	  }
+	  else if (this.state.checkinStatus != 'Stop' && this.state.checkinStatus != 'Start' && this.state.auth && this.state.auth.authorized == '1' )
+	  {
+		  this.setState({checkinStatus: 'Start'});
+	  }
+	
+
 	  
 	 this.setState({isLoading: false});
 	 
-     return this.state.auth;	
+     return auth;	
 }
 
 async authEventLogApi() {
@@ -198,9 +216,9 @@ async authEventLogApi() {
 	const netStatus = await NetInfo.getConnectionInfo()  
 	if (netStatus.type == 'none')
 	{
-		Alert.alert('no connection');
+		//Alert.alert('no connection');
 
-		return false;
+		//return false;
 	}
 
 
@@ -208,13 +226,24 @@ async authEventLogApi() {
 	violation = encodeURIComponent(this.state.violation);
 	addDispatchNote = encodeURIComponent(this.state.addDispatchNote);
 	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&event=${this.state.event}&Dispatch=${this.state.Dispatch}&Counter=${this.state.Counter}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}&addDispatchNote=${addDispatchNote}&dev=${__DEV__}&change=${this.state.change}`;
-	  await lib.fetch_authemp(authurl);
-	  var auth = await lib.getItem('auth');
-	  if (auth)
+	  var auth = await lib.fetch_authemp(authurl);
+	  if (auth && auth.dispatchs)
 	  {
+		  console.log(auth);
 		  await this.setState({auth: auth, dispatchs: auth.dispatchs});
 
 	  }
+	  else if (auth && !auth.dispatchs)
+	  {
+		  Alert.alert('No Dispatchs');
+		  return false;
+
+	  }
+	  else
+	 {
+		  Alert.alert('Connection Error');
+		  return false;
+	 }
 
 	  if (this.state.auth.authorized == 0)
 	  {
@@ -264,12 +293,12 @@ _getLocationAsync = async () => {
 
 gps_update = async () => {
 
-	  this._getLocationAsync();
+	  this._getLocationAsync().catch((error) => { console.log(error)});
 	  await this.authEmpInstApi();
 
 	  if (!this.state.locationstatus)
 	  {
-		 let location = await Location.getCurrentPositionAsync({});
+		 let location = await Location.getCurrentPositionAsync({}).catch((error) => { console.log(error)});
 		 //console.log(location);
 
 		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
@@ -311,11 +340,11 @@ async componentWillMount () {
 	  console.log('requesting location');
 	  if (!this.state.locationstatus)
 	  {
-		await this._getLocationAsync();
+		await this._getLocationAsync().catch((response) => console.log(response));
 	  }
 	  if (!this.state.locationstatus)
 	  {
-		 let location = await Location.getCurrentPositionAsync({});
+		 let location = await Location.getCurrentPositionAsync({}).catch((response) => console.log(response));
 		 console.log(location);
 		 await this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
 		 
@@ -323,11 +352,13 @@ async componentWillMount () {
 	  console.log('authing');
 	  if (!this.state.auth || !this.state.dispatchs)
 	  {
-		  var auth = lib.getItem('auth');
-	
+		  console.log('checking auth');
+		  var auth = await lib.getItem('auth');
+		  console.log(auth);
+		  console.log('auth checked');
 		  if (!auth || !auth.dispatchs)
 		  {
-			  var auth = await this.authEmpInstApi();
+			  var auth = await this.authEmpInstApi(true);
 
 		  }
 		  if (auth && auth.dispatchs)
@@ -338,12 +369,16 @@ async componentWillMount () {
 		  
 
 	  }
+	  else
+	 {
+		  console.log('auth set ' . this.state.auth.authorized);
+     }
 
 
 	  console.log('componentDidMount');
 	  console.log(this.state.image);
 	
-	      this.intervalID = setInterval(this.gps_update, 5000);
+	      this.intervalID = setInterval(this.gps_update, 3000);
 
 	
 
@@ -374,7 +409,6 @@ error(err) {
 		 Alert.alert('Please Wait...');
 	 }
 	 this.setState({isLoading: true});
-
 	 if (this.state.image)
 	 {
 		 override = true;
@@ -383,6 +417,22 @@ error(err) {
 	{
 		this.setState({override: override});
 	}
+	 var auth = await this.authEmpInstApi();
+	 console.log('what checkStatus');
+	 console.log(auth);
+	if (!auth || auth.authorized != 1 || auth == '')
+	{
+		return false;
+	}
+	else if (auth.authorized == 1)
+	{
+		
+	}
+	else
+	 {
+		Alert.alert('=>' + JSON.stringify(auth) + '<=' + auth);
+		return false;
+	 }
 	if (this.state.checkinStatus == 'Start' &&  !this.state.dispatchstatus && !this.state.eventstatus && (this.state.event=='Traveling' || override || (this.state.event=='Working' && (this.state.dispatchdistance != null && this.state.dispatchdistance < 2)))) {
 		await this.authEventLogApi();
 		if (this.state.event=='Working')
@@ -407,11 +457,12 @@ error(err) {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive != '1')
 		{
-			await this.loadPictures();
-			if (this.state.pictures && this.state.pictures.length != 0)
+	
+			if (await lib.uploadImages())
 			{
-				await this.uploadImages();
+				Alert.alert('Upload Complete');
 			}
+			
 
 			this.setState({checkinStatus: 'Start', active: !this.state.active});
 			this.props.navigation.navigate('Home');
@@ -434,7 +485,7 @@ error(err) {
 	 }
 	 if (this.state.LocName != 'Select Dispatch' && this.state.dispatchstatus)
 	 {
-		 Alert.alert(this.state.DispatcName + ' dispatch status state invalid');
+		 Alert.alert(this.state.DispatchName + ' dispatch status state invalid ' + this.state.dispatchstatus);
 		 this.setState({isLoading: false});
 		
 		 return false;
@@ -611,11 +662,18 @@ customerComplete = async () => {
 				this.setState({addDispatchNote: this.state.notes});
 				await this.addDispatchNote();
 			}
-			
-		    if (this.state.pictures && this.state.pictures.length != 0)
+			var img = await lib.uploadImages());
+			if (img && img > 0)
 			{
-				await this.uploadImages();
+				Alert.alert('Uploaded Images ' + img );
 			}
+			else if (!img)
+			{
+				Alert.alert('Error Connection');
+				this.setState({isLoading: false});
+				return false;
+			}
+			
 
 	this.setState({isLoading: false});
 	this.props.navigation.navigate('DispatchComplete');
@@ -860,6 +918,29 @@ renderNoteBox = () => {
 
 }
 
+renderCircle = () => {
+
+	if (this.state.checkinStatus != 'Start' && this.state.checkinStatus != 'Stop')
+	{
+		return (<View>			
+	    <TouchableHighlight style={this.state.active? styles.circleContainerStart: styles.circleContainerStop}  >
+	     <Text style={styles.getCircleText}> 
+	 {this.state.checkinStatus}
+	         </Text>
+            </TouchableHighlight>
+				 </View>);
+	}
+
+return (<View>			
+	    <TouchableHighlight style={this.state.active? styles.circleContainerStart: styles.circleContainerStop} onPress = { () =>  this.checkStatus() } >
+	     <Text style={styles.getCircleText}> 
+	 {this.state.checkinStatus}
+	         </Text>
+            </TouchableHighlight>
+				 </View>);
+}
+
+
  render() {
 
 	if (!this.state.latitude || !this.state.dispatchs)
@@ -899,11 +980,7 @@ renderNoteBox = () => {
 				  </TouchableHighlight>
 
             </View>
-			<TouchableHighlight style={this.state.active? styles.circleContainerStart: styles.circleContainerStop} onPress = { () =>  this.checkStatus() } >
-	     <Text style={styles.getCircleText}> 
-	 {this.state.checkinStatus}
-	         </Text>
-            </TouchableHighlight>
+	 {this.renderCircle()}
 	
 
    	 <View style={styles.buttonContainer}>

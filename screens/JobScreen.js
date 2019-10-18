@@ -86,6 +86,7 @@ constructor(props){
 		override: false,
 		pictures: null,
 		notes: '',
+		change: 'js10162019',
         gps: __DEV__,
     }
 
@@ -93,29 +94,18 @@ constructor(props){
 
 async fetchJobsFromApi() {
 
-	 
-	await fetch(URL + `jobs_json.php?latitude=${this.state.latitude}&longitude=${this.state.longitude}&EmpNo=${this.state.EmpNo}&ServiceMan=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&dev=${__DEV__}`)
-      .then((response) => response.json())
-      .then((responseJson) => {
-
-        this.setState({
-          isLoading: false,
-          jobs: responseJson.jobs,
-        }, function(){
-
-        });
-
-      })
-      .catch((error) =>{
-        console.error(error);
-      });
-	  let pickers = [];
+	 if (!this.state.jobs)
+	 {
+		 var auth = await this.authEmpInstApi();
+		 await this.setState({auth: auth, jobs: auth.jobs});
+	 }
+	 var pickers = [];
 	 for (let i=0; i < this.state.jobs.length ; i++) {
 	    pickers.push(<Button key={this.state.jobs[i].Name} title = {this.state.jobs[i].LocName} value={i} onPress={()=>this.updateJob(i)} />);
      }
 	 pickers.push(<Button key="close" title="Back" onPress={()=>this.setState({isJobVisible: false})} />);
 	//console.log(pickers);
-	this.setState({pickers: pickers});
+	await this.setState({pickers: pickers});
 	
 }
 
@@ -139,24 +129,18 @@ return (
 
 async authEmpInstApi() {
 
+	  var authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`;
  
-	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}`)
-      .then((response2) => response2.json())
-      .then((responseJson2) => {
+	  var auth = await lib.fetch_authemp(authurl);
+	  if (auth && auth.jobs)
+	  {
+		  await this.setState({auth: auth, jobs: auth.jobs});
 
-        this.setState({
-          isLoading: false,
-          auth: responseJson2,
-        }, function(){
-
-        });
-
-      })
-      .catch((error) =>{
-        console.error(error);
-      });
-
-      console.log(this.state.auth);
+	  }
+	  else
+	 {
+		  return false;
+	 }
 	  if (this.state.auth.authorized == 0)
 	  {
 		  this.props.navigation.navigate('Alternative');
@@ -184,24 +168,19 @@ async authEventLogApi() {
 	
 
 	Screen = await AsyncStorage.getItem('Screen');
-	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&event=${this.state.event}&Name=${this.state.Name}&JobID=${this.state.JobID}&addJobNote=${this.state.addJobNote}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}&dev=${__DEV__}`;
-	  await fetch(authurl)
-      .then((response2) => response2.json())
-      .then((responseJson2) => {
-
-        this.setState({
-          isLoading: false,
-          auth: responseJson2,
-        }, function(){
-
-        });
-
-      })
-      .catch((error) =>{
-        console.error(error);
-      });
-
+	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&event=${this.state.event}&Name=${this.state.Name}&JobID=${this.state.JobID}&addJobNote=${this.state.addJobNote}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}&dev=${__DEV__}&change={this.state.change}`;
+	  var auth = await lib.fetch_authemp(authurl);
+	  if (auth && auth.jobs)
+	  {
+		  await this.setState({auth: auth, jobs: auth.jobs});
+	  }
+	  else
+	 {
+		  return false;
+	 }
+	
       console.log(this.state.auth);
+
 	  if (this.state.auth.authorized == 0)
 	  {
 		  this.props.navigation.navigate('Alternative');
@@ -272,7 +251,6 @@ async componentDidMount () {
 
 	  const EmpNo = await AsyncStorage.getItem('EmpNo');
 	  this.setState({EmpNo: EmpNo});
-	  await this.fetchJobsFromApi();
 
 	  const Bio = await AsyncStorage.getItem('Bio');
 	  this.setState({Bio: Bio});
@@ -287,16 +265,33 @@ async componentDidMount () {
 
 
 	  this._getLocationAsync();
-	  await this.authEmpInstApi();
+	  console.log('auth componentDidnMount');
+	  var auth = await lib.getItem('auth');
+	  if ((!auth || !auth.jobs) && (!this.state.auth || !this.state.jobs))
+	  {
+		  console.log('authEmpInstApi componentDidnMount');
+
+		  var auth = await this.authEmpInstApi();
+		  await this.setState({auth: auth, jobs: auth.jobs});
+	  }
+	  else if (auth && auth.jobs)
+	  {
+		  console.log('setState componentDidnMount');
+
+		  		  await this.setState({auth: auth, jobs: auth.jobs});
+				  this.fetchJobsFromApi();
+
+	  }
+	 
+
 
 	  if (!this.state.locationstatus)
 	  {
 		 let location = await Location.getCurrentPositionAsync({});
-		 console.log(location);
 		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
 		 
 	  }
-      this.intervalID = setInterval(this.gps_update, 5000);
+      this.intervalID = setInterval(this.gps_update, 3000);
 
 	
 
@@ -600,7 +595,7 @@ renderWorkingJobNotes = () => {
 
  render() {
 
-	if (this.state.latitude == null)
+	if (this.state.latitude == null || !this.state.pickers)
 	{
 		return ( 
 	<View style={styles.container}>

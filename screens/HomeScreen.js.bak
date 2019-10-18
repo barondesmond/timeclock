@@ -150,9 +150,15 @@ _getLocationAsync = async () => {
 			if (this.state.EmpNo)
 			{
 				await AsyncStorage.setItem('Bio', this.state.EmpNo);
-				const auth = await this.authEmpInstApi();
+				if (!this.state.auth)
+				{		
+					await lib.fetch_authemp(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`);
+				    auth = await lib.getItem('auth');
+					await this.setState({auth: auth});
+				}	
+
 			    const Screen =  await AsyncStorage.getItem('Screen');
-				if (auth && auth.authorized != 1)
+				if (this.state.auth && this.state.auth.authorized != 1)
 				{
 					this.props.navigation.navigate('Alternative', {onGoBack: () => this.primaryLogin(Screen)});
 				}
@@ -204,9 +210,14 @@ _getLocationAsync = async () => {
 		{
 	
 		    await AsyncStorage.setItem('Bio', this.state.EmpNo);
-			const auth = await this.authEmpInstApi();
+			if (!this.state.auth)
+			{		
+				await lib.fetch_authemp(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`);
+			    auth = await lib.getItem('auth');
+				await this.setState({auth: auth});
+			}
 		    const Screen =  await AsyncStorage.getItem('Screen');
-			if (auth && auth.authorized != 1)
+			if (this.state.auth && this.state.auth.authorized != 1)
 			{
 				this.props.navigation.navigate('Alternative', {onGoBack: () => this.primaryLogin(Screen)});
 			}
@@ -228,40 +239,6 @@ _getLocationAsync = async () => {
 	}
   };
 
-async authEmpInstApi() {
-
- 
- 	const netStatus = await NetInfo.getConnectionInfo()  
-	console.log(netStatus);
-	if (netStatus.type == 'none')
-	{
-		return false;
-	}
-	if (!this.state.latitude || !this.state.longitude)
-	{
-		return false;
-	}
-	await fetch(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}`)
-      .then((response2) => response2.json())
-      .then((responseJson2) => {
-
-        this.setState({
-          isLoading: false,
-          auth: responseJson2,
-        }, function(){
-
-        });
-
-      })
-      .catch((error) =>{
-        console.error(error);
-      });
-
-      console.log(this.state.auth);
-	  
-     return this.state.auth;	
-}
- 
  
 
 alternateLogin = async (newscreen) => {

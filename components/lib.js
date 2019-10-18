@@ -10,23 +10,52 @@ export async function fetch_authemp(url) {
 var auth = null;
 var dispatchs = null;
 var jobs = null;
+const CancelToken = axios.CancelToken;
+const source = CancelToken.source();
 var opt = {
   method: 'get',
   url: url,
-  timeout: 2500
+  timeout: 2500,
+  cancelToken: source.token
 }
-var response = await axios.get(url, opt)
- 
+ console.log('axios fetch ' + url);
 
-	if (response.data)
+var response = await axios.get(url, opt) 
+	.catch(function (thrown) { 
+	console.log(thrown);
+	if (axios.isCancel(thrown)) {
+    console.log('Request canceled', thrown.message);
+    } else {
+    console.log(thrown);
+    }
+  });
+	if (response && response.data)
 	{
-		await AsyncStorage.setItem('auth', JSON.stringify(response.data));
+		if (response.data.authorized == 1)
+		{	
+			console.log('authorized ' + response.data.authorized);
+		   await setItem('auth', response.data);
 
+		}
+		else
+		{
+			console.log(response.data);
+			console.log('not authorized' + response.data.authorized);
+			Alert.alert(response.data.authorized);
+		}
+		   return response.data;
+	
+	}
+	else
+    {
+		return false;
 	}
 
-
+return false;
 
 }
+
+
 
 export async function postData (url) {
 	const resp =	await axios.get(url);
@@ -71,6 +100,45 @@ Linking.canOpenURL(url).then(supported => {
 
 }
 
+
+export async function uploadImages() {
+
+   pictures = await getItem('pictures');
+
+   if (!pictures || pictures.length == 0)
+   {
+	   return false;
+   }
+   var upload = true;
+   let max = pictures.length;
+   for(let i = 1; i <= max; i++) {
+  
+   row = pictures.pop();
+   resp = await uploadImageAsync(row);
+   if (!resp || !resp.location)
+   {
+	   Alert.alert('error upload image' + i);
+	   return false;
+   }
+   else
+	{
+	   Alert.alert('upload image ' + i);
+	   await setItem('pictures', pictures);
+	   var s = i;
+   }
+   }
+if (s)
+{
+	return s;
+}
+else {
+return upload;
+}
+
+}
+
+
+
 export async function uploadImageAsync(row) {
 
 
@@ -103,25 +171,30 @@ export async function uploadImageAsync(row) {
 
   });
 
+const CancelToken = axios.CancelToken;
+const source = CancelToken.source();
 
   opt = {
-
-    method: 'POST',
-
-    body: formData,
-
-    headers: new Headers({
+	timeout: 2500,
+	cancelToken: source.token,
+	headers: {
         'Accept': 'application/json',
 		'Content-Type': 'multipart/form-data; boundary=someArbitraryUniqueString'
 
-    }),
+    },
 
   };
-//console.log(apiUrl);
-//console.log(opt);
 
+var response = await axios.post(apiUrl, formData, opt) 
+	.catch(function (thrown) { 
+	if (axios.isCancel(thrown)) {
+    console.log('Request canceled', thrown.message);
+    } else {
+    console.log(thrown);
+    }
+  });
 
-  return fetch(apiUrl, opt);
+  return response.data;
 
 }
 
