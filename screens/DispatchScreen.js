@@ -89,7 +89,7 @@ constructor(props){
 		isVisibleDispatchNote: false,
 		notes: false,
 		gps: __DEV__,
-		change: '10/10/2019',
+		change: 'DS10222019',
 		isLoading: false,
     }
 

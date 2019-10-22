@@ -444,7 +444,6 @@ error(err) {
 		}
 		if (this.state.auth.EmpActive == '1')
 		{
-			this.setState({checkinStatus: 'Stop', active: false});
 			this.setState({isLoading: false});
 			return false;
 		}
@@ -468,7 +467,6 @@ error(err) {
 				Alert.alert('Upload Complete');
 			}
 			
-			this.setState({checkinStatus: 'Start', active: true});
 
 			this.props.navigation.navigate('Home');
 			Alert.alert('Dispatch Work Done');
