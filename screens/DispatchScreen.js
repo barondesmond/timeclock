@@ -159,8 +159,7 @@ async authEmpInstApi(refresh) {
 
 	console.log('authEmpInstApi ' + refresh + this.state.auth + this.state.dispatchs);
 
-		if (!this.state.auth || !this.state.dispatchs || !refresh)
-		{		
+			
 			var auth = await lib.fetch_authemp(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`);
 			if (auth && auth.dispatchs)
 			{
@@ -173,7 +172,7 @@ async authEmpInstApi(refresh) {
 					this.props.navigation.navigate('Home');
 				  return false;
 			}
-	    }
+	
 		if (!auth && this.state.auth)
 		{
 			this.setState({checkinStatus: 'Offline'});
@@ -200,7 +199,13 @@ async authEmpInstApi(refresh) {
 	  }
 	  else if (this.state.checkinStatus != 'Stop' && this.state.checkinStatus != 'Start' && this.state.auth && this.state.auth.authorized == '1' )
 	  {
-		  this.setState({checkinStatus: 'Start'});
+		  this.setState({checkinStatus: 'Start', active: true});
+
+	  }
+	  else if (this.state.auth.EmpActive == null)
+	  {
+		  this.setState({checkinStatus: 'Start', active: true});
+
 	  }
 	
 
@@ -353,14 +358,10 @@ async componentWillMount () {
 	  if (!this.state.auth || !this.state.dispatchs)
 	  {
 		  console.log('checking auth');
-		  var auth = await lib.getItem('auth');
-		  console.log(auth);
-		  console.log('auth checked');
-		  if (!auth || !auth.dispatchs)
-		  {
-			  var auth = await this.authEmpInstApi(true);
 
-		  }
+			  var auth = await this.authEmpInstApi();
+
+	
 		  if (auth && auth.dispatchs)
 		  {
 			this.setState({auth: auth, dispatchs: auth.dispatchs});
@@ -435,13 +436,14 @@ error(err) {
 	 }
 	if (this.state.checkinStatus == 'Start' &&  !this.state.dispatchstatus && !this.state.eventstatus && (this.state.event=='Traveling' || override || (this.state.event=='Working' && (this.state.dispatchdistance != null && this.state.dispatchdistance < 2)))) {
 		await this.authEventLogApi();
+		var auth = await this.authEmpInstApi();
+
 		if (this.state.event=='Working')
 		{
 		    clearInterval(this.intervalID);
 		}
 		if (this.state.auth.EmpActive == '1')
 		{
-			this.setState({checkinStatus: 'Stop', active: !this.state.active});
 			this.setState({isLoading: false});
 			return false;
 		}
@@ -455,6 +457,8 @@ error(err) {
 				await this.addDispatchNote();
 			}
 		await this.authEventLogApi();
+		var auth = await this.authEmpInstApi();
+
 		if (this.state.auth.EmpActive != '1')
 		{
 	
@@ -464,7 +468,6 @@ error(err) {
 			}
 			
 
-			this.setState({checkinStatus: 'Start', active: !this.state.active});
 			this.props.navigation.navigate('Home');
 			Alert.alert('Dispatch Work Done');
 			this.setState({isLoading: false});
