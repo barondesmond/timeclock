@@ -67,7 +67,7 @@ export default class HomeScreen extends React.Component {
 		 let location = await Location.getCurrentPositionAsync({}).catch((response) => console.log(response));
 		 //console.log(location);
 
-		 this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
+		 await this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
 
 	  }
 
@@ -96,12 +96,11 @@ export default class HomeScreen extends React.Component {
 
 		if (this.state.latitude && this.state.longitude && this.state.EmpNo && URL != '')
 		{
-		  await lib.fetch_authemp(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`);
-		  auth = await lib.getItem('auth');
+		  auth = await lib.fetch_authemp(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`);
 		  console.log(auth);
 		  if (auth && auth.authorized == 1)
 		  {
-			  this.setState({auth: auth});
+			  await this.setState({auth: auth});
 		  }
 		  if (auth && auth.authorized == 0)
 		  {
@@ -152,10 +151,14 @@ _getLocationAsync = async () => {
 				await AsyncStorage.setItem('Bio', this.state.EmpNo);
 				if (!this.state.auth)
 				{		
-					await lib.fetch_authemp(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`);
-				    auth = await lib.getItem('auth');
+				auth = await lib.fetch_authemp(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`);
+				if (auth)
+				{
 					await this.setState({auth: auth});
-				}	
+				}
+	
+
+				}
 
 			    const Screen =  await AsyncStorage.getItem('Screen');
 				if (this.state.auth && this.state.auth.authorized != 1)
@@ -212,9 +215,13 @@ _getLocationAsync = async () => {
 		    await AsyncStorage.setItem('Bio', this.state.EmpNo);
 			if (!this.state.auth)
 			{		
-				await lib.fetch_authemp(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`);
-			    auth = await lib.getItem('auth');
-				await this.setState({auth: auth});
+				auth = await lib.fetch_authemp(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`);
+				if (auth)
+				{
+					await this.setState({auth: auth});
+				}
+	
+
 			}
 		    const Screen =  await AsyncStorage.getItem('Screen');
 			if (this.state.auth && this.state.auth.authorized != 1)
