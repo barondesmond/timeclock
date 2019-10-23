@@ -673,7 +673,7 @@ customerComplete = async () => {
 			var img = await lib.uploadImages();
 			if (img && img > 0)
 			{
-				Alert.alert('Uploaded Images ' + img );
+				//uploaded images
 			}
 			else if (!img)
 			{

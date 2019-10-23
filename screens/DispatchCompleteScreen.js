@@ -309,7 +309,7 @@ addDispatchNote = async () => {
 
 		return false;
 	}
-	console.log('checking for notes');
+
 	if (this.state.addDispatchNote == '' || this.state.checkinStatus != 'Stop')
 	{
 		//console.log(this.state.data);
@@ -320,9 +320,18 @@ addDispatchNote = async () => {
 	this.setState({checkinStatus: 'addNote'});
 	console.log(this.state.addDispatchNote);
 	const post = await this.authEventLogApi();
-	await AsyncStorage.removeItem('notes');
+	if (post && post.authorized==1)
+	{
+		await AsyncStorage.removeItem('notes');
+
+	}
+	else
+	{
+		Alert.alert('Error Notes Not Sent.  Connection Error');
+	}		
+	
 	//console.log(post);
-	this.setState({checkinStatus: 'Stop', DispatchNotes: post.DispatchNotes, isVisibleDispatchNote: false});
+	this.setState({checkinStatus: 'Stop', DispatchNotes: post.DispatchNotes, isVisibleDispatchNote: false, notes: false, addDispatchNote: ''});
 	this.setState({isVisibleDispatchNote: false});
 }
 
@@ -340,13 +349,26 @@ checkStatus =  async () => {
 		{
 			await AsyncStorage.removeItem('noteadded');
 			await AsyncStorage.removeItem('override');
+			if (!this.state.notes)
+			{
+			var notes = await AsyncStorage.getItem('notes');
+			await this.setState({notes: notes});
+			}
 			if (this.state.notes)
 			{
 				this.setState({addDispatchNote: this.state.notes});
 				await this.addDispatchNote();
 			}
-			this.loadPictures();
-			this.uploadImages();
+			var img = await lib.uploadImages();
+			if (img && img > 0)
+			{
+				//uploaded images
+			}
+			else if (!img)
+			{
+				Alert.alert('Error Connection Image Upload');
+				this.setState({isLoading: false});
+			}
 			this.setState({checkinStatus: 'Start', active: !this.state.active, customer:false, customerimage:null});
 			await AsyncStorage.removeItem('violation');
 			await AsyncStorage.removeItem('image');

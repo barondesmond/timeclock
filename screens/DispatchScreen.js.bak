@@ -677,7 +677,7 @@ customerComplete = async () => {
 			}
 			else if (!img)
 			{
-				Alert.alert('Error Connection');
+				Alert.alert('Error Connection Image Upload');
 				this.setState({isLoading: false});
 				return false;
 			}

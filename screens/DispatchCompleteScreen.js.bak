@@ -48,6 +48,7 @@ constructor(props){
         longitude: null,
         error: null,
         checkinStatus: 'Start',
+		Counter: null,
         csBack: 'green',
         active: true,
 		event: 'Select Event',
@@ -155,7 +156,7 @@ async authEmpInstApi() {
 		  {
 			  this.props.navigation.navigate(this.state.auth.Screen);
 		  }
-		  this.setState({Dispatch: this.state.auth.Dispatch, DispatchName: this.state.auth.DispatchName, DispatchNotes: this.state.auth.DispatchNotes, Add1: this.state.auth.Add1, Add2: this.state.auth.Add2, City: this.state.auth.City, State: this.state.auth.State, Zip: this.state.auth.Zip, Phone1: this.state.auth.Phone1,event : this.state.auth.event, eventstatus: false, dispatchstatus: false, checkinStatus: 'Stop', active: false, isDispatchVisible: false}) 
+		  this.setState({Dispatch: this.state.auth.Dispatch, Counter: this.state.auth.Counter, DispatchName: this.state.auth.DispatchName, DispatchNotes: this.state.auth.DispatchNotes, Add1: this.state.auth.Add1, Add2: this.state.auth.Add2, City: this.state.auth.City, State: this.state.auth.State, Zip: this.state.auth.Zip, Phone1: this.state.auth.Phone1,event : this.state.auth.event, eventstatus: false, dispatchstatus: false, checkinStatus: 'Stop', active: false, isDispatchVisible: false}) 
 	  }
 	  
 	  
@@ -170,7 +171,7 @@ async authEventLogApi() {
 		this.setState({latitude: '33.3333', longitude: '-88.9888'});
 	}
 	Screen = await AsyncStorage.getItem('Screen');
-	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&event=${this.state.event}&Dispatch=${this.state.Dispatch}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}&addDispatchNote=${this.state.addDispatchNote}&customer=${this.state.customer}&customerimage=${this.state.customerimage}&Complete=Y&dev=${__DEV__}`;
+	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&event=${this.state.event}&Dispatch=${this.state.Dispatch}&Counter=${this.state.Counter}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}&addDispatchNote=${this.state.addDispatchNote}&customer=${this.state.customer}&customerimage=${this.state.customerimage}&Complete=Y&dev=${__DEV__}`;
 	  await fetch(authurl)
       .then((response2) => response2.json())
       .then((responseJson2) => {
@@ -308,7 +309,7 @@ addDispatchNote = async () => {
 
 		return false;
 	}
-	console.log('checking for notes');
+
 	if (this.state.addDispatchNote == '' || this.state.checkinStatus != 'Stop')
 	{
 		//console.log(this.state.data);
@@ -319,9 +320,18 @@ addDispatchNote = async () => {
 	this.setState({checkinStatus: 'addNote'});
 	console.log(this.state.addDispatchNote);
 	const post = await this.authEventLogApi();
-	await AsyncStorage.removeItem('notes');
+	if (post && post.authorized==1)
+	{
+		await AsyncStorage.removeItem('notes');
+
+	}
+	else
+	{
+		Alert.alert('Error Notes Not Sent.  Connection Error');
+	}		
+	
 	//console.log(post);
-	this.setState({checkinStatus: 'Stop', DispatchNotes: post.DispatchNotes, isVisibleDispatchNote: false});
+	this.setState({checkinStatus: 'Stop', DispatchNotes: post.DispatchNotes, isVisibleDispatchNote: false, notes: false, addDispatchNote: ''});
 	this.setState({isVisibleDispatchNote: false});
 }
 
@@ -339,13 +349,17 @@ checkStatus =  async () => {
 		{
 			await AsyncStorage.removeItem('noteadded');
 			await AsyncStorage.removeItem('override');
+			if (!this.state.notes)
+			{
+			var notes = await AsyncStorage.getItem('notes');
+			await this.setState({notes: notes});
+			}
 			if (this.state.notes)
 			{
 				this.setState({addDispatchNote: this.state.notes});
 				await this.addDispatchNote();
 			}
-			this.loadPictures();
-			this.uploadImages();
+			await lib.uploadImages();
 			this.setState({checkinStatus: 'Start', active: !this.state.active, customer:false, customerimage:null});
 			await AsyncStorage.removeItem('violation');
 			await AsyncStorage.removeItem('image');
