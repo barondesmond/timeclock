@@ -659,7 +659,12 @@ customerComplete = async () => {
 		Alert.alert('Please Wait...');
 	}
 	this.setState({isLoading: true});
+	if (!this.state.notes)
+	{
+		var notes = await AsyncStorage.getItem('notes');
+		await this.setState({notes: notes});
 
+	}
 			if (this.state.notes)
 			{
 				this.setState({addDispatchNote: this.state.notes});

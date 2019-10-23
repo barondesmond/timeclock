@@ -104,12 +104,12 @@ Linking.canOpenURL(url).then(supported => {
 export async function uploadImages() {
 
    pictures = await getItem('pictures');
+   var upload = true;
 
    if (!pictures || pictures.length == 0)
    {
-	   return false;
+	   return upload;
    }
-   var upload = true;
    let max = pictures.length;
    for(let i = 1; i <= max; i++) {
   
