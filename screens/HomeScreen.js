@@ -149,8 +149,7 @@ _getLocationAsync = async () => {
 			if (this.state.EmpNo)
 			{
 				await AsyncStorage.setItem('Bio', this.state.EmpNo);
-				if (!this.state.auth)
-				{		
+		
 				auth = await lib.fetch_authemp(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`);
 				if (auth)
 				{
@@ -158,7 +157,7 @@ _getLocationAsync = async () => {
 				}
 	
 
-				}
+	
 
 			    const Screen =  await AsyncStorage.getItem('Screen');
 				if (this.state.auth && this.state.auth.authorized != 1)
@@ -213,7 +212,7 @@ _getLocationAsync = async () => {
 		{
 	
 		    await AsyncStorage.setItem('Bio', this.state.EmpNo);
-			if (!this.state.auth)
+			if (!this.state.auth || this.state.auth.authorized == 0)
 			{		
 				auth = await lib.fetch_authemp(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`);
 				if (auth)

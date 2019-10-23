@@ -451,9 +451,9 @@ error(err) {
 	else if (this.state.checkinStatus == 'Stop' && !this.state.dispatchstatus && !this.state.eventstatus  && this.state.Counter && this.state.Counter != 'null') {
 		const notes = await AsyncStorage.getItem('notes');
 	
-		if (this.state.notes)
+		if (notes)
 			{
-				this.setState({addDispatchNote: this.state.notes});
+				this.setState({addDispatchNote: notes});
 				await this.addDispatchNote();
 			}
 		await this.authEventLogApi();
@@ -659,7 +659,12 @@ customerComplete = async () => {
 		Alert.alert('Please Wait...');
 	}
 	this.setState({isLoading: true});
+	if (!this.state.notes)
+	{
+		var notes = await AsyncStorage.getItem('notes');
+		await this.setState({notes: notes});
 
+	}
 			if (this.state.notes)
 			{
 				this.setState({addDispatchNote: this.state.notes});
@@ -782,7 +787,15 @@ addDispatchNote = async () => {
 	this.setState({checkinStatus: 'addNote'});
 	console.log(this.state.addDispatchNote);
 	const post = await this.authEventLogApi();
-	await AsyncStorage.removeItem('notes');
+	if (post && post.authorized==1)
+	{
+		await AsyncStorage.removeItem('notes');
+
+	}
+	else
+	{
+		Alert.alert('Error Notes Not Sent.  Connection Error');
+	}		
 	
 	//console.log(post);
 	this.setState({checkinStatus: 'Stop', DispatchNotes: post.DispatchNotes, isVisibleDispatchNote: false, notes: false, addDispatchNote: ''});
