@@ -60,6 +60,8 @@ constructor(props){
 		dispatched: null,
 		DispatchName: 'Select Dispatch',
 		dispatchstatus: true,
+		title: '',
+		dispatchkey: null,
         pickers: null,
         auth: null,
 		timer: null,
@@ -124,11 +126,18 @@ async fetchDispatchsFromApi() {
 	 else
 	 {
 	   for (let i=0; i < this.state.dispatchs.length ; i++) {
-		   let title = this.state.dispatchs[i].Dispatch + ' ' + this.state.dispatchs[i].DispatchName;
-	      pickers.push(<Button key={this.state.dispatchs[i].Dispatch} title = {title} value={i} onPress={()=>this.updateDispatch(i)} />);
+		  if (__DEV__)
+		  {
+			 this.state.dispatchs[i].title = this.state.dispatchs[i].Dispatch + '-' + this.state.dispatchs[i].Counter + ' ' + this.state.dispatchs[i].DispatchName;
+		  }
+		  else
+		  {
+			 this.state.dispatchs[i].title = this.state.dispatchs[i].Dispatch + '-' + this.state.dispatchs[i].Counter + ' ' + this.state.dispatchs[i].DispatchName;
+		  }
+	      pickers.push(<Button key={this.state.dispatchs[i].Dispatch} title = {this.state.dispatchs[i].title} value={i} onPress={()=>this.updateDispatch(i)} />);
        }
 	   pickers.push(<Button key="close" title="Back" onPress={()=>this.setState({isDispatchVisible: false})} />);
-		this.setState({pickers: pickers});
+		this.setState({pickers: pickers, dispatchs: this.state.dispatchs});
 		lib.setItem('pickers', pickers);
 	 }
 	
@@ -195,7 +204,7 @@ async authEmpInstApi(refresh) {
 		  {
 			  this.props.navigation.navigate(this.state.auth.Screen);
 		  }
-		  this.setState({Dispatch: this.state.auth.Dispatch, Counter: this.state.auth.Counter, DispatchName: this.state.auth.DispatchName, DispatchNotes: this.state.auth.DispatchNotes, DispatchLocation: this.state.auth.location, dispatchlatitde: this.state.auth.latitude, dispatchlongitude: this.state.auth.longitude, dispatchdistance: this.state.auth.distance,Add1: this.state.auth.Add1, Add2: this.state.auth.Add2, City: this.state.auth.City, State: this.state.auth.State, Zip: this.state.auth.Zip, Phone1: this.state.auth.Phone1,event : this.state.auth.event, eventstatus: false, dispatchstatus: false, checkinStatus: 'Stop', active: false, isDispatchVisible: false})
+		  this.setState({Dispatch: this.state.auth.Dispatch, Counter: this.state.auth.Counter, DispatchName: this.state.auth.DispatchName, title: this.state.auth.Dispatch + '-' + this.state.auth.Counter + ' ' + this.state.auth.DispatchName, DispatchNotes: this.state.auth.DispatchNotes, DispatchLocation: this.state.auth.location, dispatchlatitde: this.state.auth.latitude, dispatchlongitude: this.state.auth.longitude, dispatchdistance: this.state.auth.distance,Add1: this.state.auth.Add1, Add2: this.state.auth.Add2, City: this.state.auth.City, State: this.state.auth.State, Zip: this.state.auth.Zip, Phone1: this.state.auth.Phone1,event : this.state.auth.event, eventstatus: false, dispatchstatus: false, checkinStatus: 'Stop', active: false, isDispatchVisible: false})
 	  }
 	  else if (this.state.checkinStatus != 'Stop' && this.state.checkinStatus != 'Start' && this.state.auth && this.state.auth.authorized == '1' )
 	  {
@@ -402,6 +411,8 @@ error(err) {
  componentWillUnmount() {
 
     clearInterval(this.intervalID);
+	source.cancel('Operation canceled');
+
   }
 
  async checkStatus(override) {
@@ -531,7 +542,7 @@ resetEventStatus = () => {
  updateDispatch = (i) => {
 
 		//console.log(this.state.dispatchs[i]);
-		this.setState({dispatched: this.state.dispatchs[i], Dispatch: this.state.dispatchs[i].Dispatch, Counter: this.state.dispatchs[i].Counter, dispatchstatus: !this.state.dispatchstatus,  DispatchName: this.state.dispatchs[i].DispatchName, DispatchLocation: this.state.dispatchs[i].location, DispatchNotes: this.state.dispatchs[i].DispatchNotes, Add1: this.state.dispatchs[i].Add1, Add2: this.state.dispatchs[i].Add2, City: this.state.dispatchs[i].City, State: this.state.dispatchs[i].State, Zip: this.state.dispatchs[i].Zip, Phone1: this.state.dispatchs[i].Phone1, dispatchdistance: this.state.dispatchs[i].distance, dispatchlatitude: this.state.dispatchs[i].latitude, dispatchlongitude: this.state.dispatchs[i].longitude, isDispatchVisible: false })
+		this.setState({dispatched: this.state.dispatchs[i], Dispatch: this.state.dispatchs[i].Dispatch, Counter: this.state.dispatchs[i].Counter, dispatchstatus: !this.state.dispatchstatus,  DispatchName: this.state.dispatchs[i].DispatchName, DispatchLocation: this.state.dispatchs[i].location, DispatchNotes: this.state.dispatchs[i].DispatchNotes, Add1: this.state.dispatchs[i].Add1, Add2: this.state.dispatchs[i].Add2, City: this.state.dispatchs[i].City, State: this.state.dispatchs[i].State, Zip: this.state.dispatchs[i].Zip, Phone1: this.state.dispatchs[i].Phone1, dispatchdistance: this.state.dispatchs[i].distance, dispatchlatitude: this.state.dispatchs[i].latitude, dispatchlongitude: this.state.dispatchs[i].longitude, isDispatchVisible: false, title: this.state.dispatchs[i].title, dispatchkey: i})
 		lib.setItem('dispatched', this.state.dispatchs[i])
 	    //console.log(this.state);
    }
@@ -673,7 +684,7 @@ customerComplete = async () => {
 			var img = await lib.uploadImages();
 			if (img && img > 0)
 			{
-				Alert.alert('Uploaded Images ' + img );
+				//uploaded images
 			}
 			else if (!img)
 			{
@@ -862,7 +873,7 @@ renderDispatchModal = ()  => {
 					</ScrollView>
                </Modal>
 			  {
-			   this.state.dispatchstatus? <Button title={this.state.DispatchName} onPress = {() => this.setState({isDispatchVisible: true})} /> : <Button style={styles.buttonContainer} title={this.state.DispatchName}  onPress={() => this.resetDispatchStatus()} /> 
+			   this.state.dispatchstatus? <Button title={this.state.DispatchName} onPress = {() => this.setState({isDispatchVisible: true})} /> : <Button style={styles.buttonContainer} title={this.state.title}  onPress={() => this.resetDispatchStatus()} /> 
 			   }
          </View>
 	  );

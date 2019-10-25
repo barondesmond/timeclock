@@ -3,7 +3,14 @@ import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, U
 import { NetInfo,   AsyncStorage, Linking,   Alert } from 'react-native';
 import axios from 'axios';
 import Constants from 'expo-constants';
+export async function fetch_cancel() {
 
+const CancelToken = axios.CancelToken;
+const source = CancelToken.source();
+
+source.cancel('Operation canceled');
+
+}
 
 export async function fetch_authemp(url) {
 
@@ -29,6 +36,9 @@ var response = await axios.get(url, opt)
     console.log(thrown);
     }
   });
+
+await source.cancel('Operation canceled');
+
 	if (response && response.data)
 	{
 		if (response.data.authorized == 1)
@@ -193,6 +203,7 @@ var response = await axios.post(apiUrl, formData, opt)
     console.log(thrown);
     }
   });
+await source.cancel('Operation canceled');
 
   return response.data;
 

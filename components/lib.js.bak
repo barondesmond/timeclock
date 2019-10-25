@@ -3,7 +3,14 @@ import {COLOR_PRIMARY, COLOR_SECONDARY, FONT_NORMAL, FONT_BOLD, BORDER_RADIUS, U
 import { NetInfo,   AsyncStorage, Linking,   Alert } from 'react-native';
 import axios from 'axios';
 import Constants from 'expo-constants';
+export async function fetch_cancel() {
 
+const CancelToken = axios.CancelToken;
+const source = CancelToken.source();
+
+source.cancel('Operation canceled');
+
+}
 
 export async function fetch_authemp(url) {
 
@@ -29,6 +36,8 @@ var response = await axios.get(url, opt)
     console.log(thrown);
     }
   });
+
+
 	if (response && response.data)
 	{
 		if (response.data.authorized == 1)
@@ -104,12 +113,12 @@ Linking.canOpenURL(url).then(supported => {
 export async function uploadImages() {
 
    pictures = await getItem('pictures');
+   var upload = true;
 
    if (!pictures || pictures.length == 0)
    {
-	   return false;
+	   return upload;
    }
-   var upload = true;
    let max = pictures.length;
    for(let i = 1; i <= max; i++) {
   

@@ -53,6 +53,11 @@ export default class HomeScreen extends React.Component {
 	jobs: null,
   };
 
+	async componentWillUnMount() {
+	
+	lib.fetch_cancel();
+
+	}
 
   async componentWillMount() {
 
@@ -91,6 +96,7 @@ export default class HomeScreen extends React.Component {
 
 
 	}
+
 
 	this.checkDeviceForHardware();
 
@@ -142,126 +148,82 @@ _getLocationAsync = async () => {
 
 }
 
-  checkForBiometrics = async (Screen) => {
+  checkForBiometrics = async (newscreen) => {
+	  console.log('checkforbiometrics');
     let biometricRecords = await LocalAuthentication.isEnrolledAsync();
+	console.log('checkbiometrics complete');
     if (!biometricRecords) 
 	{
-			if (this.state.EmpNo)
-			{
-				await AsyncStorage.setItem('Bio', this.state.EmpNo);
-		
-				auth = await lib.fetch_authemp(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`);
-				if (auth)
-				{
-					await this.setState({auth: auth});
-				}
-	
-
-	
-
-			    const Screen =  await AsyncStorage.getItem('Screen');
-				if (this.state.auth && this.state.auth.authorized != 1)
-				{
-					this.props.navigation.navigate('Alternative', {onGoBack: () => this.primaryLogin(Screen)});
-				}
-				else
-				{
-					  this.props.navigation.navigate('Camera',  {onGoBack: () => this.primaryLogin(Screen)});
-				}
-			}
-	
-			else
-			{
-				if (this.state.auth && this.state.EmpActive && this.state.auth.EmpActive == 1 && this.state.Screen && this.state.auth.Screen != Screen && Screen != 'Document')
-		     {
-					 Alert.alert('You are logged into ' + this.state.auth.Screen + ' Portal');
-		     }
-				else
-				{
-					  this.props.navigation.navigate('Camera',  {onGoBack: () => this.primaryLogin(Screen)});
-				}	
-			}
-        
+		this.props.navigation.navigate('Camera',  {onGoBack: () => this.primaryLogin(newscreen)});
 
     } else {
-      this.handleLoginPress();
+      this.handleLoginPress(newscreen);
     }
   };
   
-  handleLoginPress = () => {
+  handleLoginPress = (newscreen) => {
     if (Platform.OS === 'android') {
-      this.showAndroidAlert();
+      this.showAndroidAlert(newscreen);
     } else {
-      this.scanBiometrics();
+		 this.scanBiometrics(newscreen);
     }
   };
 
-  showAndroidAlert = () => {
-    Alert.alert('Fingerprint Scan', 'Place your finger over the touch sensor.');
-    this.scanBiometrics();
+  showAndroidAlert = (newscreen) => {
+    Alert.alert('Fingerprint Scan', 'Place your finger over the touch sensor.', [], {cancelable: true});
+    this.scanBiometrics(newscreen);
   };
 
-  scanBiometrics = async () => {
-    let result = await LocalAuthentication.authenticateAsync('Biometric Scan.');
-    if (result.success) {
-
-		if (this.state.EmpNo == null)
-        { 
-        }
-		else
+  checkAuth = async (newscreen) => {
+  
+		EmpNo = await AsyncStorage.getItem('EmpNo');
+		if (EmpNo)
 		{
-	
-		    await AsyncStorage.setItem('Bio', this.state.EmpNo);
-			if (!this.state.auth || this.state.auth.authorized == 0)
-			{		
-				auth = await lib.fetch_authemp(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`);
-				if (auth)
-				{
-					await this.setState({auth: auth});
-				}
-	
+			await this.setState({EmpNo: EmpNo});
+		}
+		console.log(EmpNo);
+		console.log(this.state.EmpNo);
+		if (this.state.EmpNo === null)
+        {
+			await this.props.navigation.navigate('Alternative', {onGoBack: () => this.primaryLogin(this.state.Screen)});
+			return false;
 
-			}
-		    const Screen =  await AsyncStorage.getItem('Screen');
-			if (this.state.auth && this.state.auth.authorized != 1)
-			{
-				this.props.navigation.navigate('Alternative', {onGoBack: () => this.primaryLogin(Screen)});
-			}
-			else
-			{
-				if (this.state.auth.EmpActive == 1 && this.state.auth.Screen != Screen && Screen != 'Document')
-		     {
-					 Alert.alert('You are logged into ' + this.state.auth.Screen + ' Portal');
-		     }
-				else
-				{
-					this.props.navigation.navigate(Screen);
-				}	
-			}
         }
 
-    } else {
-	    this.props.navigation.navigate('Camera',  {onGoBack: () => this.primaryLogin(Screen)});
+  		if (!this.state.auth || this.state.auth.authorized == 0)
+		{		
+			auth = await lib.fetch_authemp(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`);
+			if (auth)
+			{
+				await this.setState({auth: auth});
+			}
+			if (auth && auth.authorized == 0)
+			{
+				this.props.navigation.navigate('Alternative', {onGoBack: () => this.primaryLogin(newscreen)});
+				return false;
+			}
+
+		}
+	console.log(auth);
+	console.log(this.state.auth);
+	return auth;
+  }
+
+
+  scanBiometrics = async (newscreen) => {
+	 console.log('scanbiometrics');
+    let result =  await LocalAuthentication.authenticateAsync('Biometric Scan.');
+	console.log('scanbiometrics complete');
+    if (result.success) {
+		this.props.navigation.navigate(newscreen);
+		return false;
+	} else {
+	    this.props.navigation.navigate('Camera',  {onGoBack: () => this.primaryLogin(newscreen)});
+		return false;
 	}
   };
 
  
-
-alternateLogin = async (newscreen) => {
-
-	  const auth = await this.authEmpInstApi();
-
-      if (this.state.auth.EmpActive == 1 && this.state.auth.Screen != newscreen)
-      {
-		 Alert.alert('You are logged into ' + this.state.auth.Screen + ' Portal');
-      }
-	  else
-	  {
-		AsyncStorage.setItem('Screen', newscreen);
-	  }
-     this.props.navigation.navigate('Camera');
-
-}
 
 resetKeys = async ()  => {
  
@@ -284,33 +246,32 @@ primaryLogin = async (newscreen) => {
 	{
 		return false;
 	}
- 
+	console.log('check auth');
+	auth = await this.checkAuth(newscreen);
+	console.log('complete checkauth');
 	if (newscreen == 'Document')
 	{
 		this.props.navigation.navigate(newscreen);
 	}
-	else
-	{
-		await AsyncStorage.setItem('Screen', newscreen);
-		EmpNo = await AsyncStorage.getItem('EmpNo');
-			
-		if (this.state.EmpNo == null && EmpNo == null)
-        {
-			await this.props.navigation.navigate('Alternative', {onGoBack: () => this.primaryLogin(newscreen)});
-			return false;
+	else if (auth && auth.authorized == 1)
 
-        }
-		else
-		{
-		   this.setState({EmpNo: EmpNo});
-		}
+	{
+	   if (this.state.auth.EmpActive == 1 && this.state.auth.Screen != newscreen)
+      {
+		 Alert.alert('You are logged into ' + this.state.auth.Screen + ' Portal');
+      }
+	  else
+	  {
+		AsyncStorage.setItem('Screen', newscreen);
+	  }
+	console.log(this.state.compatible);
 		if (this.state.compatible)
 		{
 	     this.checkForBiometrics(newscreen);
 		}
 		else
 		{
-	    this.props.navigation.navigate('Camera');
+		  this.props.navigation.navigate('Camera',  {onGoBack: () => this.primaryLogin(newscreen)});
 		}
 	}
 	
