@@ -237,6 +237,10 @@ async authEventLogApi() {
 
 
 	Screen = await AsyncStorage.getItem('Screen');
+	if (Screen != 'Dispatch')
+	{
+		Alert.alert('Login not Dispatch ' + Screen);
+	}
 	violation = encodeURIComponent(this.state.violation);
 	addDispatchNote = encodeURIComponent(this.state.addDispatchNote);
 	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&event=${this.state.event}&Dispatch=${this.state.Dispatch}&Counter=${this.state.Counter}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}&addDispatchNote=${addDispatchNote}&dev=${__DEV__}&change=${this.state.change}`;

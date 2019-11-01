@@ -91,7 +91,7 @@ constructor(props){
 		isVisibleDispatchNote: false,
 		notes: false,
 		gps: __DEV__,
-		change: 'DS10222019',
+		change: 'DS11012019',
 		isLoading: false,
     }
 

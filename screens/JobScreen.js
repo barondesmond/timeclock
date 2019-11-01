@@ -86,7 +86,7 @@ constructor(props){
 		override: false,
 		pictures: null,
 		notes: '',
-		change: 'js10162019',
+		change: 'js11012019',
         gps: __DEV__,
     }
 
