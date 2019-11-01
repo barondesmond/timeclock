@@ -168,6 +168,10 @@ async authEventLogApi() {
 	
 
 	Screen = await AsyncStorage.getItem('Screen');
+	if (Screen != 'Job')
+	{
+		Alert.alert('Login not Job ' + Screen);
+	}
 	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&event=${this.state.event}&Name=${this.state.Name}&JobID=${this.state.JobID}&addJobNote=${this.state.addJobNote}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}&dev=${__DEV__}&change={this.state.change}`;
 	  var auth = await lib.fetch_authemp(authurl);
 	  if (auth && auth.jobs)

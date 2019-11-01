@@ -190,8 +190,7 @@ _getLocationAsync = async () => {
 
         }
 
-  		if (!this.state.auth || this.state.auth.authorized == 0)
-		{		
+ 	
 			auth = await lib.fetch_authemp(URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&dev=${__DEV__}&change=${this.state.change}`);
 			if (auth)
 			{
@@ -203,7 +202,7 @@ _getLocationAsync = async () => {
 				return false;
 			}
 
-		}
+
 	console.log(auth);
 	console.log(this.state.auth);
 	return auth;
@@ -256,9 +255,10 @@ primaryLogin = async (newscreen) => {
 	else if (auth && auth.authorized == 1)
 
 	{
-	   if (this.state.auth.EmpActive == 1 && this.state.auth.Screen != newscreen)
+	   if (auth.EmpActive == 1 && auth.Screen != newscreen)
       {
-		 Alert.alert('You are logged into ' + this.state.auth.Screen + ' Portal');
+		 Alert.alert('You are logged into ' + auth.Screen + ' Portal');
+		 return false;
       }
 	  else
 	  {

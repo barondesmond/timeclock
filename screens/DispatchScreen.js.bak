@@ -411,8 +411,7 @@ error(err) {
  componentWillUnmount() {
 
     clearInterval(this.intervalID);
-	source.cancel('Operation canceled');
-
+	lib.fetch_cancel();
   }
 
  async checkStatus(override) {

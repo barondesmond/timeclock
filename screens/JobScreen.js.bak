@@ -172,7 +172,7 @@ async authEventLogApi() {
 	  var auth = await lib.fetch_authemp(authurl);
 	  if (auth && auth.jobs)
 	  {
-		  await this.setState({auth: auth, jobs: auth.jobs});\
+		  await this.setState({auth: auth, jobs: auth.jobs});
 	  }
 	  else
 	 {

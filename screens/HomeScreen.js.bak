@@ -212,7 +212,7 @@ _getLocationAsync = async () => {
 
   scanBiometrics = async (newscreen) => {
 	 console.log('scanbiometrics');
-    let result =  LocalAuthentication.authenticateAsync('Biometric Scan.');
+    let result =  await LocalAuthentication.authenticateAsync('Biometric Scan.');
 	console.log('scanbiometrics complete');
     if (result.success) {
 		this.props.navigation.navigate(newscreen);
@@ -256,9 +256,10 @@ primaryLogin = async (newscreen) => {
 	else if (auth && auth.authorized == 1)
 
 	{
-	   if (this.state.auth.EmpActive == 1 && this.state.auth.Screen != newscreen)
+	   if (auth.EmpActive == 1 && auth.Screen != newscreen)
       {
-		 Alert.alert('You are logged into ' + this.state.auth.Screen + ' Portal');
+		 Alert.alert('You are logged into ' + auth.Screen + ' Portal');
+		 return false;
       }
 	  else
 	  {
