@@ -67,10 +67,11 @@ async fetchEmployeeFromApi (EmpName, Email) {
    const EmpName = this.state.data.EmpName;
    this.setState({EmpNo: EmpNo});
    this.saveKey(EmpName, Email, EmpNo);
+   Alert.alert('Logged in ' + this.state.data.EmpNo); 
    }
-   else if (this.state.data.authorized == 0 && this.state.data.Email != '')
+   else if (this.state.data.authorized == 0 && this.state.data.auth_sent && this.state.data.auth_sent.Email)
    {
-	   Alert.alert('Email Sent to ' + this.state.data.Email);
+	   Alert.alert('Email Sent to ' + this.state.data.auth_sent.Email);
    }
    else
 	{

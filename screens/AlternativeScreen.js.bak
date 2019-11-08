@@ -68,9 +68,13 @@ async fetchEmployeeFromApi (EmpName, Email) {
    this.setState({EmpNo: EmpNo});
    this.saveKey(EmpName, Email, EmpNo);
    }
+   else if (this.state.data.authorized == 0 && this.state.data.auth_sent && this.state.data.auth_sent.Email)
+   {
+	   Alert.alert('Email Sent to ' + this.state.data.auth_sent.Email);
+   }
    else
 	{
-	  Alert.alert('Employee Not Authorized ' + this.state.data.authorized);
+	  Alert.alert('Not Authorized ' + this.state.data.authorized);
 	this.props.navigation.navigate('Home');
 	   return false;
     }
