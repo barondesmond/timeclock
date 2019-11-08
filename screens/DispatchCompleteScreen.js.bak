@@ -320,14 +320,14 @@ addDispatchNote = async () => {
 	this.setState({checkinStatus: 'addNote'});
 	console.log(this.state.addDispatchNote);
 	const post = await this.authEventLogApi();
-	if (post && post.authorized==1)
+	if (post && post.authorized==1 && !post.error)
 	{
 		await AsyncStorage.removeItem('notes');
 
 	}
 	else
 	{
-		Alert.alert('Error Notes Not Sent.  Connection Error');
+		Alert.alert('Error Notes Not Sent.  ' + post.error);
 	}		
 	
 	//console.log(post);
@@ -344,7 +344,12 @@ checkStatus =  async () => {
 	 console.log(customer);
 	 if (this.state.checkinStatus == 'Stop' && !this.state.dispatchstatus && !this.state.eventstatus && customer != ''  && customerimage != '') {
 		this.setState({customer: customer, customerimage: customerimage});
-		await this.authEventLogApi();
+		var even = await this.authEventLogApi();
+		if (even && even.error)
+		{
+			Alert.alert(even.error);
+			return false;
+		}
 		if (this.state.auth.EmpActive != '1')
 		{
 			await AsyncStorage.removeItem('noteadded');
@@ -359,7 +364,16 @@ checkStatus =  async () => {
 				this.setState({addDispatchNote: this.state.notes});
 				await this.addDispatchNote();
 			}
-			await lib.uploadImages();
+			var img = await lib.uploadImages();
+			if (img && img > 0)
+			{
+				//uploaded images
+			}
+			else if (!img)
+			{
+				Alert.alert('Error Connection Image Upload');
+				this.setState({isLoading: false});
+			}
 			this.setState({checkinStatus: 'Start', active: !this.state.active, customer:false, customerimage:null});
 			await AsyncStorage.removeItem('violation');
 			await AsyncStorage.removeItem('image');

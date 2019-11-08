@@ -320,14 +320,14 @@ addDispatchNote = async () => {
 	this.setState({checkinStatus: 'addNote'});
 	console.log(this.state.addDispatchNote);
 	const post = await this.authEventLogApi();
-	if (post && post.authorized==1)
+	if (post && post.authorized==1 && !post.error)
 	{
 		await AsyncStorage.removeItem('notes');
 
 	}
 	else
 	{
-		Alert.alert('Error Notes Not Sent.  Connection Error');
+		Alert.alert('Error Notes Not Sent.  ' + post.error);
 	}		
 	
 	//console.log(post);
@@ -344,7 +344,12 @@ checkStatus =  async () => {
 	 console.log(customer);
 	 if (this.state.checkinStatus == 'Stop' && !this.state.dispatchstatus && !this.state.eventstatus && customer != ''  && customerimage != '') {
 		this.setState({customer: customer, customerimage: customerimage});
-		await this.authEventLogApi();
+		var even = await this.authEventLogApi();
+		if (even && even.error)
+		{
+			Alert.alert(even.error);
+			this.props.navigation.navigate('Home');
+		}
 		if (this.state.auth.EmpActive != '1')
 		{
 			await AsyncStorage.removeItem('noteadded');
