@@ -449,7 +449,12 @@ error(err) {
 		return false;
 	 }
 	if (this.state.checkinStatus == 'Start' &&  !this.state.dispatchstatus && !this.state.eventstatus && (this.state.event=='Traveling' || override || (this.state.event=='Working' && (this.state.dispatchdistance != null && this.state.dispatchdistance < 2)))) {
-		await this.authEventLogApi();
+		var even = await this.authEventLogApi();
+		if (even && even.error)
+		{
+			Alert.alert(even.error);
+			return false;
+		}
 		var auth = await this.authEmpInstApi();
 
 		if (this.state.event=='Working')
@@ -463,6 +468,12 @@ error(err) {
 		}
 	}
 	else if (this.state.checkinStatus == 'Stop' && !this.state.dispatchstatus && !this.state.eventstatus  && this.state.Counter && this.state.Counter != 'null') {
+		var even = await this.authEventLogApi();
+		if (even && even.error)
+		{
+			Alert.alert(even.error);
+			return false;
+		}
 		const notes = await AsyncStorage.getItem('notes');
 	
 		if (notes)
@@ -470,7 +481,7 @@ error(err) {
 				this.setState({addDispatchNote: notes});
 				await this.addDispatchNote();
 			}
-		await this.authEventLogApi();
+
 		var auth = await this.authEmpInstApi();
 
 		if (this.state.auth.EmpActive != '1')
@@ -810,14 +821,14 @@ addDispatchNote = async () => {
 	this.setState({checkinStatus: 'addNote'});
 	console.log(this.state.addDispatchNote);
 	const post = await this.authEventLogApi();
-	if (post && post.authorized==1)
+	if (post && post.authorized==1 && !post.error)
 	{
 		await AsyncStorage.removeItem('notes');
 
 	}
 	else
 	{
-		Alert.alert('Error Notes Not Sent.  Connection Error');
+		Alert.alert('Error Notes Not Sent.  ' + post.error);
 	}		
 	
 	//console.log(post);
