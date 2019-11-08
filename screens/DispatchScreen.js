@@ -582,12 +582,21 @@ workingStatus = async () => {
 
 		return false;
 	}
-	await this.authEventLogApi();
+	if (this.state.checkinStatus != 'Stop' || this.state.event != 'Traveling')
+	{
+		return false;
+	}
+	await this.setState({checkinStatus: 'Switch'});
+
+	var auth = await this.authEventLogApi();
+	if (auth && auth.Counter && auth.Counter != this.state.Counter)
+	{
+		await this.setState({checkinStatus: 'Stop', Counter: auth.Counter, event: 'Working'});
+	}
 	//Alert.alert(this.state.checkinStatus + ' ' + this.state.event + ' for a living');
 	//this.setState({event: 'Select Event', Dispatch:'Select Dispatch', eventstatus: true, checkinStatus: 'Start', active = true});
-	  const auth = await this.authEmpInstApi();
+	 await this.authEmpInstApi();
 
-	
 
 	
 
@@ -1037,6 +1046,7 @@ return (<View>
 	
 	
 	 {this.renderWorking()}
+	 {this.renderMaybeWorking()}
 	 {this.renderCustomerComplete()}
 
 

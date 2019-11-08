@@ -41,7 +41,7 @@ export default class AlternativeScreen extends Component {
 
 async fetchEmployeeFromApi (EmpName, Email) {
    
-  const emp_url = URL + `empauth_json.php?EmpName=${EmpName}&Email=${Email}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&dev={__DEV__}`;
+  const emp_url = URL + `empauth_json.php?EmpName=${EmpName}&Email=${Email}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&dev=${__DEV__}`;
 
   await fetch(emp_url) .then((response) => response.json())
 	        .then((responsejson) => {
