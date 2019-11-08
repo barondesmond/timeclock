@@ -582,6 +582,10 @@ workingStatus = async () => {
 
 		return false;
 	}
+	if (this.state.checkinStatus != 'Stop' || this.state.event != 'Traveling')
+	{
+		return false;
+	}
 	await this.setState({checkinStatus: 'Switch'});
 
 	var auth = await this.authEventLogApi();

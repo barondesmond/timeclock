@@ -470,7 +470,11 @@ error(err) {
 				this.setState({addDispatchNote: notes});
 				await this.addDispatchNote();
 			}
-		await this.authEventLogApi();
+		var even = await this.authEventLogApi();
+		if (even && even.error)
+		{
+			Alert.alert(even.error);
+		}
 		var auth = await this.authEmpInstApi();
 
 		if (this.state.auth.EmpActive != '1')
