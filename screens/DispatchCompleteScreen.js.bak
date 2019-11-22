@@ -348,7 +348,7 @@ checkStatus =  async () => {
 		if (even && even.error)
 		{
 			Alert.alert(even.error);
-			return false;
+			this.props.navigation.navigate('Home');
 		}
 		if (this.state.auth.EmpActive != '1')
 		{

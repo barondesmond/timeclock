@@ -58,22 +58,30 @@ export default class HomeScreen extends React.Component {
 	lib.fetch_cancel();
 
 	}
+gps_update = async (location) => {
+
+		console.log('gps update location');
+		await this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
+		console.log(location);
+		 if (this.state.dispatched && this.state.dispatched.latitude && this.state.dispatched.longitude && this.state.latitude && this.state.longitude)
+		 {
+			this.state.dispatched.distance = lib.getDistance(this.state.latitude, this.state.longitude, this.state.dispatched.latitude, this.state.dispatched.longitude);
+			await this.setState({dispatched: this.state.dispatched});
+			console.log('distance calculated ' + this.state.dispatched.distance);
+		 }
+}
 
   async componentWillMount() {
 
 
-	if (!this.state.lcationstatus)
-	{
-		await this._getLocationAsync().catch((response) => console.log(response));
-
-	}
+	  await this._getLocationAsync().catch((error) => { console.log(error)});
 	  if (!this.state.locationstatus)
 	  {
-		 let location = await Location.getCurrentPositionAsync({}).catch((response) => console.log(response));
-		 //console.log(location);
+	
+		 var location = await Location.watchPositionAsync({}, this.gps_update).catch((error) => { console.log(error)});
+		 console.log(location);
 
-		 await this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
-
+		 
 	  }
 
 
@@ -255,7 +263,7 @@ primaryLogin = async (newscreen) => {
 	else if (auth && auth.authorized == 1)
 
 	{
-	   if (auth.EmpActive == 1 && auth.Screen != newscreen)
+	   if (auth.EmpActive == 1 && auth.Screen != newscreen && newscreen != 'Employee')
       {
 		 Alert.alert('You are logged into ' + auth.Screen + ' Portal');
 		 return false;
@@ -349,7 +357,7 @@ render()
       {this.renderDevice()}
 	  {this.renderPortal('Job')}
 	  {this.renderPortal('Dispatch')}
-	  {?__DEV__ ? this.renderPortal('Employee') : this.renderPortal('OOS');}
+	  {__DEV__ ? this.renderPortal('Employee') : this.renderPortal('OOS')}
 	  {this.renderPortal('Document')}
 	  {__DEV__ ? <Button title="Logout" onPress={this.resetKeys} /> : <Button title="Logout" onPress={this.resetKeys} />}
 

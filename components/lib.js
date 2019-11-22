@@ -12,6 +12,8 @@ source.cancel('Operation canceled');
 
 }
 
+
+
 export async function fetch_authemp(url) {
 
 var auth = null;
@@ -49,7 +51,7 @@ await source.cancel('Operation canceled');
 		}
 		else
 		{
-			console.log(response.data);
+			//console.log(response.data);
 			console.log('not authorized' + response.data.authorized);
 			Alert.alert(response.data.authorized);
 		}
@@ -109,6 +111,114 @@ Linking.canOpenURL(url).then(supported => {
 
 
 }
+export async function log_init(log)
+{
+	if (!log.EmpNo)
+	{
+			log.EmpNo = '';
+	}
+	if (!log.event)
+	{
+		log.event = '';
+	}
+	if (!log.Dispatch)
+	{
+		log.Dispatch = '';
+	}
+	if (!log.Counter)
+	{
+		log.Counter = '';
+	}
+	if (!log.checkinStatus)
+	{
+		log.checkinStatus = ';'
+	}
+	if (!log.violation)
+	{
+		log.violation = '';
+	}
+	if (!log.image)
+	{
+		log.image = '';
+	}
+	if (!log.latitude)
+	{
+		log.latitude = '';
+	}
+	if (!log.longitude)
+	{
+		log.longitude = '';
+	}
+	if (!log.Screen)
+	{
+		log.Screen = '';
+	}
+	if (!log.change)
+	{
+		log.change = '';
+	}
+	if (!log.addDispatchNote)
+	{
+		log.addDispatchNote = '';
+	}
+	if (!log.addJobNote)
+	{
+		log.addJobNote = '';
+	}
+	if (!log.addEmployeeNote)
+	{
+		log.addEmployeeNote = '';
+	}
+return log;
+}
+
+export async function url_create(log)
+{
+		let authurl = URL + `authempinst_json.php?EmpNo=${log.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&event=${log.event}&Dispatch=${log.Dispatch}&Counter=${log.Counter}&Name=${log.Name}&checkinStatus=${log.checkinStatus}&violation=${log.violation}&image=${log.image}&latitude=${log.latitude}&longitude=${log.longitude}&Screen=${log.Screen}&addDispatchNote=${log.addDispatchNote}&addJobNote=${log.addJobNote}&addEmployeeNote=${log.addEmployeeNote}&dev=${__DEV__}&change=${log.change}`;
+return authurl;
+}
+
+export async function add_url(url) {
+
+urls = await getItem('urls');
+if (!urls)
+{
+	urls = [];
+}
+   var upload = true;
+   
+   if (url)
+   {
+	   urls.push(url);
+	   console.log(urls);
+	   await setItem('urls', urls);
+   }
+   if (!urls || urls.length == 0)
+   {
+	   return upload;
+   }
+	let max = urls.length;
+	for(let i = 1; i <= max; i++) {
+		console.log(i + max);
+	var urlsend = urls.shift();
+	var resp = await fetch_authemp(urlsend);
+
+	console.log(resp);
+	if (resp && resp.authorized)
+	{
+		await setItem('urls', urls);
+
+	}
+	else
+	{
+		urls.push(urlsend);
+	}
+
+	}
+return resp;
+
+}
+
 
 
 export async function uploadImages() {
