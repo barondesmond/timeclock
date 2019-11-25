@@ -47,7 +47,7 @@ export default class HomeScreen extends React.Component {
 	latitude: null,
 	longitude: null,
 	EmpActive: null,
-	change: 'HS11012019',
+	change: 'HS11222019',
 	auth: null,
 	dispatchs: null,
 	jobs: null,

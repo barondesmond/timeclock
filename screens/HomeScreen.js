@@ -357,7 +357,8 @@ render()
       {this.renderDevice()}
 	  {this.renderPortal('Job')}
 	  {this.renderPortal('Dispatch')}
-	  {__DEV__ ? this.renderPortal('Employee') : this.renderPortal('OOS')}
+	  //{__DEV__ ? this.renderPortal('Employee') : this.renderPortal('OOS')}
+	  {this.renderPortal('Employee')}
 	  {this.renderPortal('Document')}
 	  {__DEV__ ? <Button title="Logout" onPress={this.resetKeys} /> : <Button title="Logout" onPress={this.resetKeys} />}
 

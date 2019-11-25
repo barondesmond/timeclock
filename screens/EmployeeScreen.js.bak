@@ -77,7 +77,7 @@ constructor(props){
 		jobed: null,
 		intervalID: null,
         gps: __DEV__,
-		change: 'ES11012019'
+		change: 'ES11222019'
     }
 
 }
@@ -582,14 +582,32 @@ componentWillMount() {
     clearInterval();
   }
 
+addPicture() {
+
+	if (this.state.auth.Screen == 'Job')
+	{
+		this.jobOverride();
+	}
+	if (this.state.auth.Screen == 'Dispatch')
+	{
+		this.dispatchOveride();
+	}
+
+}
  async checkStatus() {
 	console.log('checkStatus ' + this.state.checkinStatus);
+	if (this.state.checkinStatus == 'addPicture')
+	{
+		this.addPicture();
+		return false;
+	}
 	if (this.state.checkinStatus == 'Switch')
 	{
 		var auth = this.switchEvent(this.state.even);
 		return false;
 
 	}
+
 	if (this.state.checkinStatus == 'Start' && !this.state.eventstatus && this.state.addEmployeeNote == '')
 	{
 		Alert.alert('Employee Note Required');
@@ -839,7 +857,7 @@ renderEmployeeNotes = () => {
 }
 renderCircle = () => {
 
-	if (this.state.checkinStatus != 'Start' && this.state.checkinStatus != 'Stop' && this.state.checkinStatus != 'Switch')
+	if (this.state.checkinStatus != 'Start' && this.state.checkinStatus != 'Stop' && this.state.checkinStatus != 'Switch' && this.state.checkinStatus != 'addPicture')
 	{
 		return (<View>			
 	    <TouchableHighlight style={this.state.active? styles.circleContainerStart: styles.circleContainerStop}  >
@@ -948,9 +966,15 @@ gps_update = async (location) => {
 			await this.setState({dispatched: this.state.dispatched});
 			console.log('distance calculated ' + this.state.dispatched.distance);
 		 }
+		 if (this.state.jobed && this.state.jobed.latitude && this.state.jobed.longitude && this.state.latitude && this.state.longitude)
+		 {
+			this.state.dispatched.distance = lib.getDistance(this.state.latitude, this.state.longitude, this.state.jobed.latitude, this.state.jobed.longitude);
+			await this.setState({jobed: this.state.jobed});
+			console.log('distance calculated ' + this.state.jobed.distance);
+		 }
 }
 
-checkSwitch = async () => {
+checkSwitch = async (override) => {
 
 console.log('checkSwitch' );
 
@@ -990,7 +1014,7 @@ console.log(this.state.auth.Screen);
 console.log(this.state.auth.event);
 console.log(this.state.Screen);
 
-if (this.state.auth.Screen == 'Dispatch' && this.state.auth.event == 'Traveling' && this.state.event == 'Working')
+if (this.state.auth.Screen == 'Dispatch' && this.state.auth.event == 'Traveling' && this.state.event == 'Working' && !override)
 {
 	console.log('dispatch traveling working check');
 	if (this.state.dispatched)
@@ -1002,9 +1026,30 @@ if (this.state.auth.Screen == 'Dispatch' && this.state.auth.event == 'Traveling'
 	{
 		this.setState({even: this.state.dispatched, checkinStatus: 'Switch'});
 	}
-	else
+	else 
+	{
+	}
 	{
 		this.setState({even: this.state.dispatched, checkinStatus: 'addPicture'});
+	}
+	
+	return false;
+}
+if (this.state.auth.Screen == 'Job' && this.state.auth.event == 'Traveling' && this.state.event == 'Working' && !override)
+{
+	console.log('dispatch traveling working check');
+	if (this.state.jobed)
+	{
+		console.log(this.state.jobed.distance);
+	}
+	console.log(this.state.auth.picture);
+	if ((this.state.jobed && this.state.jobed.distance < 2 || (this.state.auth && this.state.auth.picture)) )
+	{
+		this.setState({even: this.state.jobed, checkinStatus: 'Switch'});
+	}
+	else
+	{
+		this.setState({even: this.state.jobed, checkinStatus: 'addPicture'});
 	}
 	
 	return false;
@@ -1093,6 +1138,10 @@ if (this.state.dispatched && this.state.dispatched.distance && this.state.event 
 {
 	var distanced = `Distance ${this.state.dispatched.distance}`
 }
+if (this.state.jobed && this.state.jobed.distance && this.state.event == 'Working' && this.state.auth.event == 'Traveling')
+{
+	var distanced = `Distance ${this.state.jobed.distance}`
+}
 return (<View>
 	      <Text style={styles.getStartedText}>
                Status {this.state.auth.Screen} {this.state.auth.checkinStatus} {this.state.auth.event} {this.state.auth.Dispatch} {distanced}
@@ -1178,6 +1227,22 @@ dispatchCamera = () => {
 	this.props.navigation.navigate('Picture', {onGoBack: () => this.loadPictures() , Screen: 'DispatchCamera',LocName: this.state.auth.DispatchName, address: 'DispatchCamera', reference: this.state.auth.Dispatch});
 
 }
+jobCamera = () => {
+
+	this.props.navigation.navigate('Picture', {onGoBack: () => this.loadPictures() , Screen: 'JobCamera',LocName: this.state.auth.LocName, address: 'JobCamera', reference: this.state.auth.Name});
+
+}
+dispatchOverride = () => {
+
+	this.props.navigation.navigate('Picture', {onGoBack: () => this.checkSwitch(true), Screen: 'DispatchOverride', address: this.state.auth.DispatchLocation, reference: this.state.auth.Dispatch, LocName: this.state.auth.DispatchLocation});
+
+}
+
+jobOverride = () => {
+
+	this.props.navigation.navigate('Picture', {onGoBack: () => this.checkSwitch(true), Screen: 'JobOverride', address: this.state.auth.JobLocation, reference: this.state.auth.Name, LocName: this.state.auth.JobLocation});
+
+}
 
 
 renderDispatchWorking = () => {
@@ -1199,6 +1264,30 @@ renderDispatchWorking = () => {
 		<View style={styles.buttonContainer}>
 
 			<Button title="Add Picture" onPress={() => this.dispatchCamera()}  />
+		</View>	
+   );
+
+}
+
+renderJobWorking = () => {
+
+	if (!this.state.auth)
+	{
+		return false;
+	}
+	if (this.state.auth.event != 'Working')
+	{
+		return false;
+	}
+
+	if (this.state.auth.Screen != 'Job')
+	{
+		return false;
+	}
+	return(
+		<View style={styles.buttonContainer}>
+
+			<Button title="Add Picture" onPress={() => this.jobCamera()}  />
 		</View>	
    );
 
@@ -1247,6 +1336,7 @@ renderDispatchWorking = () => {
 	 {this.renderDispatchComplete()}
 	 {this.addNote()}
 	 {this.renderDispatchWorking()}
+	 {this.renderJobWorking()}
 	 {this.renderEmployeeNotes()}
 
 			{this.renderGPS()}     
