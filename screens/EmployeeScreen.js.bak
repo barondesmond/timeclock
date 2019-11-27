@@ -170,7 +170,7 @@ async authEventLogApi(log) {
 	if (log && log.Screen && log.EmpNo && log.event && log.checkinStatus)
 	{		
 	   log.latitude = this.state.latitude;
-	   log.longitde = this.state.longitude;
+	   log.longitude = this.state.longitude;
 	   authurl = await lib.url_create(log);
 	   //var authurl = URL + `authempinst_json.php?EmpNo=${log.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&event=${log.event}&checkinStatus=${log.checkinStatus}&addNote=${addNote}&violation=${violation}&image=${log.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${log.Screen}&dev=${__DEV__}`;
 	   console.log(authurl);
@@ -308,8 +308,6 @@ async fetchDispatchsFromApi(auth) {
        }
 	   pickers.push(<Button key="close" title="Back" onPress={()=>this.setState({isDispatchVisible: false})} />);
 	   auth.dispatchpickers = pickers;
-	   auth.title = 'Dispatch';
-	   auth.DispatchName = 'Select Dispatch';
 	   //console.log(pickers);
 		await this.setState({auth: auth});
 
@@ -418,10 +416,29 @@ renderJobModal = ()  => {
 		console.log('not jobed');
 		return false;
 	}
-	if (!this.state.jobed.title)
+	console.log(jobed);
+	if (this.state.jobed.title && this.state.jobed.title == 'Select Job')
+	{
+		this.state.jobed.title = false;
+	}
+	if (!this.state.jobed.title && this.state.auth.title)
+	{
+		this.state.jobed.title = this.state.auth.title
+	}
+	else if (!this.state.jobed.title && this.state.auth.Name && this.state.auth.LocName)
+	{
+		this.state.jobed.title = this.state.auth.Name + ' ' + this.state.auth.LocName;
+	}
+	else if (!this.state.jobed.title && this.state.jobed.Name && this.state.jobed.LocName )
+	{
+		this.state.jobed.title = this.state.jobed.Name + ' ' + this.state.jobed.LocName;
+
+	}
+	else if (!this.state.jobed.title)
 	{
 		this.state.jobed.title = 'Select Job';
 	}
+	console.log('rendering Job Modal');
 	//console.log(dispatched);
 
 	//console.log(this.state.dispatched);
@@ -475,7 +492,16 @@ renderDispatchModal = ()  => {
 	}
 
 	//console.log(dispatched);
-	if (!this.state.dispatched.title)
+
+	if (!this.state.dispatched.title && this.state.auth.Dispatch && this.state.auth.DispatchName)
+	{
+		this.state.dispatched.title = this.state.auth.Dispatch + ' ' + this.state.auth.DispatchName;
+	}
+	else if (!this.state.dispatched.title && this.state.dispatched.Dispatch && this.state.dispatched.DispatchName )
+	{
+		this.state.dispatched.title = this.state.dispatched.Dispatch + ' ' + this.state.dispatched.DispatchName;
+	}
+	else if (!this.state.dispatched.title)
 	{
 		this.state.dispatched.title = 'Select Dispatch';
 	}
@@ -510,6 +536,10 @@ async employeeLogin() {
 
 	  if (auth)
 	  {
+			if (await lib.uploadImages())
+			{
+				console.log('uploaded images');
+			}
 		  console.log('auth before login');
 		  //console.log(auth);
 		  if (!auth.EmpActive)
@@ -597,19 +627,24 @@ addPicture() {
 }
  async checkStatus() {
 	console.log('checkStatus ' + this.state.checkinStatus);
-	if (this.state.checkinStatus == 'addPicture')
-	{
-		this.addPicture();
-		return false;
-	}
+
 	if (this.state.checkinStatus == 'addNote')
 	{
 		await this.setState({isNotesVisible: true});
 		return false;
 	}
+	if (await lib.uploadImages())
+	{
+		console.log('uploaded images');
+	}
+	if (this.state.checkinStatus == 'addPicture')
+	{
+		this.addPicture();
+		return false;
+	}
 	if (this.state.checkinStatus == 'Switch')
 	{
-		var auth = this.switchEvent(this.state.even);
+		var auth = await this.switchEvent(this.state.even);
 		return false;
 
 	}
@@ -629,7 +664,7 @@ addPicture() {
 		await this.authEventLogApi();
 		if (this.state.auth.EmpActive == '1')
 		{
-			this.setState({checkinStatus: 'Stop', active: !this.state.active, addEmployeeNote: ''});
+			await this.setState({checkinStatus: 'Stop', active: !this.state.active, addEmployeeNote: ''});
 			return false;
 		}
 	}
@@ -637,8 +672,8 @@ addPicture() {
 			var auth = await this.authEventLogApi();
 			if (auth.EmpActive != '1')
 			{
-
-				this.setState({checkinStatus: 'Start', active: !this.state.active});
+	
+				await this.setState({checkinStatus: 'Start', active: !this.state.active});
 				Alert.alert('Employee Stop Working');
 				this.props.navigation.navigate('Home');
 
@@ -985,16 +1020,46 @@ gps_update = async (location) => {
 		console.log('gps update location');
 		await this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude});
 		console.log(location);
+		if (this.state.auth && this.state.auth.latitde && this.state.auth.longitude && this.state.latitude && this.state.longitude)
+		{
+			this.state.auth.distance = lib.getDistance(this.state.latitude, this.state.longitude, this.state.auth.latitude, this.state.auth.longitude);
+			if (this.state.checkinStatus == 'addPicture' && this.state.auth.distance < 2)
+            {
+				await this.setState({auth: this.state.auth, checkinStatus: 'Switch'});
+				
+            }
+			else
+			{
+				await this.setState({auth: this.state.auth});
+			}
+		}
 		 if (this.state.dispatched && this.state.dispatched.latitude && this.state.dispatched.longitude && this.state.latitude && this.state.longitude)
 		 {
+     
 			this.state.dispatched.distance = lib.getDistance(this.state.latitude, this.state.longitude, this.state.dispatched.latitude, this.state.dispatched.longitude);
-			await this.setState({dispatched: this.state.dispatched});
+			if (this.state.checkinStatus == 'addPicture' && this.state.dispatched.distance < 2)
+            {
+				await this.setState({dispatched: this.state.dispatched, checkinStatus: 'Switch'});
+				
+            }
+			else
+			{
+				await this.setState({dispatched: this.state.dispatched});
+			}
 			console.log('distance calculated ' + this.state.dispatched.distance);
 		 }
 		 if (this.state.jobed && this.state.jobed.latitude && this.state.jobed.longitude && this.state.latitude && this.state.longitude)
 		 {
 			this.state.jobed.distance = lib.getDistance(this.state.latitude, this.state.longitude, this.state.jobed.latitude, this.state.jobed.longitude);
-			await this.setState({jobed: this.state.jobed});
+			 if (this.state.checkinStatus == 'addPicture' && this.state.jobed.distance < 2)
+			 {
+				await this.setState({jobed: this.state.jobed, checkinStatus: 'Switch'});
+	
+			 }
+			 else
+		     {
+				await this.setState({jobed: this.state.jobed});
+			 }
 			console.log('distance calculated ' + this.state.jobed.distance);
 		 }
 }
@@ -1046,7 +1111,7 @@ console.log(this.state.auth.Screen);
 console.log(this.state.auth.event);
 console.log(this.state.Screen);
 
-if (this.state.auth.Screen == 'Dispatch' && this.state.Screen == 'Dispatch' && this.state.auth.event == 'Traveling' && this.state.event == 'Working' && !override)
+if (this.state.auth.Screen == 'Dispatch' && this.state.Screen == 'Dispatch' && this.state.auth.event == 'Traveling' && this.state.event == 'Working')
 {
 	console.log('dispatch traveling working check');
 	if (this.state.dispatched)
@@ -1054,7 +1119,7 @@ if (this.state.auth.Screen == 'Dispatch' && this.state.Screen == 'Dispatch' && t
 		console.log(this.state.dispatched.distance);
 	}
 	console.log(this.state.auth.picture);
-	if ((this.state.dispatched && this.state.dispatched.distance < 2 || (this.state.auth && this.state.auth.picture)) )
+	if ((this.state.dispatched && this.state.dispatched.distance < 2 || (this.state.auth && this.state.auth.picture)) || override)
 	{
 		await this.setState({even: this.state.dispatched, checkinStatus: 'Switch'});
 	}
@@ -1065,7 +1130,7 @@ if (this.state.auth.Screen == 'Dispatch' && this.state.Screen == 'Dispatch' && t
 	
 	return false;
 }
-else if (this.state.auth.Screen == 'Job' && this.state.Screen == 'Job' && this.state.auth.event == 'Traveling' && this.state.event == 'Working' && !override)
+else if (this.state.auth.Screen == 'Job' && this.state.Screen == 'Job' && this.state.auth.event == 'Traveling' && this.state.event == 'Working')
 {
 	console.log('dispatch traveling working check');
 	if (this.state.jobed)
@@ -1073,7 +1138,7 @@ else if (this.state.auth.Screen == 'Job' && this.state.Screen == 'Job' && this.s
 		console.log(this.state.jobed.distance);
 	}
 	console.log(this.state.auth.picture);
-	if ((this.state.jobed && this.state.jobed.distance < 2 || (this.state.auth && this.state.auth.picture)) )
+	if ((this.state.jobed && this.state.jobed.distance < 2 || (this.state.auth && this.state.auth.picture)) || override)
 	{
 		await this.setState({even: this.state.jobed, checkinStatus: 'Switch'});
 	}
@@ -1172,18 +1237,24 @@ if (!this.state.auth || !this.state.auth.Screen ||  !this.state.auth.event)
 	return false;
 
 }
-if (this.state.dispatched && this.state.dispatched.distance && this.state.event == 'Working' && this.state.auth.event == 'Traveling')
+if (this.state.auth && this.state.auth.distance && this.state.auth.event == 'Traveling')
+{
+	var distanced = `Distance ${this.state.auth.distance}`
+}
+if (this.state.dispatched && this.state.dispatched.distance  && this.state.auth.event == 'Traveling')
 {
 	var distanced = `Distance ${this.state.dispatched.distance}`
 }
-if (this.state.jobed && this.state.jobed.distance && this.state.event == 'Working' && this.state.auth.event == 'Traveling')
+if (this.state.jobed && this.state.jobed.distance && this.state.auth.event == 'Traveling')
 {
 	var distanced = `Distance ${this.state.jobed.distance}`
 }
-return (<View>
+return (<View >
 	      <Text style={styles.getStartedText}>
-               Status {this.state.auth.Screen} {this.state.auth.checkinStatus} {this.state.auth.event} {this.state.auth.Dispatch} {distanced}
+               Status {this.state.auth.Screen} {this.state.auth.checkinStatus} {this.state.auth.event} </Text>
+	<Text style={styles.getStartedText}> {this.state.auth.Dispatch} {this.state.auth.Name} 
 	          </Text>
+				  <Text style={styles.getStartedText}>  {distanced} </Text>
 		</View>
   );
 }
@@ -1272,13 +1343,13 @@ jobCamera = () => {
 }
 dispatchOverride = () => {
 
-	this.props.navigation.navigate('Picture', {onGoBack: () => this.checkSwitch(true), Screen: 'DispatchOverride', address: this.state.auth.DispatchLocation, reference: this.state.auth.Dispatch, LocName: this.state.auth.DispatchLocation});
+	this.props.navigation.navigate('Picture', {onGoBack: () => this.checkSwitch(true), Screen: 'DispatchOverride', address: this.state.auth.DispatchLocation, reference: this.state.auth.Dispatch, LocName: this.state.auth.DispatchName});
 
 }
 
 jobOverride = () => {
 
-	this.props.navigation.navigate('Picture', {onGoBack: () => this.checkSwitch(true), Screen: 'JobOverride', address: this.state.auth.JobLocation, reference: this.state.auth.Name, LocName: this.state.auth.JobLocation});
+	this.props.navigation.navigate('Picture', {onGoBack: () => this.checkSwitch(true), Screen: 'JobOverride', address: this.state.auth.JobLocation, reference: this.state.auth.Name, LocName: this.state.auth.LocName});
 
 }
 

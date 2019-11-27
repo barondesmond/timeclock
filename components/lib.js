@@ -244,7 +244,7 @@ export async function uploadImages() {
    }
    else
 	{
-	   Alert.alert('upload image ' + i);
+	   //Alert.alert('upload image ' + i);
 	   await setItem('pictures', pictures);
 	   var s = i;
    }
