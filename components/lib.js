@@ -174,7 +174,9 @@ return log;
 
 export async function url_create(log)
 {
-		let authurl = URL + `authempinst_json.php?EmpNo=${log.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&event=${log.event}&Dispatch=${log.Dispatch}&Counter=${log.Counter}&Name=${log.Name}&checkinStatus=${log.checkinStatus}&violation=${log.violation}&image=${log.image}&latitude=${log.latitude}&longitude=${log.longitude}&Screen=${log.Screen}&addDispatchNote=${log.addDispatchNote}&addJobNote=${log.addJobNote}&addEmployeeNote=${log.addEmployeeNote}&dev=${__DEV__}&change=${log.change}`;
+
+		var authurl = URL + `authempinst_json.php?EmpNo=${log.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&event=${log.event}&Dispatch=${log.Dispatch}&Counter=${log.Counter}&Name=${log.Name}&JobID=${log.JobID}&checkinStatus=${log.checkinStatus}&violation=${log.violation}&image=${log.image}&latitude=${log.latitude}&longitude=${log.longitude}&Screen=${log.Screen}&addDispatchNote=${log.addDispatchNote}&addJobNote=${log.addJobNote}&addEmployeeNote=${log.addEmployeeNote}&dev=${__DEV__}&change=${log.change}`;
+		console.log(authurl);
 return authurl;
 }
 

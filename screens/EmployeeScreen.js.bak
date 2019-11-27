@@ -59,8 +59,8 @@ constructor(props){
         pickers: null,
         auth: null,
 		timer: null,
-        violation: null,
-	    image: null,
+        violation: '',
+	    image: '',
 		lastposition: null,
 		locationstatus: null,
 		isEventVisible: false,
@@ -148,7 +148,7 @@ async authEmpInstApi() {
 
 async authEventLogApi(log) {
 
-	
+	var authurl;
 	if (__DEV__ && this.state.latitude == null)
 	{
 		this.setState({latitude: '33.3333', longitude: '-88.9888'});
@@ -169,19 +169,20 @@ async authEventLogApi(log) {
 	console.log(log);
 	if (log && log.Screen && log.EmpNo && log.event && log.checkinStatus)
 	{		
-	   addNote = encodeURIComponent(log.addNote);
-	   violation = encodeURIComponent(log.violation);
-
-	   var authurl = URL + `authempinst_json.php?EmpNo=${log.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&event=${log.event}&checkinStatus=${log.checkinStatus}&addNote=${addNote}&violation=${violation}&image=${log.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${log.Screen}&dev=${__DEV__}`;
+	   log.latitude = this.state.latitude;
+	   log.longitde = this.state.longitude;
+	   authurl = await lib.url_create(log);
+	   //var authurl = URL + `authempinst_json.php?EmpNo=${log.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&event=${log.event}&checkinStatus=${log.checkinStatus}&addNote=${addNote}&violation=${violation}&image=${log.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${log.Screen}&dev=${__DEV__}`;
+	   console.log(authurl);
 	   if (log.Screen == 'Dispatch' && log.Dispatch)
 	   {
-		   var authurl = authurl + '&Dispatch=' + log.Dispatch + '&Counter=' + log.Counter;
-		   console.log(authurl);
+		   //var authurl = authurl + '&Dispatch=' + log.Dispatch + '&Counter=' + log.Counter;
+		   //console.log(authurl);
 		}
 	}
 	else
 	{
-		var authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&event=${this.state.event}&checkinStatus=${this.state.checkinStatus}&addEmployeeNote=${addEmployeeNote}&Bio=${this.state.Bio}&violation=${violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${this.state.Screen}&dev=${__DEV__}`;
+		authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&event=${this.state.event}&checkinStatus=${this.state.checkinStatus}&addEmployeeNote=${addEmployeeNote}&Bio=${this.state.Bio}&violation=${violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${this.state.Screen}&dev=${__DEV__}`;
 	}
 	if (!authurl)
 	{
@@ -384,7 +385,7 @@ return (
 	           <Button title="Employee" onPress={()=>this.updateScreen('Employee')} />
 	{Jobs}
 	{Dispatch}
-					   <Button title="Close Screen" onPress={()=>this.setState({isScrenVisible: false})} />
+					   <Button title="Close Screen" onPress={()=>this.setState({isScreenVisible: false})} />
 				   </View>
 		        </ScrollView>
       </Modal>
@@ -529,7 +530,7 @@ async employeeLogin() {
 	  {
 	    //not authorized
 	  }
-
+	await this.checkSwitch();
 	return auth;
 }
 
@@ -540,7 +541,7 @@ async employeeLogin() {
 	  if (!this.state.locationstatus)
 	  {
 	
-		 var location = await Location.watchPositionAsync({}, this.gps_update).catch((error) => { console.log(error)});
+		 var location = await Location.watchPositionAsync({timeInterval: 3000}, this.gps_update).catch((error) => { console.log(error)});
 		 console.log(location);
 
 		 
@@ -599,6 +600,11 @@ addPicture() {
 	if (this.state.checkinStatus == 'addPicture')
 	{
 		this.addPicture();
+		return false;
+	}
+	if (this.state.checkinStatus == 'addNote')
+	{
+		await this.setState({isNotesVisible: true});
 		return false;
 	}
 	if (this.state.checkinStatus == 'Switch')
@@ -857,7 +863,7 @@ renderEmployeeNotes = () => {
 }
 renderCircle = () => {
 
-	if (this.state.checkinStatus != 'Start' && this.state.checkinStatus != 'Stop' && this.state.checkinStatus != 'Switch' && this.state.checkinStatus != 'addPicture')
+	if (this.state.checkinStatus != 'Start' && this.state.checkinStatus != 'Stop' && this.state.checkinStatus != 'Switch' && this.state.checkinStatus != 'addPicture' && this.state.checkinStatus != 'addNote')
 	{
 		return (<View>			
 	    <TouchableHighlight style={this.state.active? styles.circleContainerStart: styles.circleContainerStop}  >
@@ -867,7 +873,26 @@ renderCircle = () => {
             </TouchableHighlight>
 				 </View>);
 	}
-
+if (this.state.auth && this.state.auth.Screen && this.state.auth.Screen == 'Dispatch' && !this.state.dispatched)
+{
+	return (<View>			
+	    <TouchableHighlight style={this.state.active? styles.circleContainerStart: styles.circleContainerStop}  >
+	     <Text style={styles.getCircleText}> 
+	 {this.state.checkinStatus}
+	         </Text>
+            </TouchableHighlight>
+				 </View>);
+}
+if (this.state.auth && this.state.auth.Screen && this.state.auth.Screen == 'Job' && !this.state.jobed)
+{
+	return (<View>			
+	    <TouchableHighlight style={this.state.active? styles.circleContainerStart: styles.circleContainerStop}  >
+	     <Text style={styles.getCircleText}> 
+	 {this.state.checkinStatus}
+	         </Text>
+            </TouchableHighlight>
+				 </View>);
+}
 return (<View>			
 	    <TouchableHighlight style={this.state.active? styles.circleContainerStart: styles.circleContainerStop} onPress = { () =>  this.checkStatus() } >
 	     <Text style={styles.getCircleText}> 
@@ -968,7 +993,7 @@ gps_update = async (location) => {
 		 }
 		 if (this.state.jobed && this.state.jobed.latitude && this.state.jobed.longitude && this.state.latitude && this.state.longitude)
 		 {
-			this.state.dispatched.distance = lib.getDistance(this.state.latitude, this.state.longitude, this.state.jobed.latitude, this.state.jobed.longitude);
+			this.state.jobed.distance = lib.getDistance(this.state.latitude, this.state.longitude, this.state.jobed.latitude, this.state.jobed.longitude);
 			await this.setState({jobed: this.state.jobed});
 			console.log('distance calculated ' + this.state.jobed.distance);
 		 }
@@ -977,6 +1002,10 @@ gps_update = async (location) => {
 checkSwitch = async (override) => {
 
 console.log('checkSwitch' );
+if (this.state.checkinStatus != 'Stop' || this.state.checkinStatus != 'Start')
+{
+	await this.setState({checkinStatus: 'Stop'});
+}
 
 if (!this.state.auth || !this.state.auth.Screen || !this.state.auth.event)
 {
@@ -986,7 +1015,7 @@ if (!this.state.auth || !this.state.auth.Screen || !this.state.auth.event)
 console.log(this.state.checkinStatus);
 if (this.state.checkinStatus == 'Switch' && this.state.auth.Screen == this.state.Screen && this.state.auth.event == this.state.event)
 {
-	await this.setState({checkinStatus: 'Stop'});
+	//await this.setState({checkinStatus: 'Stop'});
 }
 console.log('check note dispatch');
 console.log(this.state.auth.Screen);
@@ -997,16 +1026,19 @@ console.log(this.state.auth.note);
 if (this.state.checkinStatus == 'Stop' && this.state.auth.Screen == 'Dispatch' && (!this.state.auth.note || this.state.auth.note == null) && this.state.auth.event == 'Working')
 {
 	await this.setState({checkinStatus: 'addNote'});
+	return false;
 }
 if (this.state.Screen == 'Dispatch' && (!this.state.dispatched || !this.state.dispatched.Dispatch) && this.state.auth.Screen != this.state.Screen)
 {
 	console.log('No Dispatch/dispatched' + this.state.dispatched + this.state.Screen + this.state.dispatched.Dispatch);
 	console.log(dispatched);
+	await this.setState({checkinStatus: 'Waiting'});
 	return false;
 }
 if (this.state.Screen == 'Job' && (!this.state.jobed || !this.state.jobed.Name) && this.state.auth.Screen != this.state.Screen)
 {
 	console.log('No Job/jobed');
+	await this.setState({checkinStatus: 'Waiting'});
 	return false;
 }
 console.log('checking travel working');
@@ -1014,7 +1046,7 @@ console.log(this.state.auth.Screen);
 console.log(this.state.auth.event);
 console.log(this.state.Screen);
 
-if (this.state.auth.Screen == 'Dispatch' && this.state.auth.event == 'Traveling' && this.state.event == 'Working' && !override)
+if (this.state.auth.Screen == 'Dispatch' && this.state.Screen == 'Dispatch' && this.state.auth.event == 'Traveling' && this.state.event == 'Working' && !override)
 {
 	console.log('dispatch traveling working check');
 	if (this.state.dispatched)
@@ -1024,18 +1056,16 @@ if (this.state.auth.Screen == 'Dispatch' && this.state.auth.event == 'Traveling'
 	console.log(this.state.auth.picture);
 	if ((this.state.dispatched && this.state.dispatched.distance < 2 || (this.state.auth && this.state.auth.picture)) )
 	{
-		this.setState({even: this.state.dispatched, checkinStatus: 'Switch'});
+		await this.setState({even: this.state.dispatched, checkinStatus: 'Switch'});
 	}
 	else 
 	{
-	}
-	{
-		this.setState({even: this.state.dispatched, checkinStatus: 'addPicture'});
+		await this.setState({even: this.state.dispatched, checkinStatus: 'addPicture'});
 	}
 	
 	return false;
 }
-if (this.state.auth.Screen == 'Job' && this.state.auth.event == 'Traveling' && this.state.event == 'Working' && !override)
+else if (this.state.auth.Screen == 'Job' && this.state.Screen == 'Job' && this.state.auth.event == 'Traveling' && this.state.event == 'Working' && !override)
 {
 	console.log('dispatch traveling working check');
 	if (this.state.jobed)
@@ -1045,23 +1075,22 @@ if (this.state.auth.Screen == 'Job' && this.state.auth.event == 'Traveling' && t
 	console.log(this.state.auth.picture);
 	if ((this.state.jobed && this.state.jobed.distance < 2 || (this.state.auth && this.state.auth.picture)) )
 	{
-		this.setState({even: this.state.jobed, checkinStatus: 'Switch'});
+		await this.setState({even: this.state.jobed, checkinStatus: 'Switch'});
 	}
 	else
 	{
-		this.setState({even: this.state.jobed, checkinStatus: 'addPicture'});
+		await this.setState({even: this.state.jobed, checkinStatus: 'addPicture'});
 	}
 	
 	return false;
 }
-
-if (this.state.auth.Screen != this.state.Screen || this.state.auth.event != this.state.event)
+else if ((this.state.auth.Screen != this.state.Screen || this.state.auth.event != this.state.event) && (this.state.event == 'Traveling' || this.state.auth.event == 'Working'))
 {
 	//var title = 'Switch To ' + this.state.Screen + ' ' + this.state.event;
 	if (this.state.Screen == 'Dispatch' && this.state.dispatched && this.state.dispatched.Dispatch)
 	{
 		//var title = title + ' ' + this.state.dispatched.Dispatch;
-		this.setState({even: this.state.dispatched, checkinStatus: 'Switch'});
+		await this.setState({even: this.state.dispatched, checkinStatus: 'Switch'});
 		return false;
 	}
 	else if (this.state.Screen == 'Dispatch' && !this.state.dispatched)
@@ -1070,12 +1099,12 @@ if (this.state.auth.Screen != this.state.Screen || this.state.auth.event != this
 	}
 	else if (this.state.Screen == 'Employee')
 	{
-		this.setState({checkinStatus: 'Switch'});
+		await this.setState({checkinStatus: 'Switch'});
 		return false;
 	}
 	else if (this.state.Screen == 'Job' && this.state.jobed && this.state.jobed.Name)
 	{
-		this.setState({even: this.state.jobed, checkinStatus: 'Switch'});
+		await this.setState({even: this.state.jobed, checkinStatus: 'Switch'});
 		return false;
 
 	} 
@@ -1083,6 +1112,15 @@ if (this.state.auth.Screen != this.state.Screen || this.state.auth.event != this
 	{
 		return false;
 	}
+
+}
+else if (this.state.auth.Screen == 'Employee' && this.state.Screen == 'Employee' && this.state.auth.event == 'Traveling' && this.state.event == 'Working')
+{
+		await this.setState({checkinStatus: 'Switch'});
+}
+else if (this.state.Screen == 'Employee' && this.state.auth.Screen != 'Employee' && this.state.auth.event == 'Traveling')
+{
+		await this.setState({checkinStatus: 'Switch'});
 
 }
 
@@ -1296,7 +1334,7 @@ renderJobWorking = () => {
  render() {
 
 
-	if (!this.state.latitude)
+	if (!this.state.latitude || !this.state.longitude)
 	{
 				return ( 
 	<View style={styles.container}>
