@@ -214,6 +214,8 @@ if (!urls)
 	else
 	{
 		urls.push(urlsend);
+		await setItem('urls', urls);
+
 	}
 
 	}

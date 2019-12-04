@@ -740,7 +740,7 @@ addToNote = async () => {
 var log;
 		console.log('log setup addToNote');
 		log = this.state.auth;
-		console.log(log);
+		//console.log(log);
 	if ((this.state.checkinStatus != 'Stop' && this.state.checkinStatus != 'addNote')  || !this.state.isNotesVisible )
 	{
 		Alert.alert('Erorr Status Note ');
@@ -759,13 +759,16 @@ var log;
 		log.addJobNote = this.state.addJobNote;
 		log.Name = this.state.jobed.Name;
 	}
-	if (log.screen == 'Employee')
+	console.log('add Employee Note');
+	console.log(this.state.addEmployeeNote);
+	if (log.Screen == 'Employee')
 	{
 		log.addEmployeeNote = this.state.addEmployeeNote;
 
 	}
 	
 	var authurl = await lib.url_create(log);
+	console.log('this authurl');
 	console.log(authurl);
 
 	var auth = await lib.add_url(authurl);
@@ -885,8 +888,11 @@ renderEmployeeNotes = () => {
                    onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
    
   		        <ScrollView style={styles.buttonContainer}>
+				<View style={styles.noteboxContainer}>
+
 	  		                  <Button title="Add To Notes" onPress={()=>this.addToNote()} />
                 <Button title="Back" onPress={()=>this.setState({isNotesVisible: false})} />
+				</View>
 			      	    <TextInput placeholder="Note" multiline={true}     numberOfLines={4}
         style={styles.noteContainer} value={this.state.addEmployeeNote} 
                   onChangeText={data => this.setState({ addEmployeeNote: data })}
