@@ -447,7 +447,7 @@ renderDispatchModal = ()  => {
 	{
 		return false;
 	}
-
+	console.log('renderDispatchModal');
 	if (!this.state.auth)
 	{
 		console.log('no auth');
@@ -470,12 +470,12 @@ renderDispatchModal = ()  => {
 	{
 		this.state.dispatched.title = this.state.dispatched.Dispatch + ' ' + this.state.dispatched.DispatchName;
 	}
-	else if ((this.state.dispatched.title == 'Select Dispatch' || !this.state.dispatched.title)  && this.state.auth.Dispatch && this.state.auth.DispatchName && this.state.Screen == this.state.auth.Screen
+	else if ((this.state.dispatched.title == 'Select Dispatch' || !this.state.dispatched.title)  && this.state.auth.Dispatch && this.state.auth.DispatchName && this.state.Screen == this.state.auth.Screen)
 	{
 		this.state.dispatched.title = this.state.auth.Dispatch + ' ' + this.state.auth.DispatchName;
 	}
-	
-	//console.log(this.state.dispatched);
+	console.log('rendering Dispatch Modal');
+	console.log(this.state.dispatched.title);
 	return (
 			<View style={styles.buttonContainer}>
    
@@ -663,18 +663,20 @@ addPicture() {
 }
 
  updateScreen = async (Screen) => {
+	 console.log('updateScreen');
 		console.log(Screen);
 		if (Screen == 'Dispatch')
 		{
-			var dispatched = this.state.dispatched;
-			dispatched.title = 'Select Dispatch';
-			await this.setState({dispatched: dispatched});
+			console.log('update title dispatched');
+
+			await this.setState({dispatched: {}});
+
 		}
 		if (Screen == 'Job')
 		{
-			var jobed = this.state.jobed;
-			jobed.title = 'Select Job';
-			await this.setState({jobed: jobed});
+			console.log('update title jobed');
+
+			await this.setState({jobed: {}});
 
 		}
 		await   this.setState({ Screen: Screen, isScreenVisible: false})
