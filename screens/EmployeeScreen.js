@@ -141,6 +141,17 @@ async authEmpInstApi() {
 		  await this.setState({checkinStatus: 'Start', active: true});
 
 	  }
+	  if (auth && auth.Screen && auth.EmpActive && auth.EmpActive == 1)
+	  {
+		  if (auth.Screen == 'Dispatch')
+		  {
+			  await this.setState({dispatched: auth});
+		  }
+		  if (auth.Screen == 'Job')
+		  {
+			  await this.setState({jobed: auth});
+		  }
+	  }
 
 	  
      return auth;	
@@ -702,6 +713,7 @@ addPicture() {
 
   updateEvent = async (event) => {
 		console.log(event);
+
 		 await this.setState({ event: event, isEventVisible: false })
 
 		await this.checkSwitch();
@@ -951,24 +963,18 @@ renderEventModal = () => {
 
 console.log('renderEventModal');
 console.log(this.state.Screen);
-if (this.state.Screen != 'Employee')
+var Traveling = <Button title='Traveling' onPress={()=>this.updateEvent('Traveling')} />
+var Working = <Button title="Working" onPress={()=>this.updateEvent('Working')} />
+var Complete = '';
+if (this.state.Screen == 'Employee')
 {
-
-return (
-    <Modal animationType = {"slide"} transparent = {true}
-                   visible = {this.state.isEventVisible}
-                   onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
-  		        <ScrollView style={styles.buttonContainer}>
-					   <View style={styles.noteText}>
-	           <Button title="Traveling" onPress={()=>this.updateEvent('Traveling')} />
-		           <Button title="Working" onPress={()=>this.updateEvent('Working')} />
-					   <Button title="Close Event" onPress={()=>this.setState({isEventVisible: false})} />
-				   </View>
-		        </ScrollView>
-      </Modal>
-		);
+		var Lunch = <Button title='Lunch' onPress={()=>this.updateEvent('Lunch')} />
 
 }
+	if (this.state.Screen == 'Dispatch' && this.state.auth.Screen == 'Dispatch' && this.state.auth.event == 'Working' && this.state.checkinStatus == 'Stop')
+	{
+		var Complete = <Button title="Complete" onPress={()=>this.dispatchComplete()} />
+	}
 
 return (
     <Modal animationType = {"slide"} transparent = {true}
@@ -976,10 +982,10 @@ return (
                    onRequestClose = {() =>{ console.log("Modal has been closed.") } }>
   		        <ScrollView style={styles.buttonContainer}>
 					   <View style={styles.noteText}>
-	           <Button title="Traveling" onPress={()=>this.updateEvent('Traveling')} />
-		           <Button title="Working" onPress={()=>this.updateEvent('Working')} />
-		           <Button title="Lunch" onPress={()=>this.updateEvent('Lunch')} />
-
+	{Traveling}
+	{Working}
+	{Lunch}
+	{Complete}
 					   <Button title="Close Event" onPress={()=>this.setState({isEventVisible: false})} />
 				   </View>
 		        </ScrollView>
@@ -1019,6 +1025,9 @@ async switchEvent(even) {
 	var auth = await this.authEventLogApi(even);
 	//console.log(auth);
 	 auth =  await this.authEmpInstApi();
+	 this.checkSwitch();
+	 await this.setState({auth: auth});
+
 
 return auth;
 }
@@ -1216,7 +1225,7 @@ dispatchComplete = async () => {
 	}
 			
 
-	this.setState({isLoading: false});
+	this.setState({isLoading: false, isEventVisible: false});
 	this.props.navigation.navigate('DispatchComplete', {onGoBack: () => this.employeeLogin()});
 }
 
@@ -1451,7 +1460,7 @@ renderJobWorking = () => {
 	 {this.renderCurrentStatus()}
 
             </View>
-	 {this.renderDispatchComplete()}
+	 
 	 {this.addNote()}
 	 {this.renderDispatchWorking()}
 	 {this.renderJobWorking()}
