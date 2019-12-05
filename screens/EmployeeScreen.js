@@ -73,8 +73,8 @@ constructor(props){
 		addEmployeeNote: '',
 		addDispatchNote: '',
 		addJobNote: '',
-		dispatched: null,
-		jobed: null,
+		jobed: {title: 'Select Job'},
+		dispatched: {title: 'Select Dispatch'},
 		intervalID: null,
         gps: __DEV__,
 		change: 'ES11222019'
@@ -272,7 +272,7 @@ async fetchDispatchsFromApi(auth) {
 
  
 
-	
+	console.log('fetchDispatchsFromApi');
 	if (!auth.dispatchs)
 	{
 		console.log('no dispatchs');
@@ -407,36 +407,19 @@ renderJobModal = ()  => {
 		return false;
     }
 
-	if (!this.state.jobed)
+
+	if ((this.state.jobed.title == 'Select Job' || !this.state.jobed.title) && this.state.jobed.Name && this.state.jobed.LocName )
 	{
-		console.log('not jobed');
-		return false;
+		this.state.jobed.title = this.state.jobed.Name + ' ' + this.state.jobed.LocName;
 	}
-	console.log(jobed);
-	if (this.state.jobed.title && this.state.jobed.title == 'Select Job')
-	{
-		this.state.jobed.title = false;
-	}
-	if (!this.state.jobed.title && this.state.auth.title)
-	{
-		this.state.jobed.title = this.state.auth.title
-	}
-	else if (!this.state.jobed.title && this.state.auth.Name && this.state.auth.LocName)
+	else if ((this.state.jobed.title == 'Select Job' || !this.state.jobed.title) && this.state.auth.Name && this.state.auth.LocName && this.state.Screen == this.state.auth.Screen)
 	{
 		this.state.jobed.title = this.state.auth.Name + ' ' + this.state.auth.LocName;
 	}
-	else if (!this.state.jobed.title && this.state.jobed.Name && this.state.jobed.LocName )
-	{
-		this.state.jobed.title = this.state.jobed.Name + ' ' + this.state.jobed.LocName;
 
-	}
-	else if (!this.state.jobed.title)
-	{
-		this.state.jobed.title = 'Select Job';
-	}
 	console.log('rendering Job Modal');
 	//console.log(dispatched);
-
+	console.log(this.state.jobed.title);
 	//console.log(this.state.dispatched);
 	return (
 			<View style={styles.buttonContainer}>
@@ -478,27 +461,20 @@ renderDispatchModal = ()  => {
     }
 	if (!this.state.dispatched)
 	{
-		console.log('not dispatched');
-		return false;
+		this.state.dispatched = {}
+		this.state.dispatched.title = 'Select Dispatch';
 	}
 
-	//console.log(dispatched);
-	if (this.state.dispatched.title && this.state.dispatched.title == 'Select Dispatch')
-	{
-		this.state.dispatched.title = false;
-	}
-	if (!this.state.dispatched.title && this.state.auth.Dispatch && this.state.auth.DispatchName)
-	{
-		this.state.dispatched.title = this.state.auth.Dispatch + ' ' + this.state.auth.DispatchName;
-	}
-	else if (!this.state.dispatched.title && this.state.dispatched.Dispatch && this.state.dispatched.DispatchName )
+
+	if ((this.state.dispatched.title == 'Select Dispatch' || !this.state.dispatched.title) && this.state.dispatched.Dispatch && this.state.dispatched.DispatchName)
 	{
 		this.state.dispatched.title = this.state.dispatched.Dispatch + ' ' + this.state.dispatched.DispatchName;
 	}
-	else if (!this.state.dispatched.title)
+	else if ((this.state.dispatched.title == 'Select Dispatch' || !this.state.dispatched.title)  && this.state.auth.Dispatch && this.state.auth.DispatchName && this.state.Screen == this.state.auth.Screen)
 	{
-		this.state.dispatched.title = 'Select Dispatch';
+		this.state.dispatched.title = this.state.auth.Dispatch + ' ' + this.state.auth.DispatchName;
 	}
+	
 	//console.log(this.state.dispatched);
 	return (
 			<View style={styles.buttonContainer}>
@@ -527,7 +503,8 @@ async employeeLogin() {
 	  console.log('componentDidMount authEmpInstApi');
 	  console.log(auth);
 	  await this.setState({auth: auth});
-	 
+	  await this.checkSwitch();
+	
 
 	  if (auth)
 	  {
@@ -548,6 +525,7 @@ async employeeLogin() {
 			  var auth = await this.authEventLogApi(auth);
 			  var auth = await this.authEmpInstApi();
 		   }
+
 		  await this.setState({auth: auth});
 
 	  }
@@ -555,7 +533,7 @@ async employeeLogin() {
 	  {
 	    //not authorized
 	  }
-	await this.checkSwitch();
+
 	return auth;
 }
 
@@ -686,10 +664,22 @@ addPicture() {
 
  updateScreen = async (Screen) => {
 		console.log(Screen);
-		await   this.setState({ Screen: Screen, isScreenVisible: false })
+		if (Screen == 'Dispatch')
+		{
+			var dispatched = this.state.dispatched;
+			dispatched.title = 'Select Dispatch';
+			await this.setState({dispatched: dispatched});
+		}
+		if (Screen == 'Job')
+		{
+			var jobed = this.state.jobed;
+			jobed.title = 'Select Job';
+			await this.setState({jobed: jobed});
+
+		}
+		await   this.setState({ Screen: Screen, isScreenVisible: false})
 
 		await this.checkSwitch();
-       //this.setState({isEventVisible: false});
    }
 
   updateEvent = async (event) => {
