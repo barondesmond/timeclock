@@ -246,14 +246,7 @@ _getLocationAsync = async () => {
 
 async fetchJobsFromApi(auth) {
 
-	 if (!this.state.jobed)
-	 {
-		 jobed = lib.getItem('jobed');
-	 }
-	 if (jobed)
-	 {
-		 this.setState({jobed: jobed});
-	 }
+
 	 if (auth.jobs == null)
 	 {
 		 return false;
@@ -278,15 +271,7 @@ async fetchJobsFromApi(auth) {
 async fetchDispatchsFromApi(auth) {
 
  
-		if (!this.state.dispatched)
-		{
-			dispatched = lib.getItem('dispatched')
-		}
-		if (dispatched)
-		{
-			console.log('dispatched');
-			this.setState({dispatched: dispatched})
-		}
+
 	
 	if (!auth.dispatchs)
 	{
@@ -333,7 +318,6 @@ async fetchDispatchsFromApi(auth) {
 		{
 			console.log('updating jobed updateJob');
 			await this.setState({jobed: this.state.auth.jobs[i], isJobVisible: false, jobkey: i});
-			lib.setItem('jobed', this.state.auth.jobs[i]);
 
 		}
 		else
@@ -353,7 +337,6 @@ async fetchDispatchsFromApi(auth) {
 		{
 			console.log('updating dispatched update Dispatch');
 			await this.setState({dispatched: this.state.auth.dispatchs[i], isDispatchVisible: false, dispatchkey: i});
-			lib.setItem('dispatched', this.state.auth.dispatchs[i]);
 			//console.log(dispatched);
 
 		}
@@ -373,9 +356,11 @@ if (!this.state.Screen)
 {
 	this.state.Screen = 'Employee'
 }
-
+console.log('renderScreenModal');
 if (this.state.auth && this.state.auth.dispatchs)
 {
+	console.log('dispatchs');
+	console.log(this.state.auth.dispatchs);
 	var Dispatch = <Button title='Dispatch' onPress={()=>this.updateScreen('Dispatch')} />
 }
 
@@ -485,12 +470,7 @@ renderDispatchModal = ()  => {
 		console.log('no auth');
 		return false;
 	}
-	if (this.state.auth && this.state.dispatchs)
-	{
-		console.log('fetching dispatchpickers');
 
-		this.fetchDispatchsFromApi(this.state.auth);
-	}
     if (!this.state.auth.dispatchpickers)
     {
 		console.log('still no dispatchpickers');
@@ -545,6 +525,7 @@ async employeeLogin() {
 	  var auth = await this.authEmpInstApi();
 
 	  console.log('componentDidMount authEmpInstApi');
+	  console.log(auth);
 	  await this.setState({auth: auth});
 	 
 
@@ -965,7 +946,7 @@ console.log('renderEventModal');
 console.log(this.state.Screen);
 var Traveling = <Button title='Traveling' onPress={()=>this.updateEvent('Traveling')} />
 var Working = <Button title="Working" onPress={()=>this.updateEvent('Working')} />
-var Complete = '';
+var Complete = null;
 if (this.state.Screen == 'Employee')
 {
 		var Lunch = <Button title='Lunch' onPress={()=>this.updateEvent('Lunch')} />
@@ -1113,8 +1094,7 @@ if (this.state.checkinStatus == 'Stop' && this.state.auth.Screen == 'Dispatch' &
 }
 if (this.state.Screen == 'Dispatch' && (!this.state.dispatched || !this.state.dispatched.Dispatch) && this.state.auth.Screen != this.state.Screen)
 {
-	console.log('No Dispatch/dispatched' + this.state.dispatched + this.state.Screen + this.state.dispatched.Dispatch);
-	console.log(dispatched);
+	console.log('No Dispatch/dispatched' );
 	await this.setState({checkinStatus: 'Waiting'});
 	return false;
 }
