@@ -170,7 +170,7 @@ async authEventLogApi() {
 	{
 		this.setState({latitude: '33.3333', longitude: '-88.9888'});
 	}
-	Screen = await AsyncStorage.getItem('Screen');
+	Screen = this.state.auth.Screen;
 	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&event=${this.state.event}&Dispatch=${this.state.Dispatch}&Counter=${this.state.Counter}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}&addDispatchNote=${this.state.addDispatchNote}&customer=${this.state.customer}&customerimage=${this.state.customerimage}&Complete=Y&dev=${__DEV__}`;
 	  await fetch(authurl)
       .then((response2) => response2.json())

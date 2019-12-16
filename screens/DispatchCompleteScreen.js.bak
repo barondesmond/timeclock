@@ -378,6 +378,14 @@ checkStatus =  async () => {
 			await AsyncStorage.removeItem('violation');
 			await AsyncStorage.removeItem('image');
 			Alert.alert('Dispatch Complete');
+			if (this.props.navigation.state.params && this.props.navigation.state.params.onGoBack)
+			{
+				this.props.navigation.state.params.onGoBack();
+				this.props.navigation.goBack();
+				return false;
+			}
+  
+
 			this.props.navigation.navigate('Home');
 		}
 
