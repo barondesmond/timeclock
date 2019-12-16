@@ -594,7 +594,7 @@ addPicture() {
 	}
 	if (this.state.auth.Screen == 'Dispatch')
 	{
-		this.dispatchOveride();
+		this.dispatchOverride();
 	}
 
 }

@@ -668,15 +668,17 @@ addPicture() {
 		if (Screen == 'Dispatch')
 		{
 			console.log('update title dispatched');
-
-			await this.setState({dispatched: {}});
+			var dispatched = {};
+			dispatched.title = 'Select Dispatch';
+			await this.setState({dispatched: dispatched});
 
 		}
 		if (Screen == 'Job')
 		{
 			console.log('update title jobed');
-
-			await this.setState({jobed: {}});
+			var jobed = {};
+			jobed.title = 'Select Job';
+			await this.setState({jobed: jobed});
 
 		}
 		await   this.setState({ Screen: Screen, isScreenVisible: false})
