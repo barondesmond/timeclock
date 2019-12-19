@@ -728,7 +728,7 @@ var log;
 		console.log('log setup addToNote');
 		log = this.state.auth;
 		//console.log(log);
-	if ((this.state.checkinStatus != 'Stop' && this.state.checkinStatus != 'addNote')  || !this.state.isNotesVisible )
+	if ((this.state.checkinStatus != 'Stop' && this.state.checkinStatus != 'addNote')  || !this.state.isNotesVisible || this.state.isNotesVisible == false )
 	{
 		Alert.alert('Erorr Status Note ');
 		return false;
@@ -759,6 +759,21 @@ var log;
 	console.log(authurl);
 
 	var auth = await lib.add_url(authurl);
+	if (auth && auth.authorized == '1')
+	{
+		if (log.Screen == 'Dispatch')
+		{
+			await this.setState({addDispatchNote: ''});
+		}
+		if (log.Screen == 'Job')
+		{
+			await this.setState({addJobNote: ''});
+		}
+		if (log.Screen == 'Employee')
+		{
+			await this.setState({addEmployeeNote: ''});
+		}
+	}
 	//console.log(auth);
 	await this.authEmpInstApi();
 	await this.setState({checkinStatus: 'Stop'});
