@@ -172,6 +172,12 @@ async authEventLogApi(log) {
 		log = this.state.auth;
 		log.checkinStatus = this.state.checkinStatus;
 		//console.log(log);
+		if (log.Screen == 'Dispatch' && this.state.event == 'Complete' && this.state.image && this.state.violation)
+		{
+			log.Complete = 'Y';
+			log.customer = this.state.violation;
+			log.customerimage = this.state.image;
+		}
 	}
 	else if (this.state.checkinStatus == 'Stop' && !log)
 	{
@@ -504,8 +510,19 @@ async employeeLogin() {
 	  console.log(auth);
 	  await this.setState({auth: auth});
 	  await this.checkSwitch();
-	
-
+	  var violation = await AsyncStorage.getItem('violation');
+	  var image = await AsyncStorage.getItem('image');
+	  console.log('employee login');
+	  if (auth)
+	  {
+		  console.log(auth.Screen);
+		  console.log(violation);
+		  console.log(auth.signature);
+	  }
+	  if (auth && violation && image && auth.Screen == 'Dispatch' && auth.signature)
+	  {
+		  await this.setState({event: 'Complete', image: auth.signature, violation: violation});
+	  }
 	  if (auth)
 	  {
 			if (await lib.uploadImages())
@@ -525,7 +542,7 @@ async employeeLogin() {
 			  var auth = await this.authEventLogApi(auth);
 			  var auth = await this.authEmpInstApi();
 		   }
-
+		
 		  await this.setState({auth: auth});
 
 	  }
@@ -642,6 +659,7 @@ addPicture() {
 		}
 	}
 	else if (this.state.checkinStatus == 'Stop'  && !this.state.eventstatus) {
+	
 			var auth = await this.authEventLogApi();
 			if (auth.EmpActive != '1')
 			{
@@ -653,7 +671,7 @@ addPicture() {
 				return false;
 			}
 	
-	}
+	} 
 	//console.log(this.state.auth);
 
 	Alert.alert('Error ' + this.state.checkinStatus + ' ' + this.state.event + ' ' + this.state.auth.EmpActive + ' ' + this.state.eventstatus);
@@ -1005,16 +1023,30 @@ async switchEvent(even) {
 
 	}
 	even.Screen = this.state.Screen;
+
+	console.log('switchEvent');
+	console.log(even.Screen);
+	console.log(this.state.event);
+	console.log(this.state.image);
+	console.log(this.state.violation);
+
+	if (this.state.auth && this.state.auth.Screen == 'Dispatch' && this.state.event == 'Complete' && this.state.image && this.state.violation)
+	{
+		even.Complete = 'Y';
+		even.customerimage = this.state.image;
+		even.customer = this.state.violation;
+	}
 	even.event = this.state.event;
 	even.checkinStatus = 'Switch';
 	even.EmpNo = this.state.auth.EmpNo;
 
-	Alert.alert('Switching to ' + even.Screen + ' ' + even.event);
 
 
 	var auth = await this.authEventLogApi(even);
 	//console.log(auth);
 	 auth =  await this.authEmpInstApi();
+	Alert.alert('Switched ' + auth.Screen + ' ' + auth.event);
+
 	 this.checkSwitch();
 	 await this.setState({auth: auth});
 

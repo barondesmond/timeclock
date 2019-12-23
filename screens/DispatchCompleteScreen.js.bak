@@ -170,7 +170,7 @@ async authEventLogApi() {
 	{
 		this.setState({latitude: '33.3333', longitude: '-88.9888'});
 	}
-	Screen = await AsyncStorage.getItem('Screen');
+	Screen = this.state.auth.Screen;
 	let authurl = URL + `authempinst_json.php?EmpNo=${this.state.EmpNo}&installationId=${Constants.installationId}&version=${Constants.manifest.version}&event=${this.state.event}&Dispatch=${this.state.Dispatch}&Counter=${this.state.Counter}&checkinStatus=${this.state.checkinStatus}&Bio=${this.state.Bio}&violation=${this.state.violation}&image=${this.state.image}&latitude=${this.state.latitude}&longitude=${this.state.longitude}&Screen=${Screen}&addDispatchNote=${this.state.addDispatchNote}&customer=${this.state.customer}&customerimage=${this.state.customerimage}&Complete=Y&dev=${__DEV__}`;
 	  await fetch(authurl)
       .then((response2) => response2.json())
@@ -344,16 +344,8 @@ checkStatus =  async () => {
 	 console.log(customer);
 	 if (this.state.checkinStatus == 'Stop' && !this.state.dispatchstatus && !this.state.eventstatus && customer != ''  && customerimage != '') {
 		this.setState({customer: customer, customerimage: customerimage});
-		var even = await this.authEventLogApi();
-		if (even && even.error)
-		{
-			Alert.alert(even.error);
-			this.props.navigation.navigate('Home');
-		}
-		if (this.state.auth.EmpActive != '1')
-		{
-			await AsyncStorage.removeItem('noteadded');
-			await AsyncStorage.removeItem('override');
+		//var even = await this.authEventLogApi();
+	
 			if (!this.state.notes)
 			{
 			var notes = await AsyncStorage.getItem('notes');
@@ -374,10 +366,10 @@ checkStatus =  async () => {
 				Alert.alert('Error Connection Image Upload');
 				this.setState({isLoading: false});
 			}
-			this.setState({checkinStatus: 'Start', active: !this.state.active, customer:false, customerimage:null});
-			await AsyncStorage.removeItem('violation');
-			await AsyncStorage.removeItem('image');
-			Alert.alert('Dispatch Complete');
+			//this.setState({checkinStatus: 'Start', active: !this.state.active, customer:false, customerimage:null});
+			//await AsyncStorage.removeItem('violation');
+			//await AsyncStorage.removeItem('image');
+			//Alert.alert('Dispatch Complete');
 			if (this.props.navigation.state.params && this.props.navigation.state.params.onGoBack)
 			{
 				this.props.navigation.state.params.onGoBack();
@@ -386,8 +378,7 @@ checkStatus =  async () => {
 			}
   
 
-			this.props.navigation.navigate('Home');
-		}
+	
 
 
 	}

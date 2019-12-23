@@ -344,26 +344,9 @@ checkStatus =  async () => {
 	 console.log(customer);
 	 if (this.state.checkinStatus == 'Stop' && !this.state.dispatchstatus && !this.state.eventstatus && customer != ''  && customerimage != '') {
 		this.setState({customer: customer, customerimage: customerimage});
-		var even = await this.authEventLogApi();
-		if (even && even.error)
-		{
-			Alert.alert(even.error);
-			this.props.navigation.navigate('Home');
-		}
-		if (this.state.auth.EmpActive != '1')
-		{
-			await AsyncStorage.removeItem('noteadded');
-			await AsyncStorage.removeItem('override');
-			if (!this.state.notes)
-			{
-			var notes = await AsyncStorage.getItem('notes');
-			await this.setState({notes: notes});
-			}
-			if (this.state.notes)
-			{
-				this.setState({addDispatchNote: this.state.notes});
-				await this.addDispatchNote();
-			}
+		//var even = await this.authEventLogApi();
+	
+
 			var img = await lib.uploadImages();
 			if (img && img > 0)
 			{
@@ -374,10 +357,10 @@ checkStatus =  async () => {
 				Alert.alert('Error Connection Image Upload');
 				this.setState({isLoading: false});
 			}
-			this.setState({checkinStatus: 'Start', active: !this.state.active, customer:false, customerimage:null});
-			await AsyncStorage.removeItem('violation');
-			await AsyncStorage.removeItem('image');
-			Alert.alert('Dispatch Complete');
+			//this.setState({checkinStatus: 'Start', active: !this.state.active, customer:false, customerimage:null});
+			//await AsyncStorage.removeItem('violation');
+			//await AsyncStorage.removeItem('image');
+			//Alert.alert('Dispatch Complete');
 			if (this.props.navigation.state.params && this.props.navigation.state.params.onGoBack)
 			{
 				this.props.navigation.state.params.onGoBack();
@@ -386,8 +369,7 @@ checkStatus =  async () => {
 			}
   
 
-			this.props.navigation.navigate('Home');
-		}
+	
 
 
 	}
