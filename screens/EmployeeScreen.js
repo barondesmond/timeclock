@@ -1128,7 +1128,7 @@ console.log(this.state.auth.event);
 console.log(this.state.auth.Dispatch);
 console.log(this.state.auth.Counter);
 console.log(this.state.auth.note);
-if (this.state.checkinStatus == 'Stop' && this.state.auth.Screen == 'Dispatch' && (!this.state.auth.note || this.state.auth.note == null) && this.state.auth.event == 'Working')
+if (this.state.checkinStatus == 'Stop' && this.state.auth.Screen == 'Dispatch' && (!this.state.auth.note || this.state.auth.note == null) && this.state.auth.event == 'Working' && this.state.event != 'Lunch')
 {
 	await this.setState({checkinStatus: 'addNote'});
 	return false;
