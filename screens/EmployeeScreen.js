@@ -1222,6 +1222,10 @@ else if (this.state.auth.Screen == 'Employee' && this.state.Screen == 'Employee'
 {
 		await this.setState({checkinStatus: 'Switch'});
 }
+else if (this.state.auth.Screen == 'Employee' && this.state.auth.event == 'Lunch' & this.state.event != 'Lunch')
+{
+		await this.setState({checkinStatus: 'Switch'});
+}
 else if (this.state.Screen == 'Employee' && this.state.auth.Screen != 'Employee' && this.state.auth.event == 'Traveling')
 {
 		await this.setState({checkinStatus: 'Switch'});

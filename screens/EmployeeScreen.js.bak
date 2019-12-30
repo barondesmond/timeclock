@@ -1030,7 +1030,7 @@ async switchEvent(even) {
 	console.log(this.state.image);
 	console.log(this.state.violation);
 
-	if (this.auth.Screen == 'Dispatch' && this.state.event == 'Complete' && this.state.image && this.state.violation)
+	if (this.state.auth && this.state.auth.Screen == 'Dispatch' && this.state.event == 'Complete' && this.state.image && this.state.violation)
 	{
 		even.Complete = 'Y';
 		even.customerimage = this.state.image;
