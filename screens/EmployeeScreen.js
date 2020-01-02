@@ -172,7 +172,7 @@ async authEventLogApi(log) {
 		log = this.state.auth;
 		log.checkinStatus = this.state.checkinStatus;
 		//console.log(log);
-		if (log.Screen == 'Dispatch' && this.state.event == 'Complete' && this.state.image && this.state.violation)
+		if (log.Screen == 'Dispatch' && this.state.event == 'Complete')
 		{
 			log.Complete = 'Y';
 			log.customer = this.state.violation;
@@ -661,8 +661,9 @@ addPicture() {
 		}
 	}
 	else if (this.state.checkinStatus == 'Stop'  && !this.state.eventstatus) {
-	
+
 			var auth = await this.authEventLogApi();
+			
 			if (auth.EmpActive != '1')
 			{
 	
@@ -1032,7 +1033,7 @@ async switchEvent(even) {
 	console.log(this.state.image);
 	console.log(this.state.violation);
 
-	if (this.state.auth && this.state.auth.Screen == 'Dispatch' && this.state.event == 'Complete' && this.state.image && this.state.violation)
+	if (this.state.auth && this.state.auth.Screen == 'Dispatch' && this.state.event == 'Complete' && (this.state.image || this.state.auth.signature || this.state.auth.picture) && this.state.auth.note)
 	{
 		even.Complete = 'Y';
 		even.customerimage = this.state.image;
