@@ -518,8 +518,10 @@ async employeeLogin() {
 		  console.log(auth.Screen);
 		  console.log(violation);
 		  console.log(auth.signature);
+		  console.log(auth.note);
+		  console.log(auth.picture);
 	  }
-	  if (auth && violation && image && auth.Screen == 'Dispatch' && auth.signature)
+	  if (auth && (image || auth.picture || auth.signature) && (auth.note) && auth.Screen == 'Dispatch')
 	  {
 		  await this.setState({event: 'Complete', image: auth.signature, violation: violation});
 	  }
