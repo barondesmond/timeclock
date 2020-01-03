@@ -1379,12 +1379,12 @@ return true;
 
 dispatchCamera = () => {
 
-	this.props.navigation.navigate('Picture', {onGoBack: () => this.loadPictures() , Screen: 'DispatchCamera',LocName: this.state.auth.DispatchName, address: 'DispatchCamera', reference: this.state.auth.Dispatch});
+	this.props.navigation.navigate('Picture', {onGoBack: () => this.employeeLogin() , Screen: 'DispatchCamera',LocName: this.state.auth.DispatchName, address: 'DispatchCamera', reference: this.state.auth.Dispatch});
 
 }
 jobCamera = () => {
 
-	this.props.navigation.navigate('Picture', {onGoBack: () => this.loadPictures() , Screen: 'JobCamera',LocName: this.state.auth.LocName, address: 'JobCamera', reference: this.state.auth.Name});
+	this.props.navigation.navigate('Picture', {onGoBack: () => this.employeeLogin() , Screen: 'JobCamera',LocName: this.state.auth.LocName, address: 'JobCamera', reference: this.state.auth.Name});
 
 }
 dispatchOverride = () => {

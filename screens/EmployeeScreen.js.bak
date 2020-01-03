@@ -172,7 +172,7 @@ async authEventLogApi(log) {
 		log = this.state.auth;
 		log.checkinStatus = this.state.checkinStatus;
 		//console.log(log);
-		if (log.Screen == 'Dispatch' && this.state.event == 'Complete' && this.state.image && this.state.violation)
+		if (log.Screen == 'Dispatch' && this.state.event == 'Complete')
 		{
 			log.Complete = 'Y';
 			log.customer = this.state.violation;
@@ -661,8 +661,9 @@ addPicture() {
 		}
 	}
 	else if (this.state.checkinStatus == 'Stop'  && !this.state.eventstatus) {
-	
+
 			var auth = await this.authEventLogApi();
+			
 			if (auth.EmpActive != '1')
 			{
 	
