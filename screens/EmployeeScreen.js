@@ -994,13 +994,14 @@ async switchEvent(even) {
 	even.checkinStatus = 'Switch';
 	even.EmpNo = this.state.auth.EmpNo;
 
-	Alert.alert('Switching to ' + even.Screen + ' ' + even.event);
+	//Alert.alert('Switching to ' + even.Screen + ' ' + even.event);
 
 
 	var auth = await this.authEventLogApi(even);
 	//console.log(auth);
 	 auth =  await this.authEmpInstApi();
 	 this.checkSwitch();
+	 Alert.alert('Switched to ' + auth.Screen + ' ' + auth.event);
 	 await this.setState({auth: auth});
 
 
