@@ -172,6 +172,12 @@ async authEventLogApi(log) {
 		log = this.state.auth;
 		log.checkinStatus = this.state.checkinStatus;
 		//console.log(log);
+		if (log.Screen == 'Dispatch' && this.state.event == 'Complete')
+		{
+			log.Complete = 'Y';
+			log.customer = this.state.violation;
+			log.customerimage = this.state.image;
+		}
 	}
 	else if (this.state.checkinStatus == 'Stop' && !log)
 	{
@@ -504,8 +510,21 @@ async employeeLogin() {
 	  console.log(auth);
 	  await this.setState({auth: auth});
 	  await this.checkSwitch();
-	
-
+	  var violation = await AsyncStorage.getItem('violation');
+	  var image = await AsyncStorage.getItem('image');
+	  console.log('employee login');
+	  if (auth)
+	  {
+		  console.log(auth.Screen);
+		  console.log(violation);
+		  console.log(auth.signature);
+		  console.log(auth.note);
+		  console.log(auth.picture);
+	  }
+	  if (auth && (image || auth.picture || auth.signature) && (auth.note) && auth.Screen == 'Dispatch')
+	  {
+		  await this.setState({event: 'Complete', image: auth.signature, violation: violation});
+	  }
 	  if (auth)
 	  {
 			if (await lib.uploadImages())
@@ -525,7 +544,7 @@ async employeeLogin() {
 			  var auth = await this.authEventLogApi(auth);
 			  var auth = await this.authEmpInstApi();
 		   }
-
+		
 		  await this.setState({auth: auth});
 
 	  }
@@ -642,7 +661,9 @@ addPicture() {
 		}
 	}
 	else if (this.state.checkinStatus == 'Stop'  && !this.state.eventstatus) {
+
 			var auth = await this.authEventLogApi();
+			
 			if (auth.EmpActive != '1')
 			{
 	
@@ -653,7 +674,7 @@ addPicture() {
 				return false;
 			}
 	
-	}
+	} 
 	//console.log(this.state.auth);
 
 	Alert.alert('Error ' + this.state.checkinStatus + ' ' + this.state.event + ' ' + this.state.auth.EmpActive + ' ' + this.state.eventstatus);
@@ -728,7 +749,7 @@ var log;
 		console.log('log setup addToNote');
 		log = this.state.auth;
 		//console.log(log);
-	if ((this.state.checkinStatus != 'Stop' && this.state.checkinStatus != 'addNote')  || !this.state.isNotesVisible )
+	if ((this.state.checkinStatus != 'Stop' && this.state.checkinStatus != 'addNote')  || !this.state.isNotesVisible || this.state.isNotesVisible == false )
 	{
 		Alert.alert('Erorr Status Note ');
 		return false;
@@ -759,6 +780,21 @@ var log;
 	console.log(authurl);
 
 	var auth = await lib.add_url(authurl);
+	if (auth && auth.authorized == '1')
+	{
+		if (log.Screen == 'Dispatch')
+		{
+			await this.setState({addDispatchNote: ''});
+		}
+		if (log.Screen == 'Job')
+		{
+			await this.setState({addJobNote: ''});
+		}
+		if (log.Screen == 'Employee')
+		{
+			await this.setState({addEmployeeNote: ''});
+		}
+	}
 	//console.log(auth);
 	await this.authEmpInstApi();
 	await this.setState({checkinStatus: 'Stop'});
@@ -990,18 +1026,31 @@ async switchEvent(even) {
 
 	}
 	even.Screen = this.state.Screen;
+
+	console.log('switchEvent');
+	console.log(even.Screen);
+	console.log(this.state.event);
+	console.log(this.state.image);
+	console.log(this.state.violation);
+
+	if (this.state.auth && this.state.auth.Screen == 'Dispatch' && this.state.event == 'Complete' && (this.state.image || this.state.auth.signature || this.state.auth.picture) && this.state.auth.note)
+	{
+		even.Complete = 'Y';
+		even.customerimage = this.state.image;
+		even.customer = this.state.violation;
+	}
 	even.event = this.state.event;
 	even.checkinStatus = 'Switch';
 	even.EmpNo = this.state.auth.EmpNo;
 
-	//Alert.alert('Switching to ' + even.Screen + ' ' + even.event);
 
 
 	var auth = await this.authEventLogApi(even);
 	//console.log(auth);
 	 auth =  await this.authEmpInstApi();
+	Alert.alert('Switched ' + auth.Screen + ' ' + auth.event);
+
 	 this.checkSwitch();
-	 Alert.alert('Switched to ' + auth.Screen + ' ' + auth.event);
 	 await this.setState({auth: auth});
 
 
@@ -1082,7 +1131,7 @@ console.log(this.state.auth.event);
 console.log(this.state.auth.Dispatch);
 console.log(this.state.auth.Counter);
 console.log(this.state.auth.note);
-if (this.state.checkinStatus == 'Stop' && this.state.auth.Screen == 'Dispatch' && (!this.state.auth.note || this.state.auth.note == null) && this.state.auth.event == 'Working')
+if (this.state.checkinStatus == 'Stop' && this.state.auth.Screen == 'Dispatch' && (!this.state.auth.note || this.state.auth.note == null) && this.state.auth.event == 'Working' && this.state.event != 'Lunch')
 {
 	await this.setState({checkinStatus: 'addNote'});
 	return false;
@@ -1173,6 +1222,10 @@ else if ((this.state.auth.Screen != this.state.Screen || this.state.auth.event !
 
 }
 else if (this.state.auth.Screen == 'Employee' && this.state.Screen == 'Employee' && this.state.auth.event == 'Traveling' && this.state.event == 'Working')
+{
+		await this.setState({checkinStatus: 'Switch'});
+}
+else if (this.state.auth.Screen == 'Employee' && this.state.auth.event == 'Lunch' & this.state.event != 'Lunch')
 {
 		await this.setState({checkinStatus: 'Switch'});
 }
@@ -1326,12 +1379,12 @@ return true;
 
 dispatchCamera = () => {
 
-	this.props.navigation.navigate('Picture', {onGoBack: () => this.loadPictures() , Screen: 'DispatchCamera',LocName: this.state.auth.DispatchName, address: 'DispatchCamera', reference: this.state.auth.Dispatch});
+	this.props.navigation.navigate('Picture', {onGoBack: () => this.employeeLogin() , Screen: 'DispatchCamera',LocName: this.state.auth.DispatchName, address: 'DispatchCamera', reference: this.state.auth.Dispatch});
 
 }
 jobCamera = () => {
 
-	this.props.navigation.navigate('Picture', {onGoBack: () => this.loadPictures() , Screen: 'JobCamera',LocName: this.state.auth.LocName, address: 'JobCamera', reference: this.state.auth.Name});
+	this.props.navigation.navigate('Picture', {onGoBack: () => this.employeeLogin() , Screen: 'JobCamera',LocName: this.state.auth.LocName, address: 'JobCamera', reference: this.state.auth.Name});
 
 }
 dispatchOverride = () => {
